@@ -1,4 +1,4 @@
-package com.example.gamequeue.firebase;
+package com.example.gamequeue.data.firebase;
 
 import com.google.firebase.database.FirebaseDatabase;
 
