@@ -6,4 +6,15 @@
     </style>
 
     <style name="Theme.GameQueue" parent="Base.Theme.GameQueue" />
+
+    <style name="Theme.GameQueue.Splash" parent="Theme.SplashScreen">
+        <!-- REMOVE icon and branding -->
+        <item name="windowSplashScreenAnimatedIcon">@null</item>
+
+        <!-- Set your custom background layout -->
+        <item name="windowSplashScreenBackground">@drawable/linear_blue_gradient_background</item>
+
+        <item name="postSplashScreenTheme">@style/Theme.GameQueue</item>
+    </style>
+
 </resources>

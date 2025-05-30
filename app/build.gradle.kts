@@ -38,6 +38,7 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.database)
     implementation(libs.firebase.analytics)
+    implementation(libs.core.splashscreen)
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
