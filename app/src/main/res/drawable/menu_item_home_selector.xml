@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Icon when the item is checked (selected/active) -->
+    <item android:drawable="@drawable/home" android:state_checked="true" />
+    <!-- Default icon (when not checked) -->
+    <item android:drawable="@drawable/home_outline" />
+</selector>

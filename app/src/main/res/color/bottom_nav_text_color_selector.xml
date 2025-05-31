@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Text color when the item is checked (active) -->
+    <!-- Let's use the obvious red for debugging first, then switch to light_blue -->
+    <item android:color="@color/light_blue" android:state_checked="true" />
+    <!-- <item android:color="@color/my_light_blue_active" android:state_checked="true" /> -->
+
+    <!-- Text color when the item is not checked (inactive) -->
+    <item android:color="@color/black" android:state_checked="false"/>
+
+    <!-- Default color (often the same as inactive) -->
+    <item android:color="@color/black" />
+</selector>

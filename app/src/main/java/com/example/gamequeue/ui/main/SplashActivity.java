@@ -1,6 +1,10 @@
 package com.example.gamequeue.ui.main;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -11,6 +15,7 @@ import androidx.core.splashscreen.SplashScreen;
 
 import com.example.gamequeue.R;
 
+@SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {
     // Variables
     private ImageView logo;
@@ -20,6 +25,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
 
@@ -33,9 +39,11 @@ public class SplashActivity extends AppCompatActivity {
         textGame.startAnimation(fadein);
         textQueue.startAnimation(fadein);
 
-        // Immediately start another activity here
-//        startActivity(new Intent(this, MainActivity.class));
-//        overridePendingTransition(0,0);
-//        finish();
+        // Async to Main Activity
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            startActivity(new Intent(this, MainActivity.class));
+            overridePendingTransition(0, 0);
+            finish();
+        }, 1700);
     }
 }
