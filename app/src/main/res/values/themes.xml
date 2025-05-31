@@ -9,10 +9,11 @@
 
     <style name="Theme.GameQueue.Splash" parent="Theme.SplashScreen">
         <!-- REMOVE icon and branding -->
-        <item name="windowSplashScreenAnimatedIcon">@null</item>
+        <item name="windowSplashScreenAnimatedIcon">@color/transparent</item>
 
         <!-- Set your custom background layout -->
         <item name="windowSplashScreenBackground">@drawable/linear_blue_gradient_background</item>
+        <item name="android:windowBackground">@drawable/linear_blue_gradient_background</item>
 
         <item name="postSplashScreenTheme">@style/Theme.GameQueue</item>
     </style>
