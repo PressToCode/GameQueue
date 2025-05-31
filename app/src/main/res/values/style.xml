@@ -6,4 +6,8 @@
         <item name="android:height">0dp</item>
         <item name="marginHorizontal">0dp</item>
     </style>
+
+    <style name="App.BottomNavigationView.TextAppearance" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:fontFamily">@font/poppins</item>
+    </style>
 </resources>

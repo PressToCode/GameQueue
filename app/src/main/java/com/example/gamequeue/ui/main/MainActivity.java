@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         // Set FAB Button Listener
         fabReservasi.setOnClickListener(v -> {
             bottomNavigationView.setSelectedItemId(NAV_RESERVATION);
-            loadFragment(new HomeFragment());
+            loadFragment(new ReservationFragment());
         });
 
         // Set Bottom Navigation View Listener
