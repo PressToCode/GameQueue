@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -33,11 +34,12 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical">
@@ -46,8 +48,10 @@
                             android:id="@+id/text_greeting"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:fontFamily="@font/inter"
                             android:text="Hai, Olfat!"
-                            android:textSize="24sp"
+                            android:textColor="@color/white"
+                            android:textSize="20sp"
                             android:textStyle="bold" />
 
                         <TextView
@@ -55,34 +59,59 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
+                            android:fontFamily="@font/inter"
                             android:text="Reservasi sekarang dengan cepat!"
+                            android:textColor="@color/white"
                             android:textSize="14sp" />
                     </LinearLayout>
 
-                    <ImageView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:contentDescription="Profile"
-                        android:src="@drawable/ic_launcher_foreground" />
+                    <ImageButton
+                        android:id="@+id/imageButton2"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:adjustViewBounds="true"
+                        android:background="@drawable/baseline_circle_24"
+                        android:backgroundTint="@color/white"
+                        android:cropToPadding="true"
+                        android:src="@drawable/user" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginVertical="20dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/imageButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_weight="8"
+                        android:background="@drawable/left_rounded_corner_background"
+                        android:paddingStart="14dp"
+                        android:src="@drawable/search_icon" />
+
+                    <EditText
+                        android:id="@+id/edit_search"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/right_rounded_corner_background"
+                        android:fontFamily="@font/inter"
+                        android:hint="Cari konsol tersedia"
+                        android:paddingHorizontal="16dp"
+                        android:textColor="@color/black" />
                 </LinearLayout>
 
                 <!-- Search Field -->
-                <EditText
-                    android:id="@+id/edit_search"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="12dp"
-                    android:background="@drawable/ic_launcher_background"
-                    android:hint="Cari konsol tersedia"
-                    android:paddingHorizontal="16dp" />
 
                 <!-- Collapsible Card -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/card_recommendation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    app:cardCornerRadius="12dp"
+                    app:cardCornerRadius="20dp"
                     app:cardElevation="6dp">
 
                     <LinearLayout
@@ -94,6 +123,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:fontFamily="@font/inter_bold"
                             android:text="Console Tersedia Saat ini"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -112,7 +142,7 @@
         android:id="@+id/scroll_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/rounded_corner_background"
+        android:background="@drawable/top_rounded_corner_background"
         android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
@@ -160,9 +190,9 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view_reservations"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:clipToPadding="false"
-                android:paddingBottom="120dp" />
+                tools:listitem="@layout/card_item_one" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
