@@ -2,13 +2,24 @@ package com.example.gamequeue.ui.fragment;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.example.gamequeue.R;
+import com.example.gamequeue.data.model.ConsoleModel;
+import com.example.gamequeue.ui.adapter.ConsoleAdapter;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -21,6 +32,11 @@ public class HomeFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private RecyclerView recyclerView;
+    private NestedScrollView scrollContainer;
+    private LinearLayout contentHolder, filterButtons;
+    private ConsoleAdapter adapter;
+    private ArrayList<ConsoleModel> consoleList;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -51,10 +67,12 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+//        if (getArguments() != null) {
+//            mParam1 = getArguments().getString(ARG_PARAM1);
+//            mParam2 = getArguments().getString(ARG_PARAM2);
+//        }
+        // Data fetching should run here
+        consoleList = new ArrayList<>();
     }
 
     @Override
@@ -62,5 +80,80 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Initialization
+        recyclerView = view.findViewById(R.id.recycler_view_reservations);
+        scrollContainer = view.findViewById(R.id.scroll_container);
+        contentHolder = view.findViewById(R.id.scroll_container_content);
+        filterButtons = view.findViewById(R.id.filter_buttons);
+
+        // Some Setup because RecyclerView is being an a**
+        setupRecycler();
+
+        // Set Adapter
+        adapter = new ConsoleAdapter(getContext(), R.layout.card_item_one, consoleList);
+        recyclerView.setAdapter(adapter);
+
+        // Load Dummy Data
+        loadDummyData();
+    }
+
+    private void loadDummyData() {
+        // Dummy data loading logic
+        consoleList.clear();
+        consoleList.add(new ConsoleModel("XBOX", 0, "Day, DD MM YY", "Time Timezone"));
+        consoleList.add(new ConsoleModel("Playstation 5", 1, "Day, DD MM YY", "Time Timezone"));
+        consoleList.add(new ConsoleModel("Desktop PC", 2, "Day, DD MM YY", "Time Timezone"));
+    }
+
+    private void setupRecycler() {
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        scrollContainer.post(() -> {
+            if (getContext() == null) return;
+
+            // 1. Get the actual available height INSIDE the NestedScrollView's viewport
+            // This accounts for scrollContainer's own padding, if any.
+            int availableHeightInScrollContainer = scrollContainer.getHeight()
+                    - scrollContainer.getPaddingTop()
+                    - scrollContainer.getPaddingBottom();
+
+            // 2. The contentHolder LinearLayout is supposed to match this.
+            // Let's verify its padding if it affects calculations for RV.
+            int contentHolderPaddingTop = contentHolder.getPaddingTop();
+            int contentHolderPaddingBottom = contentHolder.getPaddingBottom();
+
+            // 3. Get height of filter buttons (including its margins)
+            int filterButtonsHeight = filterButtons.getHeight();
+            ViewGroup.MarginLayoutParams filterMargins = (ViewGroup.MarginLayoutParams) filterButtons.getLayoutParams();
+            int filterButtonsTotalHeightWithMargins = filterButtonsHeight + filterMargins.topMargin + filterMargins.bottomMargin;
+
+            // 4. Calculate target height for RecyclerView
+            // This is the space within contentHolder, after filters and contentHolder's own padding.
+            int recyclerViewTargetHeight = availableHeightInScrollContainer // Total space for contentHolder
+                    - contentHolderPaddingTop      // Subtract contentHolder's top padding
+                    - filterButtonsTotalHeightWithMargins // Subtract filters
+                    - contentHolderPaddingBottom;  // Subtract contentHolder's bottom padding
+
+
+            if (recyclerViewTargetHeight < 0) {
+                recyclerViewTargetHeight = 0;
+            }
+
+            ViewGroup.LayoutParams rvLayoutParams = recyclerView.getLayoutParams();
+            if (rvLayoutParams.height != recyclerViewTargetHeight) {
+                rvLayoutParams.height = recyclerViewTargetHeight;
+                recyclerView.setLayoutParams(rvLayoutParams);
+//                 Log.d("RV_RESIZE", "Set RV height to: " + recyclerViewTargetHeight);
+            } else {
+//                 Log.d("RV_RESIZE", "RV height already correct: " + rvLayoutParams.height);
+            }
+        });
     }
 }

@@ -5,4 +5,7 @@
     <color name="light_blue">#3355FF</color>
     <color name="white_blue_smoke">#99AAFF</color>
     <color name="transparent">#00FFFFFF</color>
+    <color name="light_green_bg">#ACE66A</color>
+    <color name="light_green_fg">#4CAF50</color>
+    <color name="gray">#818181</color>
 </resources>
