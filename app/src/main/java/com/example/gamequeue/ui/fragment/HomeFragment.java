@@ -1,5 +1,6 @@
 package com.example.gamequeue.ui.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -20,6 +22,7 @@ import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ConsoleModel;
 import com.example.gamequeue.data.model.SharedViewModel;
 import com.example.gamequeue.ui.adapter.ConsoleAdapter;
+import com.example.gamequeue.ui.main.UserProfileActivity;
 
 import java.util.ArrayList;
 
@@ -31,6 +34,9 @@ public class HomeFragment extends Fragment {
     private ConsoleAdapter adapter;
     private ArrayList<ConsoleModel> consoleList;
     private SharedViewModel viewModel;
+
+    // Add profile button variable
+    private ImageButton profileButton;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -61,7 +67,11 @@ public class HomeFragment extends Fragment {
         scrollContainer = view.findViewById(R.id.scroll_container);
         contentHolder = view.findViewById(R.id.scroll_container_content);
         filterButtons = view.findViewById(R.id.filter_radio_group);
+        profileButton = view.findViewById(R.id.imageButton2); // Profile button
         viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+
+        // Setup profile button click listener
+        setupProfileButton();
 
         // Some Setup because RecyclerView is being an a**
         setupRecycler();
@@ -72,6 +82,14 @@ public class HomeFragment extends Fragment {
 
         // Load Dummy Data
         loadDummyData();
+    }
+
+    private void setupProfileButton() {
+        profileButton.setOnClickListener(v -> {
+            // Navigate to User Profile Activity
+            Intent intent = new Intent(getActivity(), UserProfileActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void loadDummyData() {
