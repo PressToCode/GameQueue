@@ -27,6 +27,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/wave"
                 android:orientation="vertical"
                 android:padding="16dp">
 
@@ -49,7 +50,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/inter"
-                            android:text="Hai, Olfat!"
+                            android:text="Hai, [Name]!"
                             android:textColor="@color/white"
                             android:textSize="20sp"
                             android:textStyle="bold" />
@@ -270,8 +271,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:paddingHorizontal="20dp"
-            android:paddingTop="20dp"
-            android:paddingBottom="16dp">
+            android:paddingTop="20dp">
 
             <!-- Filter Buttons -->
             <TextView

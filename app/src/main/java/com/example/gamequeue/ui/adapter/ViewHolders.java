@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamequeue.data.model.ConsoleModel;
 import com.example.gamequeue.utils.CardOneID;
+import com.example.gamequeue.utils.CardTwoID;
 
 import java.util.Objects;
 
@@ -38,15 +39,7 @@ public class ViewHolders {
 //            imageView.setImageResource(consoleModel.getImage());
             title.setText(consoleModel.getTitle());
             status.setText(consoleModel.getStatus());
-            if(Objects.equals(consoleModel.getStatus(), "Pending")) {
-                status.setTextColor(Color.parseColor(pendingTxtColor));
-                status.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(pendingBgColor)));
-            }
-
-            if (Objects.equals(consoleModel.getStatus(), "Rejected")) {
-                status.setTextColor(Color.parseColor(rejectedTxtColor));
-                status.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(rejectedBgColor)));
-            }
+            statusChanger(status);
             date.setText(consoleModel.getDate());
             time.setText(consoleModel.getTime());
         }
@@ -54,10 +47,28 @@ public class ViewHolders {
 
     public static class ViewHolderTwo extends RecyclerView.ViewHolder {
         ImageView imageView;
-        TextView title, status, date, time;
+        TextView title, status, specificationOne, specificationTwo, specificationThree;
 
         public ViewHolderTwo(@NonNull View itemView) {
             super(itemView);
+            imageView = itemView.findViewById(CardTwoID.image);
+            title = itemView.findViewById(CardTwoID.title);
+            status = itemView.findViewById(CardTwoID.status);
+            specificationOne = itemView.findViewById(CardTwoID.specificationOne);
+            specificationTwo = itemView.findViewById(CardTwoID.specificationTwo);
+            specificationThree = itemView.findViewById(CardTwoID.specificationThree);
+        }
+
+        public void bind(ConsoleModel consoleModel) {
+            if (consoleModel == null) return;
+
+//            imageView.setImageResource(consoleModel.getImage());
+            title.setText(consoleModel.getTitle());
+            status.setText(consoleModel.getStatus());
+            statusChanger(status);
+            specificationOne.setText(consoleModel.getSpecificationOne());
+            specificationTwo.setText(consoleModel.getSpecificationTwo());
+            specificationThree.setText(consoleModel.getSpecificationThree());
         }
     }
 
@@ -67,6 +78,18 @@ public class ViewHolders {
 
         public ViewHolderThree(@NonNull View itemView) {
             super(itemView);
+        }
+    }
+
+    private static void statusChanger(@NonNull TextView status) {
+        if(Objects.equals(status.getText(), "Pending")) {
+            status.setTextColor(Color.parseColor(pendingTxtColor));
+            status.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(pendingBgColor)));
+        }
+
+        if (Objects.equals(status.getText(), "Rejected")) {
+            status.setTextColor(Color.parseColor(rejectedTxtColor));
+            status.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(rejectedBgColor)));
         }
     }
 }

@@ -2,59 +2,34 @@ package com.example.gamequeue.ui.fragment;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.gamequeue.R;
+import com.example.gamequeue.data.model.ConsoleModel;
+import com.example.gamequeue.ui.adapter.ConsoleAdapter;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ReservationFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+
 public class ReservationFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private RecyclerView recyclerView;
+    private ArrayList<ConsoleModel> consoleList;
 
     public ReservationFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ReservationFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ReservationFragment newInstance(String param1, String param2) {
-        ReservationFragment fragment = new ReservationFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        consoleList = new ArrayList<>();
     }
 
     @Override
@@ -62,5 +37,28 @@ public class ReservationFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_reservation, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Initialization
+        recyclerView = view.findViewById(R.id.reservationRecycler);
+
+        // Set Adapter
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        ConsoleAdapter adapter = new ConsoleAdapter(getContext(), R.layout.card_item_two, consoleList);
+        recyclerView.setAdapter(adapter);
+
+        // Load Dummy Data
+        loadDummyData();
+    }
+
+    private void loadDummyData() {
+        consoleList.clear();
+        consoleList.add(new ConsoleModel("XBOX", 0, "XBOX X Series", "Gigabyte Curved 120Hz", "Wireless Dualsense Stick"));
+        consoleList.add(new ConsoleModel("Playstation 5", 1, "Playstation 5 Pro", "2K HDR AMOLED 120Hz", "PS Pro Limited Pad"));
+        consoleList.add(new ConsoleModel("Desktop PC", 2, "Alienware X", "4K HDR Monitor 240Hz", "Razer Viper"));
     }
 }

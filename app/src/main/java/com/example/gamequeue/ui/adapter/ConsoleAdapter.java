@@ -45,7 +45,7 @@ public class ConsoleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             ((ViewHolders.ViewHolderOne) holder).bind(currentItem);
             // Logic
         } else if (holder instanceof ViewHolders.ViewHolderTwo) {
-            ViewHolders.ViewHolderTwo viewHolderTwo = (ViewHolders.ViewHolderTwo) holder;
+            ((ViewHolders.ViewHolderTwo) holder).bind(currentItem);
             // Logic
         } else if (holder instanceof ViewHolders.ViewHolderThree) {
             ViewHolders.ViewHolderThree viewHolderThree = (ViewHolders.ViewHolderThree) holder;
