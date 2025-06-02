@@ -10,6 +10,7 @@ constraintlayout = "2.2.1"
 firebaseBoMVersion = "33.14.0"
 gmsVersion = "4.4.2"
 coreSplashVersion = "1.0.1"
+stepperIndicatorVer = "1.0.7"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -24,6 +25,7 @@ firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
 firebase-database = { group = "com.google.firebase", name = "firebase-database" }
 core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashVersion" }
+stepper-indicator = { group = "com.github.badoualy", name = "stepper-indicator", version.ref = "stepperIndicatorVer" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
