@@ -3,6 +3,7 @@ package com.example.gamequeue.ui.adapter;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamequeue.data.model.ConsoleModel;
 import com.example.gamequeue.utils.CardOneID;
+import com.example.gamequeue.utils.CardThreeID;
 import com.example.gamequeue.utils.CardTwoID;
 
 import java.util.Objects;
@@ -75,9 +77,28 @@ public class ViewHolders {
     public static class ViewHolderThree extends RecyclerView.ViewHolder {
         ImageView imageView;
         TextView title, status, date, time;
+        Button detailBtn, removeBtn;
 
         public ViewHolderThree(@NonNull View itemView) {
             super(itemView);
+            imageView = itemView.findViewById(CardThreeID.image);
+            title = itemView.findViewById(CardThreeID.title);
+            status = itemView.findViewById(CardThreeID.status);
+            date = itemView.findViewById(CardThreeID.date);
+            time = itemView.findViewById(CardThreeID.time);
+            detailBtn = itemView.findViewById(CardThreeID.detailBtn);
+            removeBtn = itemView.findViewById(CardThreeID.removeBtn);
+        }
+
+        public void bind(ConsoleModel consoleModel) {
+            if (consoleModel == null) return;
+
+//            imageView.setImageResource(consoleModel.getImage());
+            title.setText(consoleModel.getTitle());
+            status.setText(consoleModel.getStatus());
+            statusChanger(status);
+            date.setText(consoleModel.getDate());
+            time.setText(consoleModel.getTime());
         }
     }
 
