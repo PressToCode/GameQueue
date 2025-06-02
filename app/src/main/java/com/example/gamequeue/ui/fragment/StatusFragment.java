@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ConsoleModel;
+import com.example.gamequeue.data.model.SharedViewModel;
 import com.example.gamequeue.ui.adapter.ConsoleAdapter;
 
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ import java.util.ArrayList;
 public class StatusFragment extends Fragment {
     private RecyclerView recyclerView;
     private ArrayList<ConsoleModel> consoleList;
+    private SharedViewModel viewModel;
 
     public StatusFragment() {
         // Required empty public constructor
@@ -45,6 +48,7 @@ public class StatusFragment extends Fragment {
 
         // Initialization
         recyclerView = view.findViewById(R.id.statusRecycler);
+        viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
         // Set Adapter
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -58,8 +62,6 @@ public class StatusFragment extends Fragment {
     private void loadDummyData() {
         // Dummy data loading logic
         consoleList.clear();
-        consoleList.add(new ConsoleModel("XBOX", 0, "Day, DD MM YY", "Time Timezone"));
-        consoleList.add(new ConsoleModel("Playstation 5", 1, "Day, DD MM YY", "Time Timezone"));
-        consoleList.add(new ConsoleModel("Desktop PC", 2, "Day, DD MM YY", "Time Timezone"));
+        consoleList.addAll(viewModel.getConsoleList());
     }
 }

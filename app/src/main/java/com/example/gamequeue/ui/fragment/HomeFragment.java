@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ConsoleModel;
+import com.example.gamequeue.data.model.SharedViewModel;
 import com.example.gamequeue.ui.adapter.ConsoleAdapter;
 
 import java.util.ArrayList;
@@ -28,6 +30,7 @@ public class HomeFragment extends Fragment {
     private LinearLayout contentHolder, filterButtons;
     private ConsoleAdapter adapter;
     private ArrayList<ConsoleModel> consoleList;
+    private SharedViewModel viewModel;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -36,10 +39,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-//        }
+
         // Data fetching should run here
         consoleList = new ArrayList<>();
     }
@@ -61,6 +61,7 @@ public class HomeFragment extends Fragment {
         scrollContainer = view.findViewById(R.id.scroll_container);
         contentHolder = view.findViewById(R.id.scroll_container_content);
         filterButtons = view.findViewById(R.id.filter_radio_group);
+        viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
         // Some Setup because RecyclerView is being an a**
         setupRecycler();
@@ -76,9 +77,7 @@ public class HomeFragment extends Fragment {
     private void loadDummyData() {
         // Dummy data loading logic
         consoleList.clear();
-        consoleList.add(new ConsoleModel("XBOX", 0, "Day, DD MM YY", "Time Timezone"));
-        consoleList.add(new ConsoleModel("Playstation 5", 1, "Day, DD MM YY", "Time Timezone"));
-        consoleList.add(new ConsoleModel("Desktop PC", 2, "Day, DD MM YY", "Time Timezone"));
+        consoleList.addAll(viewModel.getConsoleList());
     }
 
     private void setupRecycler() {

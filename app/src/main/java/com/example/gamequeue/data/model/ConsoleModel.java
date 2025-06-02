@@ -1,9 +1,6 @@
 package com.example.gamequeue.data.model;
 
-import android.graphics.Color;
-
-import com.example.gamequeue.R;
-
+// Used as base model for cards
 public class ConsoleModel {
     private String title = "NO TITLE";
     private String status = "NO STATUS";
@@ -14,28 +11,11 @@ public class ConsoleModel {
     private String specificationThree = "NO SPECIFICATION";
 
     // Constructor
-    public ConsoleModel(String title, int status, String date, String time) {
+    public ConsoleModel(String title, int status, String date, String time, String specificationOne, String specificationTwo, String specificationThree) {
         this.title = title;
-        if(status == 0) {
-            this.status = "Pending";
-        } else if (status == 1) {
-            this.status = "Confirmed";
-        } else {
-            this.status = "Rejected";
-        }
+        this.status = statusConverter(status);
         this.date = date;
         this.time = time;
-    }
-
-    public ConsoleModel(String title, int status, String specificationOne, String specificationTwo, String specificationThree) {
-        this.title = title;
-        if(status == 0) {
-            this.status = "Pending";
-        } else if (status == 1) {
-            this.status = "Confirmed";
-        } else {
-            this.status = "Rejected";
-        }
         this.specificationOne = specificationOne;
         this.specificationTwo = specificationTwo;
         this.specificationThree = specificationThree;
@@ -68,5 +48,18 @@ public class ConsoleModel {
 
     public String getSpecificationThree() {
         return specificationThree;
+    }
+
+    // Utility
+    private String statusConverter(int status) {
+        if(status == 0) {
+            return "Pending";
+        } else if (status == 1) {
+            return "Confirmed";
+        } else if (status == 2) {
+            return "Rejected";
+        } else {
+            return "NULL";
+        }
     }
 }

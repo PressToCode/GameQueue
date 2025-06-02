@@ -8,8 +8,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.gamequeue.R;
+import com.example.gamequeue.data.model.SharedViewModel;
 import com.example.gamequeue.ui.fragment.HomeFragment;
 import com.example.gamequeue.ui.fragment.ReservationFragment;
 import com.example.gamequeue.ui.fragment.StatusFragment;
@@ -27,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private final ReservationFragment reservationFragment = new ReservationFragment();
     private final StatusFragment statusFragment = new StatusFragment();
     private Fragment activeFragment = homeFragment;
+    private SharedViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +42,10 @@ public class MainActivity extends AppCompatActivity {
         // Initialization
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         fabReservasi = findViewById(R.id.fab_reservasi);
+        viewModel = new ViewModelProvider(this).get(SharedViewModel.class);
+
+        // Fetch Data
+        viewModel.fetchSetup();
 
         // Setup all fragments and listener
         setupFragments(savedInstanceState);
@@ -102,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
         fabReservasi.setOnClickListener(v -> {
             // Simply select the item, the listener will handle the fragment switch
             bottomNavigationView.setSelectedItemId(R.id.nav_reservation);
-            // NO need to call switchFragment or loadFragment here directly
         });
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
@@ -135,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction ft = fm.beginTransaction();
 
         // Optional: Add animations
-        // ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
+//        ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
 
         if (activeFragment != null && activeFragment.isAdded()) {
             ft.hide(activeFragment);
@@ -146,14 +152,6 @@ public class MainActivity extends AppCompatActivity {
         if (targetFragment.isAdded()) {
             ft.show(targetFragment);
         } else {
-            // This case should ideally not happen if setupFragments is correct
-            // For robustness, you could add it here, but it implies an issue in initial setup.
-            // String tag = "";
-            // if (targetFragment == homeFragment) tag = TAG_HOME;
-            // else if (targetFragment == reservationFragment) tag = TAG_RESERVATION;
-            // else if (targetFragment == statusFragment) tag = TAG_STATUS;
-            // ft.add(R.id.fragment_container, targetFragment, tag).show(targetFragment);
-            // Fallback or error handling
             return;
         }
 
