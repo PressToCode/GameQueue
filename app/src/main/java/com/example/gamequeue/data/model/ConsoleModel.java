@@ -23,4 +23,21 @@ public class ConsoleModel {
         this.date = date;
         this.time = time;
     }
+
+    // Getter
+    public String getTitle() {
+        return title;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public String getTime() {
+        return time;
+    }
 }

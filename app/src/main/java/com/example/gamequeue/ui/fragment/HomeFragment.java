@@ -9,11 +9,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ConsoleModel;
@@ -33,10 +33,12 @@ public class HomeFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private RecyclerView recyclerView;
+    private TextView statusReservationText;
     private NestedScrollView scrollContainer;
     private LinearLayout contentHolder, filterButtons;
     private ConsoleAdapter adapter;
     private ArrayList<ConsoleModel> consoleList;
+    private boolean isRecyclerViewTouched = false;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -88,9 +90,10 @@ public class HomeFragment extends Fragment {
 
         // Initialization
         recyclerView = view.findViewById(R.id.recycler_view_reservations);
+        statusReservationText = view.findViewById(R.id.statusReservationText);
         scrollContainer = view.findViewById(R.id.scroll_container);
         contentHolder = view.findViewById(R.id.scroll_container_content);
-        filterButtons = view.findViewById(R.id.filter_buttons);
+        filterButtons = view.findViewById(R.id.filter_radio_group);
 
         // Some Setup because RecyclerView is being an a**
         setupRecycler();
@@ -129,15 +132,21 @@ public class HomeFragment extends Fragment {
             int contentHolderPaddingTop = contentHolder.getPaddingTop();
             int contentHolderPaddingBottom = contentHolder.getPaddingBottom();
 
-            // 3. Get height of filter buttons (including its margins)
+            // 3. Get height of TextView status reservation
+            int statusReservationTextHeight = statusReservationText.getHeight();
+            ViewGroup.MarginLayoutParams statusReservationTextMargins = (ViewGroup.MarginLayoutParams) statusReservationText.getLayoutParams();
+            int statusReservationTextTotalHeightWithMargins = statusReservationTextHeight + statusReservationTextMargins.topMargin + statusReservationTextMargins.bottomMargin;
+
+            // 4. Get height of filter buttons (including its margins)
             int filterButtonsHeight = filterButtons.getHeight();
             ViewGroup.MarginLayoutParams filterMargins = (ViewGroup.MarginLayoutParams) filterButtons.getLayoutParams();
             int filterButtonsTotalHeightWithMargins = filterButtonsHeight + filterMargins.topMargin + filterMargins.bottomMargin;
 
-            // 4. Calculate target height for RecyclerView
+            // 5. Calculate target height for RecyclerView
             // This is the space within contentHolder, after filters and contentHolder's own padding.
             int recyclerViewTargetHeight = availableHeightInScrollContainer // Total space for contentHolder
                     - contentHolderPaddingTop      // Subtract contentHolder's top padding
+                    - statusReservationTextTotalHeightWithMargins // Subtract statusReservationText
                     - filterButtonsTotalHeightWithMargins // Subtract filters
                     - contentHolderPaddingBottom;  // Subtract contentHolder's bottom padding
 

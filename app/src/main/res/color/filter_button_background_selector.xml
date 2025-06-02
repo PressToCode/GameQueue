@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- State when button is selected (active) -->
+    <item android:state_selected="true"
+        android:color="@color/light_blue" />
+
+    <!-- Default state (inactive) - can be transparent or your default outlined button color -->
+    <item android:color="@android:color/transparent" />
+    <!-- Or, if your outlined buttons have a specific background tint by default you want to revert to:
+    <item android:color="@color/your_default_outline_button_background_tint" /> -->
+</selector>

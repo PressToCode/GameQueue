@@ -13,8 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/light_blue"
-        android:theme="@style/Theme.Material3.DayNight"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="true"
+        android:theme="@style/Theme.Material3.DayNight">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
@@ -111,6 +111,7 @@
                     android:id="@+id/card_recommendation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     app:cardCornerRadius="20dp"
                     app:cardElevation="6dp">
 
@@ -268,54 +269,81 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingHorizontal="20dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="16dp">
 
             <!-- Filter Buttons -->
-            <LinearLayout
-                android:id="@+id/filter_buttons"
+            <TextView
+                android:id="@+id/statusReservationText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="12dp"
+                android:fontFamily="@font/inter_bold"
+                android:paddingStart="4dp"
+                android:text="Status Reservasi"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+            <RadioGroup
+                android:id="@+id/filter_radio_group"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
+                android:checkedButton="@id/radio_button_pending"
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:weightSum="3">
 
-                <com.google.android.material.button.MaterialButton
-                    style="@style/Widget.Material3.Button.OutlinedButton"
+                <RadioButton
+                    android:id="@+id/radio_button_pending"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:background="@drawable/radio_button_background_selector"
+                    android:button="@android:color/transparent"
                     android:fontFamily="@font/inter_bold"
-                    android:paddingLeft="12dp"
-                    android:paddingRight="12dp"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:minHeight="36dp"
                     android:text="Pending"
-                    android:textSize="12sp"
-                    app:iconPadding="0dp" />
+                    android:textColor="@color/radio_button_text_selector"
+                    android:textSize="12sp" />
 
-                <com.google.android.material.button.MaterialButton
-                    style="@style/Widget.Material3.Button.OutlinedButton"
+                <RadioButton
+                    android:id="@+id/radio_button_completed"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
+                    android:background="@drawable/radio_button_background_selector"
+                    android:button="@android:color/transparent"
                     android:fontFamily="@font/inter_bold"
-                    android:paddingLeft="12dp"
-                    android:paddingRight="12dp"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:minHeight="36dp"
                     android:text="Completed"
+                    android:textColor="@color/radio_button_text_selector"
                     android:textSize="12sp" />
 
-                <com.google.android.material.button.MaterialButton
-                    style="@style/Widget.Material3.Button.OutlinedButton"
+                <RadioButton
+                    android:id="@+id/radio_button_canceled"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
+                    android:background="@drawable/radio_button_background_selector"
+                    android:button="@android:color/transparent"
                     android:fontFamily="@font/inter_bold"
-                    android:paddingLeft="12dp"
-                    android:paddingRight="12dp"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:minHeight="36dp"
                     android:text="Canceled"
+                    android:textColor="@color/radio_button_text_selector"
                     android:textSize="12sp" />
-            </LinearLayout>
+
+            </RadioGroup>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view_reservations"

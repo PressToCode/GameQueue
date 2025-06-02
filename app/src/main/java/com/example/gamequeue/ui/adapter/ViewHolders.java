@@ -1,5 +1,7 @@
 package com.example.gamequeue.ui.adapter;
 
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -10,7 +12,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.gamequeue.data.model.ConsoleModel;
 import com.example.gamequeue.utils.CardOneID;
 
+import java.util.Objects;
+
 public class ViewHolders {
+    private final static String pendingBgColor = "#FFF5CC";
+    private final static String pendingTxtColor = "#CCA300";
+    private final static String rejectedBgColor = "#FACCCC";
+    private final static String rejectedTxtColor = "#E50000";
     public static class ViewHolderOne extends RecyclerView.ViewHolder {
         ImageView imageView;
         TextView title, status, date, time;
@@ -26,7 +34,21 @@ public class ViewHolders {
 
         public void bind(ConsoleModel consoleModel) {
             if (consoleModel == null) return;
-            // Logic maybe?
+
+//            imageView.setImageResource(consoleModel.getImage());
+            title.setText(consoleModel.getTitle());
+            status.setText(consoleModel.getStatus());
+            if(Objects.equals(consoleModel.getStatus(), "Pending")) {
+                status.setTextColor(Color.parseColor(pendingTxtColor));
+                status.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(pendingBgColor)));
+            }
+
+            if (Objects.equals(consoleModel.getStatus(), "Rejected")) {
+                status.setTextColor(Color.parseColor(rejectedTxtColor));
+                status.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(rejectedBgColor)));
+            }
+            date.setText(consoleModel.getDate());
+            time.setText(consoleModel.getTime());
         }
     }
 
