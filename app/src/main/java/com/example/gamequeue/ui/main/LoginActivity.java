@@ -16,7 +16,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.acitivty_login);
 
-        // Mencari tombol login di layout
+        // This button for login
         Button login = findViewById(R.id.btn_login);
 
         // Menambahkan event listener untuk tombol login
