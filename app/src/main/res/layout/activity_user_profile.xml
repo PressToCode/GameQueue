@@ -9,6 +9,7 @@
     tools:context=".ui.main.UserProfileActivity">
 
     <!-- Header -->
+
     <LinearLayout
         android:id="@+id/headerLayout"
         android:layout_width="match_parent"
@@ -22,12 +23,13 @@
 
         <ImageView
             android:id="@+id/backButton"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/baseline_arrow_back_24"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
-            android:focusable="true" />
+            android:focusable="true"
+            android:padding="12dp"
+            android:src="@drawable/baseline_arrow_back_24" />
 
         <TextView
             android:layout_width="0dp"
@@ -44,106 +46,112 @@
     </LinearLayout>
 
     <!-- Content Container -->
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:orientation="vertical"
-        android:padding="24dp"
-        android:gravity="center_horizontal"
-        app:layout_constraintTop_toBottomOf="@id/headerLayout"
+        android:fillViewport="true"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/headerLayout">
 
-        <!-- Profile Image -->
-        <ImageView
-            android:id="@+id/profileImage"
-            android:layout_width="125dp"
-            android:layout_height="125dp"
-            android:layout_marginBottom="32dp"
-            android:background="@drawable/baseline_circle_24"
-            android:scaleType="centerCrop"
-            android:src="@drawable/user" />
-
-        <!-- Name Field -->
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nama"
-            android:fontFamily="@font/poppins"
-            android:textSize="14sp"
-            android:textColor="@android:color/black"
-            android:layout_marginBottom="8dp" />
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="24dp">
 
-        <EditText
-            android:id="@+id/userName"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="@drawable/rounded_edittext_background"
-            android:padding="12dp"
-            android:text="Ketut Olfat Satvika"
-            android:fontFamily="@font/poppins"
-            android:textSize="16sp"
-            android:textColor="@android:color/black"
-            android:enabled="false"
-            android:layout_marginBottom="16dp" />
+            <!-- Profile Image -->
+            <ImageView
+                android:id="@+id/profileImage"
+                android:layout_width="125dp"
+                android:layout_height="125dp"
+                android:layout_marginBottom="32dp"
+                android:background="@drawable/baseline_circle_24"
+                android:scaleType="centerCrop"
+                android:src="@drawable/user" />
 
-        <!-- Email Field -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Email"
-            android:fontFamily="@font/poppins"
-            android:textSize="14sp"
-            android:textColor="@android:color/black"
-            android:layout_marginBottom="8dp" />
+            <!-- Name Field -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/poppins"
+                android:text="Nama"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
 
-        <EditText
-            android:id="@+id/userEmail"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="@drawable/rounded_edittext_background"
-            android:padding="12dp"
-            android:text="KetutOlfat@natha.com"
-            android:fontFamily="@font/poppins"
-            android:textSize="16sp"
-            android:textColor="@android:color/black"
-            android:enabled="false"
-            android:layout_marginBottom="32dp" />
+            <EditText
+                android:id="@+id/userName"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/rounded_edittext_background"
+                android:enabled="false"
+                android:fontFamily="@font/poppins"
+                android:padding="12dp"
+                android:text="Ketut Olfat Satvika"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
 
-        <!-- Spacer -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+            <!-- Email Field -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="@font/poppins"
+                android:text="Email"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
 
-        <!-- Edit Button -->
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/editButton"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="Ubah Email &amp; Password"
-            android:fontFamily="@font/poppins"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:background="@drawable/blue_button_background"
-            android:layout_marginBottom="12dp" />
+            <EditText
+                android:id="@+id/userEmail"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="32dp"
+                android:background="@drawable/rounded_edittext_background"
+                android:enabled="false"
+                android:fontFamily="@font/poppins"
+                android:padding="12dp"
+                android:text="KetutOlfat@natha.com"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
 
-        <!-- Logout Button -->
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/logoutButton"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="Logout"
-            android:fontFamily="@font/poppins"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:background="@drawable/red_button_background" />
+            <!-- Spacer -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
-    </LinearLayout>
+            <!-- Edit Button -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/editButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/blue_button_background"
+                android:fontFamily="@font/poppins"
+                android:text="Ubah Email &amp; Password"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <!-- Logout Button -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/logoutButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/red_button_background"
+                android:fontFamily="@font/poppins"
+                android:text="Logout"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
