@@ -1,8 +1,10 @@
 package com.example.gamequeue.ui.adapter;
 
+import com.example.gamequeue.ui.main.ReservationProcessActivity;
 import com.example.gamequeue.utils.CardLayoutConst;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,13 +45,11 @@ public class ConsoleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         ConsoleModel currentItem = consoleList.get(position);
         if (holder instanceof ViewHolders.ViewHolderOne) {
             ((ViewHolders.ViewHolderOne) holder).bind(currentItem);
-            // Logic
         } else if (holder instanceof ViewHolders.ViewHolderTwo) {
             ((ViewHolders.ViewHolderTwo) holder).bind(currentItem);
-            // Logic
+            holder.itemView.setOnClickListener(v -> context.startActivity(new Intent(context, ReservationProcessActivity.class)));
         } else if (holder instanceof ViewHolders.ViewHolderThree) {
             ((ViewHolders.ViewHolderThree) holder).bind(currentItem);
-            // Logic
         }
     }
 
