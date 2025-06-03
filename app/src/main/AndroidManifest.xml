@@ -24,6 +24,9 @@
             android:name=".ui.main.MainActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.main.LoginActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.main.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.GameQueue.Splash">
@@ -33,6 +36,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

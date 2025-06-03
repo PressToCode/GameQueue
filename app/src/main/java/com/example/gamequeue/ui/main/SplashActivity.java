@@ -41,7 +41,7 @@ public class SplashActivity extends AppCompatActivity {
 
         // Async to Main Activity
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            startActivity(new Intent(this, MainActivity.class));
+            startActivity(new Intent(this, LoginActivity.class));
             overridePendingTransition(0, 0);
             finish();
         }, 1700);
