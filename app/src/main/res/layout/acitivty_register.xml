@@ -177,6 +177,7 @@
         android:background="@drawable/blue_button_background"
         android:textAllCaps="false"
         android:text="Daftar"
+        android:fontFamily="@font/poppins"
         android:textColor="#FFFFFF"
         android:textSize="16sp"
         android:textStyle="bold"
