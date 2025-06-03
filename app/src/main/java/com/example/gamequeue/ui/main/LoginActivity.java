@@ -12,12 +12,16 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.acitivty_login);
+
+        // Mencari tombol login di layout
         Button login = findViewById(R.id.btn_login);
 
+        // Menambahkan event listener untuk tombol login
         login.setOnClickListener(v -> {
+            // Mengarahkan pengguna ke MainActivity setelah tombol login diklik
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
-            finish();
+            finish(); // Menutup LoginActivity agar tidak bisa kembali ke halaman login
         });
     }
 }

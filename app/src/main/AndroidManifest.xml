@@ -27,6 +27,9 @@
             android:name=".ui.main.LoginActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.main.RegisterActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.main.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.GameQueue.Splash">
