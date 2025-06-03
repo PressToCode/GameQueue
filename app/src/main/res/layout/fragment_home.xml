@@ -102,6 +102,7 @@
                         android:fontFamily="@font/inter"
                         android:hint="Cari konsol tersedia"
                         android:paddingHorizontal="16dp"
+                        android:singleLine="true"
                         android:textColor="@color/black" />
                 </LinearLayout>
 

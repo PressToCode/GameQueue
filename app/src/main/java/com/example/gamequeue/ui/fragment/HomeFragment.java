@@ -24,6 +24,7 @@ import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ConsoleModel;
 import com.example.gamequeue.data.model.SharedViewModel;
 import com.example.gamequeue.ui.adapter.ConsoleAdapter;
+import com.example.gamequeue.ui.main.ReservationProcessActivity;
 import com.example.gamequeue.ui.main.UserProfileActivity;
 
 import java.util.ArrayList;
@@ -173,5 +174,9 @@ public class HomeFragment extends Fragment {
         recommendedSpecificationThree.setText(consoleList.get(0).getSpecificationThree());
 
         recommendationCard.setVisibility(View.VISIBLE);
+        recommendationCard.setOnClickListener(v -> {
+            // We need to pass the current console data to the next activity
+            startActivity(new Intent(getContext(), ReservationProcessActivity.class));
+        });
     }
 }
