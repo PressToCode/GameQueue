@@ -9,15 +9,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.viewpager.widget.ViewPager;
 
 import com.badoualy.stepperindicator.StepperIndicator;
 import com.example.gamequeue.R;
+import com.example.gamequeue.ui.adapter.ReservationPagerAdapter;
 
 public class ReservationProcessActivity extends AppCompatActivity {
     // Variables
     private ImageButton backBtn;
     private Button continueBtn;
     private StepperIndicator indicator;
+    private ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +36,10 @@ public class ReservationProcessActivity extends AppCompatActivity {
         // Initialization
         backBtn = findViewById(R.id.reservationProcessBackButton);
         continueBtn = findViewById(R.id.reservationProcessContinueButton);
+        viewPager = findViewById(R.id.reservationProcessViewPager);
+        viewPager.setAdapter(new ReservationPagerAdapter(getSupportFragmentManager()));
         indicator = findViewById(R.id.reservationProcessIndicator);
+        indicator.setViewPager(viewPager);
 
         // Set OnClick Listener
         buttonSetup();
@@ -48,11 +54,13 @@ public class ReservationProcessActivity extends AppCompatActivity {
 
             if(currentStep != indicator.getStepCount()) {
                 indicator.setCurrentStep(currentStep + 1);
+                viewPager.setCurrentItem(currentStep + 1);
             }
         });
 
         indicator.addOnStepClickListener(step -> {
             indicator.setCurrentStep(step);
+            viewPager.setCurrentItem(step, true);
         });
     }
 }

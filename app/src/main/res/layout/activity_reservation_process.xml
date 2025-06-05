@@ -43,6 +43,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="40dp"
         android:layout_marginTop="10dp"
+        app:stpi_indicatorColor="@color/light_blue"
         app:stpi_stepCount="3" />
 
     <LinearLayout
@@ -82,12 +83,13 @@
             android:textAlignment="textEnd" />
     </LinearLayout>
 
-    <FrameLayout
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/reservationProcessViewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1">
 
-    </FrameLayout>
+    </androidx.viewpager.widget.ViewPager>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -102,6 +104,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:backgroundTint="@color/light_blue"
             android:fontFamily="@font/inter_bold"
             android:text="Lanjutkan" />
     </LinearLayout>
