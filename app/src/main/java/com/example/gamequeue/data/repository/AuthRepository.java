@@ -1,112 +1,136 @@
+/*
+ * We do NOT need to store data
+ * our app is ONLINE-only
+ * due to the nature of data-fetching
+ * real-time reservation, and authentication
+ *
+ * DO NOT STORE DATA LOCALLY
+ */
+
 package com.example.gamequeue.data.repository;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.net.Uri;
+
+import androidx.annotation.NonNull;
+import androidx.credentials.Credential;
+import androidx.credentials.CredentialManagerCallback;
+import androidx.credentials.CustomCredential;
+import androidx.credentials.GetCredentialResponse;
+import androidx.credentials.exceptions.ClearCredentialException;
+import androidx.credentials.exceptions.GetCredentialException;
 
 import com.example.gamequeue.data.firebase.FirebaseUtil;
+import com.example.gamequeue.data.model.ProfileModel;
+import com.example.gamequeue.utils.CustomCallback;
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.auth.GoogleAuthProvider;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class AuthRepository {
-    private static final String PREF_NAME = "GameQueuePrefs";
-    private static final String KEY_USER_NAME = "user_name";
-    private static final String KEY_USER_EMAIL = "user_email";
+    // Firebase Utilities Singletons Alias
+    private static final FirebaseAuth auth = FirebaseUtil.getAuth();
+    private static final FirebaseUser user = auth.getCurrentUser();
 
-    private SharedPreferences sharedPreferences;
-    private FirebaseAuth firebaseAuth;
-    private DatabaseReference databaseReference;
+    // Executor for Async Call
+    private static final Executor executor = Executors.newSingleThreadExecutor();
 
-    public AuthRepository(Context context) {
-        sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        firebaseAuth = FirebaseAuth.getInstance();
-        databaseReference = FirebaseUtil.getDatabaseInstance().getReference();
+    // Firebase Authenticated User Metadata
+    public static String getFirebaseAuthUserUid() { return user.getUid(); }
+    public static String getFirebaseAuthUserName() { return user.getDisplayName(); }
+    public static String getFirebaseAuthUserEmail() { return user.getEmail(); }
+    public static Uri getFirebaseAuthUserPhotoUrl() { return user.getPhotoUrl(); }
+
+    // Check Authentication Status
+    public static boolean isLoggedIn() { return auth.getCurrentUser() != null; }
+
+    // Register Using Email & Password
+    public static void registerWithEmailAndPassword(String email, String password, CustomCallback callback) {
+        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+            if(task.isSuccessful()) {
+                callback.onSuccess();
+                return;
+            }
+
+            callback.onError("Register Failed");
+        });
     }
 
-    // Save user data to SharedPreferences
-    public void saveUserData(String userName, String userEmail) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(KEY_USER_NAME, userName);
-        editor.putString(KEY_USER_EMAIL, userEmail);
-        editor.apply();
+    // Login Using Email & Password
+    public static void loginWithEmailAndPassword(String email, String password, CustomCallback callback) {
+        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+            if(task.isSuccessful()) {
+                ProfileModel.setAll();
+                callback.onSuccess();
+                return;
+            }
+
+            callback.onError("Login Failed");
+        });
     }
 
-    // Get user name from SharedPreferences
-    public String getUserName() {
-        return sharedPreferences.getString(KEY_USER_NAME, "");
+    // Login with Google -------------------------
+    public static void loginWithGoogle(Context context, CustomCallback callback) {
+        FirebaseUtil.getCredentialManager()
+                .getCredentialAsync(context, FirebaseUtil.getRequest(), null, executor, new CredentialManagerCallback<>() {
+                    @Override
+                    public void onResult(GetCredentialResponse getCredentialResponse) {
+                        handleSignIn(getCredentialResponse.getCredential(), callback);
+                    }
+
+                    @Override
+                    public void onError(@NonNull GetCredentialException e) {
+                        callback.onError(e.getMessage());
+                    }
+                });
     }
 
-    // Get user email from SharedPreferences
-    public String getUserEmail() {
-        return sharedPreferences.getString(KEY_USER_EMAIL, "");
-    }
+    private static void handleSignIn(Credential credential, CustomCallback callback) {
+        if (credential instanceof CustomCredential && credential.getType().equals(GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL)) {
 
-    // Get current Firebase user
-    public FirebaseUser getCurrentUser() {
-        return firebaseAuth.getCurrentUser();
-    }
-
-    // Update user profile in Firebase
-    public void updateUserProfile(String userName, String email, UpdateProfileCallback callback) {
-        FirebaseUser user = getCurrentUser();
-        if (user != null) {
-            // Update email
-            user.updateEmail(email).addOnCompleteListener(emailTask -> {
-                if (emailTask.isSuccessful()) {
-                    // Update name in Firebase Database
-                    databaseReference.child("users").child(user.getUid())
-                            .child("name").setValue(userName)
-                            .addOnCompleteListener(nameTask -> {
-                                if (nameTask.isSuccessful()) {
-                                    // Save to local storage
-                                    saveUserData(userName, email);
-                                    callback.onSuccess();
-                                } else {
-                                    callback.onError("Failed to update name");
-                                }
-                            });
-                } else {
-                    callback.onError("Failed to update email");
-                }
-            });
-        } else {
-            callback.onError("User not authenticated");
-        }
-    }
-
-    // Update password
-    public void updatePassword(String newPassword, UpdatePasswordCallback callback) {
-        FirebaseUser user = getCurrentUser();
-        if (user != null) {
-            user.updatePassword(newPassword).addOnCompleteListener(task -> {
+            AuthCredential authCredential = GoogleAuthProvider.getCredential(GoogleIdTokenCredential.createFrom(credential.getData()).getIdToken(), null);
+            auth.signInWithCredential(authCredential).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
+                    ProfileModel.setAll();
                     callback.onSuccess();
-                } else {
-                    callback.onError("Failed to update password");
+                    return;
                 }
+
+                callback.onError("Login Failed");
             });
         } else {
-            callback.onError("User not authenticated");
+            callback.onError("Mismatched Credential");
         }
     }
 
-    // Logout
-    public void logout() {
-        firebaseAuth.signOut();
-        // Clear local data
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.clear();
-        editor.apply();
-    }
+    // End of Login with Google -----------------
 
-    // Callback interfaces
-    public interface UpdateProfileCallback {
-        void onSuccess();
-        void onError(String error);
-    }
 
-    public interface UpdatePasswordCallback {
-        void onSuccess();
-        void onError(String error);
+    // Logout - Async to prevent UI Thread Stuck
+    public static void logout(CustomCallback callback) {
+        FirebaseUtil.getCredentialManager()
+                .clearCredentialStateAsync(
+                        FirebaseUtil.getClearCredentialStateRequest(),
+                        null,
+                        executor,
+                        new CredentialManagerCallback<>() {
+                            @Override
+                            public void onResult(Void unused) {
+                                ProfileModel.removeAll();
+                                auth.signOut();
+                                callback.onSuccess();
+                            }
+
+                            @Override
+                            public void onError(@NonNull ClearCredentialException e) {
+                                callback.onError(e.getMessage());
+                            }
+                        }
+                );
     }
 }

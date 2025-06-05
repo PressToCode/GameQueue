@@ -12,10 +12,7 @@
         android:theme="@style/Theme.GameQueue"
         tools:targetApi="31">
         <activity
-            android:name=".ui.main.EditProfileActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.main.UserProfileActivity"
+            android:name=".ui.main.ProfileActivity"
             android:exported="false" />
         <activity
             android:name=".ui.main.ReservationProcessActivity"
@@ -39,7 +36,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
     </application>
 
 </manifest>

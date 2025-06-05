@@ -24,8 +24,8 @@ import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ConsoleModel;
 import com.example.gamequeue.data.model.SharedViewModel;
 import com.example.gamequeue.ui.adapter.ConsoleAdapter;
+import com.example.gamequeue.ui.main.ProfileActivity;
 import com.example.gamequeue.ui.main.ReservationProcessActivity;
-import com.example.gamequeue.ui.main.UserProfileActivity;
 
 import java.util.ArrayList;
 
@@ -103,7 +103,7 @@ public class HomeFragment extends Fragment {
     private void setupProfileButton() {
         profileButton.setOnClickListener(v -> {
             // Navigate to User Profile Activity
-            Intent intent = new Intent(getActivity(), UserProfileActivity.class);
+            Intent intent = new Intent(getActivity(), ProfileActivity.class);
             startActivity(intent);
         });
     }
