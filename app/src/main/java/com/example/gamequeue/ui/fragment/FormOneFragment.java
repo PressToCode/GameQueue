@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.example.gamequeue.R;
@@ -21,6 +22,7 @@ import java.util.List;
 
 public class FormOneFragment extends Fragment {
     private List<LinearLayout> buttonDayCard;
+    private List<RadioButton> buttonTime;
 
     public FormOneFragment() {
         // Required empty public constructor
@@ -49,15 +51,19 @@ public class FormOneFragment extends Fragment {
         buttonDayCard.add(view.findViewById(R.id.buttonDayCard3));
         buttonDayCard.add(view.findViewById(R.id.buttonDayCard4));
         buttonDayCard.add(view.findViewById(R.id.buttonDayCard5));
-
-        // Setup Listener
-        for (int i = 0; i < buttonDayCard.size(); i++) {
-            final int index = i;
-            buttonDayCard.get(i).setOnClickListener(v -> setDaySelected(index));
-        }
+        buttonTime = new ArrayList<>();
+        buttonTime.add(view.findViewById(R.id.radio_time1));
+        buttonTime.add(view.findViewById(R.id.radio_time2));
+        buttonTime.add(view.findViewById(R.id.radio_time3));
+        buttonTime.add(view.findViewById(R.id.radio_time4));
+        buttonTime.add(view.findViewById(R.id.radio_time5));
+        buttonTime.add(view.findViewById(R.id.radio_time6));
+        buttonTime.add(view.findViewById(R.id.radio_time7));
+        buttonTime.add(view.findViewById(R.id.radio_time8));
 
         // Set UI Visual
         setupCards();
+        setupListener();
     }
 
     private void setupCards() {
@@ -83,6 +89,26 @@ public class FormOneFragment extends Fragment {
         ((TextView) buttonDayCard.get(2).findViewById(R.id.tvDay)).setText("Rabu");
         ((TextView) buttonDayCard.get(3).findViewById(R.id.tvDay)).setText("Kamis");
         ((TextView) buttonDayCard.get(4).findViewById(R.id.tvDay)).setText("Jumat");
+    }
+
+    private void setupListener() {
+        // Setup Listener for ButtonDayCard
+        for (int i = 0; i < buttonDayCard.size(); i++) {
+            final int index = i;
+            buttonDayCard.get(i).setOnClickListener(v -> setDaySelected(index));
+        }
+
+        // Setup Listener for ButtonTime
+        buttonTime.forEach(button -> {
+            button.setOnClickListener(v -> {
+                buttonTime.forEach(it -> {
+                    it.setChecked(false);
+                    it.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+                });
+                button.setChecked(true);
+                button.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+            });
+        });
     }
 
     private void setDaySelected(int selectedIndex) {
