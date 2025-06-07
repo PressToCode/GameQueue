@@ -11,7 +11,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.gamequeue.R;
-import com.example.gamequeue.data.model.SharedViewModel;
+import com.example.gamequeue.data.model.MainSharedViewModel;
 import com.example.gamequeue.ui.fragment.HomeFragment;
 import com.example.gamequeue.ui.fragment.ReservationFragment;
 import com.example.gamequeue.ui.fragment.StatusFragment;
@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private final ReservationFragment reservationFragment = new ReservationFragment();
     private final StatusFragment statusFragment = new StatusFragment();
     private Fragment activeFragment = homeFragment;
-    private SharedViewModel viewModel;
+    private MainSharedViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         // Initialization
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         fabReservasi = findViewById(R.id.fab_reservasi);
-        viewModel = new ViewModelProvider(this).get(SharedViewModel.class);
+        viewModel = new ViewModelProvider(this).get(MainSharedViewModel.class);
 
         // Fetch Data
         viewModel.fetchSetup();

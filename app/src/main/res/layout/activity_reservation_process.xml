@@ -104,7 +104,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:backgroundTint="@color/light_blue"
+            android:backgroundTint="@color/blue_button_tint_selector"
+            android:enabled="false"
             android:fontFamily="@font/inter_bold"
             android:text="Lanjutkan" />
     </LinearLayout>

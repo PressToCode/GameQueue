@@ -1,24 +1,35 @@
 package com.example.gamequeue.ui.fragment;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 import com.example.gamequeue.R;
+import com.example.gamequeue.data.model.ReservationFormModel;
+import com.example.gamequeue.data.model.ReservationSharedViewModel;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
+
+import java.util.List;
 
 public class FormTwoFragment extends Fragment {
     // Variables
     private TextInputEditText formNameField, formNIMField, formPhoneField;
+    private List<TextInputEditText> fieldList;
     private MaterialAutoCompleteTextView formProdiDropdown;
+    private ReservationSharedViewModel sharedViewModel;
 
     public FormTwoFragment() {
         // Required empty public constructor
@@ -45,6 +56,11 @@ public class FormTwoFragment extends Fragment {
         formNIMField = view.findViewById(R.id.formNIMField);
         formPhoneField = view.findViewById(R.id.formPhoneField);
         formProdiDropdown = view.findViewById(R.id.formProdiDropdown);
+        fieldList = List.of(formNameField, formNIMField, formPhoneField);
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(ReservationSharedViewModel.class);
+
+        // Set Listener
+        setupListener();
 
         // Set Dropdown Items
         setDropdownItems();
@@ -60,5 +76,73 @@ public class FormTwoFragment extends Fragment {
         };
 
         formProdiDropdown.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, menus));
+    }
+
+    private void setupListener() {
+        fieldList.forEach(field -> {
+            field.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    inputFormData(field);
+                    checkFilled();
+                }
+            });
+        });
+
+        formProdiDropdown.setOnItemClickListener((parent, view, position, id) -> {
+            inputFormData(formProdiDropdown);
+            checkFilled();
+        });
+    }
+
+    private void inputFormData(TextView textView) {
+        String text = textView.getText().toString();
+        if(text == null || text.isEmpty()) {
+            return;
+        }
+
+        ReservationFormModel form = sharedViewModel.getReservationForm().getValue();
+
+        if(textView.getId() == R.id.formProdiDropdown) {
+            form.setLenderProdi(text);
+            return;
+        }
+
+        if(textView.getId() == R.id.formNameField) {
+            form.setLenderName(text);
+            return;
+        }
+
+        if(textView.getId() == R.id.formNIMField) {
+            form.setLenderNIM(text);
+            return;
+        }
+
+        if(textView.getId() == R.id.formPhoneField) {
+            form.setLenderPhone(text);
+        }
+    }
+
+    private void checkFilled() {
+        boolean isFilled = true;
+
+        for(TextInputEditText field : fieldList) {
+            if(field.getText().toString().isEmpty()) {
+                isFilled = false;
+                break;
+            }
+        }
+
+        if(formProdiDropdown.getText().toString().isEmpty()) {
+            isFilled = false;
+        }
+
+        sharedViewModel.setFormTwoFilled(isFilled);
     }
 }

@@ -11,7 +11,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 
 public class ReservationPagerAdapter extends FragmentPagerAdapter {
     public ReservationPagerAdapter(@NonNull FragmentManager fm) {
-        super(fm);
+        super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
     }
 
     @NonNull

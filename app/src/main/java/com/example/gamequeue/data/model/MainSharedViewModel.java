@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel;
 import java.util.ArrayList;
 
 // Used to pass data between fragments
-public class SharedViewModel extends ViewModel {
+public class MainSharedViewModel extends ViewModel {
     private ArrayList<ConsoleModel> consoleList;
     public void fetchSetup() {
         // Setup logic to fetch ONLY ONCE to avoid re-fetching

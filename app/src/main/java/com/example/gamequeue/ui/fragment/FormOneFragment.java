@@ -6,7 +6,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.example.gamequeue.R;
+import com.example.gamequeue.data.model.ReservationSharedViewModel;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -23,6 +26,7 @@ import java.util.List;
 public class FormOneFragment extends Fragment {
     private List<LinearLayout> buttonDayCard;
     private List<RadioButton> buttonTime;
+    private ReservationSharedViewModel sharedViewModel;
 
     public FormOneFragment() {
         // Required empty public constructor
@@ -60,6 +64,7 @@ public class FormOneFragment extends Fragment {
         buttonTime.add(view.findViewById(R.id.radio_time6));
         buttonTime.add(view.findViewById(R.id.radio_time7));
         buttonTime.add(view.findViewById(R.id.radio_time8));
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(ReservationSharedViewModel.class);
 
         // Set UI Visual
         setupCards();
@@ -107,6 +112,11 @@ public class FormOneFragment extends Fragment {
                 });
                 button.setChecked(true);
                 button.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+
+                sharedViewModel.getReservationForm().getValue().setTime(button.getText().toString());
+
+                // Since this is radio button, and date is pre-filled
+                sharedViewModel.setFormOneFilled(true);
             });
         });
     }
@@ -125,5 +135,9 @@ public class FormOneFragment extends Fragment {
             tvDay.setTextColor(color);
             tvDate.setTextColor(color);
         }
+
+        // Update Reservation Form
+        TextView date = buttonDayCard.get(selectedIndex).findViewById(R.id.tvDate);
+        sharedViewModel.getReservationForm().getValue().setDate(date.getText().toString());
     }
 }

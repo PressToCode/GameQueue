@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 
 import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ConsoleModel;
-import com.example.gamequeue.data.model.SharedViewModel;
+import com.example.gamequeue.data.model.MainSharedViewModel;
 import com.example.gamequeue.ui.adapter.ConsoleAdapter;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 public class ReservationFragment extends Fragment {
     private RecyclerView recyclerView;
     private ArrayList<ConsoleModel> consoleList;
-    private SharedViewModel viewModel;
+    private MainSharedViewModel viewModel;
 
     public ReservationFragment() {
         // Required empty public constructor
@@ -48,7 +48,7 @@ public class ReservationFragment extends Fragment {
 
         // Initialization
         recyclerView = view.findViewById(R.id.reservationRecycler);
-        viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(MainSharedViewModel.class);
 
         // Set Adapter
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

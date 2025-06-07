@@ -22,7 +22,7 @@ import android.widget.TextView;
 
 import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ConsoleModel;
-import com.example.gamequeue.data.model.SharedViewModel;
+import com.example.gamequeue.data.model.MainSharedViewModel;
 import com.example.gamequeue.ui.adapter.ConsoleAdapter;
 import com.example.gamequeue.ui.main.ProfileActivity;
 import com.example.gamequeue.ui.main.ReservationProcessActivity;
@@ -36,7 +36,7 @@ public class HomeFragment extends Fragment {
     private LinearLayout contentHolder, filterButtons;
     private ConsoleAdapter adapter;
     private ArrayList<ConsoleModel> consoleList;
-    private SharedViewModel viewModel;
+    private MainSharedViewModel viewModel;
     private CardView recommendationCard;
     private ImageView recommendedImage;
     private TextView recommendedTitle, recommendedStatus, recommendedSpecificationOne, recommendedSpecificationTwo, recommendedSpecificationThree;
@@ -81,7 +81,7 @@ public class HomeFragment extends Fragment {
         recommendedSpecificationOne = view.findViewById(R.id.recommendedSpecificationOne);
         recommendedSpecificationTwo = view.findViewById(R.id.recommendedSpecificationTwo);
         recommendedSpecificationThree = view.findViewById(R.id.recommendedSpecificationThree);
-        viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(MainSharedViewModel.class);
 
         // Setup profile button click listener
         setupProfileButton();
