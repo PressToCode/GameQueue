@@ -83,13 +83,13 @@
             android:textAlignment="textEnd" />
     </LinearLayout>
 
-    <androidx.viewpager.widget.ViewPager
+    <com.example.gamequeue.widgets.NonSwipeableViewPager
         android:id="@+id/reservationProcessViewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1">
 
-    </androidx.viewpager.widget.ViewPager>
+    </com.example.gamequeue.widgets.NonSwipeableViewPager>
 
     <LinearLayout
         android:layout_width="match_parent"

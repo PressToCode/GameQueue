@@ -1,6 +1,7 @@
 package com.example.gamequeue.ui.adapter;
 
 import com.example.gamequeue.ui.fragment.FormOneFragment;
+import com.example.gamequeue.ui.fragment.FormThreeFragment;
 import com.example.gamequeue.ui.fragment.FormTwoFragment;
 
 import androidx.annotation.NonNull;
@@ -26,6 +27,8 @@ public class ReservationPagerAdapter extends FragmentPagerAdapter {
                 return new FormOneFragment();
             case 1:
                 return new FormTwoFragment();
+            case 2:
+                return new FormThreeFragment();
             default:
                 return new FormTwoFragment();
         }

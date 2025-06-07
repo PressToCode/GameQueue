@@ -9,18 +9,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.viewpager.widget.ViewPager;
 
 import com.badoualy.stepperindicator.StepperIndicator;
 import com.example.gamequeue.R;
 import com.example.gamequeue.ui.adapter.ReservationPagerAdapter;
+import com.example.gamequeue.widgets.NonSwipeableViewPager;
 
 public class ReservationProcessActivity extends AppCompatActivity {
     // Variables
     private ImageButton backBtn;
     private Button continueBtn;
     private StepperIndicator indicator;
-    private ViewPager viewPager;
+    private NonSwipeableViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
