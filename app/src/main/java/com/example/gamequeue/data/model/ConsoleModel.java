@@ -10,6 +10,11 @@ public class ConsoleModel {
     private String specificationTwo = "NO SPECIFICATION";
     private String specificationThree = "NO SPECIFICATION";
 
+    // Default Constructor
+    public ConsoleModel() {
+        // Required for Firebase
+    }
+
     // Constructor
     public ConsoleModel(String title, int status, String date, String time, String specificationOne, String specificationTwo, String specificationThree) {
         this.title = title;

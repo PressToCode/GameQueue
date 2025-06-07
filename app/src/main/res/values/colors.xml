@@ -11,4 +11,5 @@
     <color name="pastel_blue">#D6DDFF</color>
     <color name="pastel_red">#F6D9D9</color>
     <color name="blind_red">#EA3333</color>
+    <color name="link_color">#4285F4</color>
 </resources>

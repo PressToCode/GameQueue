@@ -12,19 +12,16 @@
         android:theme="@style/Theme.GameQueue"
         tools:targetApi="31">
         <activity
-            android:name=".ui.main.EditProfileActivity"
+            android:name=".ui.main.AuthActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.main.UserProfileActivity"
+            android:name=".ui.main.ProfileActivity"
             android:exported="false" />
         <activity
             android:name=".ui.main.ReservationProcessActivity"
             android:exported="false" />
         <activity
             android:name=".ui.main.MainActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.main.LoginActivity"
             android:exported="false" />
         <activity
             android:name=".ui.main.SplashActivity"
@@ -36,7 +33,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
     </application>
 
 </manifest>

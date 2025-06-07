@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -15,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -22,7 +24,8 @@ import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ConsoleModel;
 import com.example.gamequeue.data.model.SharedViewModel;
 import com.example.gamequeue.ui.adapter.ConsoleAdapter;
-import com.example.gamequeue.ui.main.UserProfileActivity;
+import com.example.gamequeue.ui.main.ProfileActivity;
+import com.example.gamequeue.ui.main.ReservationProcessActivity;
 
 import java.util.ArrayList;
 
@@ -34,6 +37,9 @@ public class HomeFragment extends Fragment {
     private ConsoleAdapter adapter;
     private ArrayList<ConsoleModel> consoleList;
     private SharedViewModel viewModel;
+    private CardView recommendationCard;
+    private ImageView recommendedImage;
+    private TextView recommendedTitle, recommendedStatus, recommendedSpecificationOne, recommendedSpecificationTwo, recommendedSpecificationThree;
 
     // Add profile button variable
     private ImageButton profileButton;
@@ -67,7 +73,14 @@ public class HomeFragment extends Fragment {
         scrollContainer = view.findViewById(R.id.scroll_container);
         contentHolder = view.findViewById(R.id.scroll_container_content);
         filterButtons = view.findViewById(R.id.filter_radio_group);
-        profileButton = view.findViewById(R.id.imageButton2); // Profile button
+        profileButton = view.findViewById(R.id.imageButton2);
+        recommendationCard = view.findViewById(R.id.card_recommendation);
+        recommendedImage = view.findViewById(R.id.recommendedImage);
+        recommendedTitle = view.findViewById(R.id.recommendedTitle);
+        recommendedStatus = view.findViewById(R.id.recommendedStatus);
+        recommendedSpecificationOne = view.findViewById(R.id.recommendedSpecificationOne);
+        recommendedSpecificationTwo = view.findViewById(R.id.recommendedSpecificationTwo);
+        recommendedSpecificationThree = view.findViewById(R.id.recommendedSpecificationThree);
         viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
         // Setup profile button click listener
@@ -82,12 +95,15 @@ public class HomeFragment extends Fragment {
 
         // Load Dummy Data
         loadDummyData();
+
+        // Load Recommendation Data
+        loadRecommendedData();
     }
 
     private void setupProfileButton() {
         profileButton.setOnClickListener(v -> {
             // Navigate to User Profile Activity
-            Intent intent = new Intent(getActivity(), UserProfileActivity.class);
+            Intent intent = new Intent(getActivity(), ProfileActivity.class);
             startActivity(intent);
         });
     }
@@ -147,6 +163,20 @@ public class HomeFragment extends Fragment {
             } else {
 //                 Log.d("RV_RESIZE", "RV height already correct: " + rvLayoutParams.height);
             }
+        });
+    }
+
+    private void loadRecommendedData() {
+        recommendedTitle.setText(consoleList.get(0).getTitle());
+        recommendedStatus.setText("Available");
+        recommendedSpecificationOne.setText(consoleList.get(0).getSpecificationOne());
+        recommendedSpecificationTwo.setText(consoleList.get(0).getSpecificationTwo());
+        recommendedSpecificationThree.setText(consoleList.get(0).getSpecificationThree());
+
+        recommendationCard.setVisibility(View.VISIBLE);
+        recommendationCard.setOnClickListener(v -> {
+            // We need to pass the current console data to the next activity
+            startActivity(new Intent(getContext(), ReservationProcessActivity.class));
         });
     }
 }
