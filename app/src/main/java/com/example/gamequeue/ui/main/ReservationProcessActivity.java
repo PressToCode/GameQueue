@@ -1,7 +1,6 @@
 package com.example.gamequeue.ui.main;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageButton;
 
@@ -10,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
@@ -18,7 +16,9 @@ import androidx.viewpager.widget.ViewPager;
 import com.badoualy.stepperindicator.StepperIndicator;
 import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ReservationSharedViewModel;
+import com.example.gamequeue.data.repository.AuthRepository;
 import com.example.gamequeue.ui.adapter.ReservationPagerAdapter;
+import com.example.gamequeue.utils.ApplicationContext;
 import com.example.gamequeue.widgets.NonSwipeableViewPager;
 
 public class ReservationProcessActivity extends AppCompatActivity {
@@ -33,6 +33,13 @@ public class ReservationProcessActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Auth Check before Rendering - Unless Dev Mode
+        if(!ApplicationContext.getDevMode()) {
+            if (AuthRepository.isLoggedIn()) { return; }
+            finish();
+        }
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_reservation_process);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {

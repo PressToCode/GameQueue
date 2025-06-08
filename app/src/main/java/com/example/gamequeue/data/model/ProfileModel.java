@@ -2,13 +2,11 @@ package com.example.gamequeue.data.model;
 
 import android.net.Uri;
 
-import androidx.lifecycle.ViewModel;
-
 import com.example.gamequeue.data.repository.AuthRepository;
 import com.example.gamequeue.data.repository.DatabaseRepository;
 import com.example.gamequeue.utils.CustomCallbackWithString;
 
-public class ProfileModel extends ViewModel {
+public class ProfileModel {
     private static String uid;
     private static String name;
     private static String email;
@@ -22,6 +20,8 @@ public class ProfileModel extends ViewModel {
     public static void setAll() {
         setUid();
         setName();
+        setEmail();
+        setProfileImageUrl();
     }
 
     public static void removeAll() {
@@ -69,5 +69,22 @@ public class ProfileModel extends ViewModel {
     public static void setProfileImageUrl() {
         // Can be null - Setup later in profile activity
         profileImageUrl = AuthRepository.getFirebaseAuthUserPhotoUrl();
+    }
+
+    // Getter
+    public static String getUid() {
+        return uid;
+    }
+
+    public static String getName() {
+        return name;
+    }
+
+    public static String getEmail() {
+        return email;
+    }
+
+    public static Uri getProfileImageUrl() {
+        return profileImageUrl;
     }
 }

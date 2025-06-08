@@ -33,12 +33,14 @@ public class FirebaseUtil {
         // Initialize Firebase Objects
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance(DATABASE_URL);
+
+        // Set Data Persistence in case of offline - MUST BE CALLED BEFORE DB OPERATION
+        database.setPersistenceEnabled(true);
+
+        // Get References
         profilesRef = database.getReference("profiles");
         gamesRef = database.getReference("games");
         reservationsRef = database.getReference("reservations");
-
-        // Set Data Persistence in case of offline
-        database.setPersistenceEnabled(true);
 
         // Create Google Request Object for Credential Manager
         request = new GetCredentialRequest.Builder()

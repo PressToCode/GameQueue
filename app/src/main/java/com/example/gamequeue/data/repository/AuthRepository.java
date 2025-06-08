@@ -11,6 +11,8 @@ package com.example.gamequeue.data.repository;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.credentials.Credential;
@@ -34,11 +36,18 @@ import java.util.concurrent.Executors;
 
 public class AuthRepository {
     // Firebase Utilities Singletons Alias
-    private static final FirebaseAuth auth = FirebaseUtil.getAuth();
-    private static final FirebaseUser user = auth.getCurrentUser();
+    private static final FirebaseAuth auth;
+    private static final FirebaseUser user;
 
     // Executor for Async Call
-    private static final Executor executor = Executors.newSingleThreadExecutor();
+    private static final Executor executor;
+
+    // Static Constructor - ensure Singleton
+    static {
+        auth = FirebaseUtil.getAuth();
+        user = auth.getCurrentUser();
+        executor = Executors.newSingleThreadExecutor();
+    }
 
     // Firebase Authenticated User Metadata
     public static String getFirebaseAuthUserUid() { return user.getUid(); }
@@ -50,7 +59,7 @@ public class AuthRepository {
     public static boolean isLoggedIn() { return auth.getCurrentUser() != null; }
 
     // Register Using Email & Password
-    public static void registerWithEmailAndPassword(String email, String password, CustomCallback callback) {
+    public static void registerWithEmailAndPassword(String name, String email, String password, CustomCallback callback) {
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
             if(task.isSuccessful()) {
                 callback.onSuccess();

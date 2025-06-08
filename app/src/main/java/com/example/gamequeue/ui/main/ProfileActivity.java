@@ -13,6 +13,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.gamequeue.R;
+import com.example.gamequeue.data.model.ProfileModel;
+import com.example.gamequeue.data.repository.AuthRepository;
+import com.example.gamequeue.utils.ApplicationContext;
 
 public class ProfileActivity extends AppCompatActivity {
     // Variables
@@ -21,10 +24,21 @@ public class ProfileActivity extends AppCompatActivity {
     private EditText usernameField, emailField, passwordField, confirmPasswordField;
     private Button editBtn, saveBtn, logoutBtn;
     private boolean isEdit = false;
+    private boolean skipFetch = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Auth Check before Rendering - Unless Dev Mode
+        if(!ApplicationContext.getDevMode()) {
+            if (AuthRepository.isLoggedIn()) {
+                skipFetch = !skipFetch;
+                return;
+            }
+            finish();
+        }
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_profile);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -53,14 +67,23 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void setupView() {
-        // TODO: Implement Actual User Fetch later
-        usernameField.setText("Wedanta");
-        emailField.setText("Wedanta@gmail.com");
+        // TODO: REMOVE ON PRODUCTION
+        // Skip if in dev mode
+        if(skipFetch) {
+            usernameField.setText("[Dev Mode] My Name");
+            emailField.setText("[Dev Mode] My Email");
+            return;
+        }
+
+        usernameField.setText(ProfileModel.getName());
+        emailField.setText(ProfileModel.getEmail());
     }
 
     private void setupListeners() {
+        // Go Back
         backBtn.setOnClickListener(v -> finish());
 
+        // Change UI to edit or normal
         editBtn.setOnClickListener(v -> {
             isEdit = !isEdit;
             if(isEdit) {
@@ -81,6 +104,13 @@ public class ProfileActivity extends AppCompatActivity {
             logoutBtn.setVisibility(Button.VISIBLE);
         });
 
+        // Saving Changes
+        saveBtn.setOnClickListener(v -> {
+            // TODO: Implement save changes after login-flow done
+            finish();
+        });
+
+        // Logout
         logoutBtn.setOnClickListener(v -> {
             // TODO: Implement logout after login-flow done
             finish();

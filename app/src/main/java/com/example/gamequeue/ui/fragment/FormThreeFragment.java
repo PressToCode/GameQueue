@@ -33,6 +33,7 @@ public class FormThreeFragment extends Fragment {
     private LinearLayout placeholderLayout;
     private ImageView imagePreview;
     private ReservationSharedViewModel sharedViewModel;
+    private String[] mimetypes;
 
 
     public FormThreeFragment() {
@@ -96,9 +97,13 @@ public class FormThreeFragment extends Fragment {
             }
         });
 
+        // Limit Mimetype
+        mimetypes = new String[]{"image/jpeg", "image/png", "image/jpg"};
+
         // On Click Listener
         uploadBox.setOnClickListener(v -> {
             ImagePicker.with(this)
+                    .galleryMimeTypes(mimetypes)
                     .crop(16f, 9f)
                     .compress(2048)
                     .createIntent( intent -> {
@@ -109,6 +114,7 @@ public class FormThreeFragment extends Fragment {
 
         imagePreview.setOnClickListener(v -> {
             ImagePicker.with(this)
+                    .galleryMimeTypes(mimetypes)
                     .crop(16f, 9f)
                     .compress(2048)
                     .createIntent( intent -> {

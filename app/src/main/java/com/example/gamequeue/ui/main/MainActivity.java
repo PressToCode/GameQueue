@@ -12,9 +12,11 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.MainSharedViewModel;
+import com.example.gamequeue.data.repository.AuthRepository;
 import com.example.gamequeue.ui.fragment.HomeFragment;
 import com.example.gamequeue.ui.fragment.ReservationFragment;
 import com.example.gamequeue.ui.fragment.StatusFragment;
+import com.example.gamequeue.utils.ApplicationContext;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -33,9 +35,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        overridePendingTransition(android.R.anim.fade_in, 0);
-
         super.onCreate(savedInstanceState);
+
+        // Auth Check before Rendering - Unless Dev Mode
+        if(!ApplicationContext.getDevMode()) {
+            if (AuthRepository.isLoggedIn()) { return; }
+            finish();
+        }
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
