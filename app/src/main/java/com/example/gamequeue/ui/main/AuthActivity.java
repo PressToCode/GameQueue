@@ -15,6 +15,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.gamequeue.R;
+import com.example.gamequeue.data.firebase.FirebaseUtil;
+import com.example.gamequeue.data.model.SharedProfileModel;
 import com.example.gamequeue.data.repository.AuthRepository;
 import com.example.gamequeue.utils.ApplicationContext;
 import com.example.gamequeue.utils.CustomCallback;
@@ -32,6 +34,7 @@ public class AuthActivity extends AppCompatActivity {
         overridePendingTransition(android.R.anim.fade_in, 0);
 
         super.onCreate(savedInstanceState);
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_auth);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -39,6 +42,14 @@ public class AuthActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        // Check for Actual Auth
+        // TODO: CHANGE AFTER DEV MODE IS REMOVED TO AUTH REPOSITORY METHOD
+        if(FirebaseUtil.getAuth().getCurrentUser() != null) {
+            SharedProfileModel.setAll();
+            startActivity(new Intent(context, MainActivity.class));
+            finish();
+        }
 
         // Initialization
         authNameContainer = findViewById(R.id.authNameContainer);
@@ -75,16 +86,24 @@ public class AuthActivity extends AppCompatActivity {
             // Check if field is empty
             if (isRegistering && name.isEmpty()) {
                 authNameField.setError("Nama tidak boleh kosong");
-                return;
             }
 
             if (email.isEmpty()) {
                 authEmailField.setError("Email tidak boleh kosong");
-                return;
             }
 
             if (password.isEmpty()) {
-                authPasswordField.setError("Password tidak boleh kosong");
+                Toast.makeText(context, "Password tidak boleh kosong", Toast.LENGTH_SHORT).show();
+            } else if (password.length() < 6) {
+                Toast.makeText(context, "Password minimal 6 karakter", Toast.LENGTH_SHORT).show();
+            }
+
+            // Guard, Stop login or Register Attempt
+            if ((isRegistering && name.isEmpty())
+                    || email.isEmpty()
+                    || password.isEmpty()
+                    || password.length() < 6
+            ) {
                 return;
             }
 

@@ -19,7 +19,6 @@ public class FirebaseUtil {
 
     // Database References
     private static final FirebaseDatabase database;
-    public static final DatabaseReference profilesRef;
     public static final DatabaseReference gamesRef;
     public static final DatabaseReference reservationsRef;
 
@@ -38,7 +37,6 @@ public class FirebaseUtil {
         database.setPersistenceEnabled(true);
 
         // Get References
-        profilesRef = database.getReference("profiles");
         gamesRef = database.getReference("games");
         reservationsRef = database.getReference("reservations");
 
@@ -62,7 +60,6 @@ public class FirebaseUtil {
     private FirebaseUtil() {}
 
     // Getter
-    public static DatabaseReference getProfilesRef() { return profilesRef; }
     public static DatabaseReference getGamesRef() { return gamesRef; }
     public static DatabaseReference getReservationsRef() { return reservationsRef; }
     public static FirebaseAuth getAuth() { return auth; }

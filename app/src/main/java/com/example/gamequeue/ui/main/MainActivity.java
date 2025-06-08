@@ -37,14 +37,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Auth Check before Rendering - Unless Dev Mode
-        if(!ApplicationContext.getDevMode()) {
-            if (AuthRepository.isLoggedIn()) { return; }
-            finish();
-        }
-
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        // Auth Check before Rendering - Unless Dev Mode
+        if(!AuthRepository.isLoggedIn()) {
+            finish();
+        }
 
         // Initialization
         bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -57,6 +56,16 @@ public class MainActivity extends AppCompatActivity {
         // Setup all fragments and listener
         setupFragments(savedInstanceState);
         setupListeners();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Check Auth Status
+        if(!AuthRepository.isLoggedIn()) {
+            finish();
+        }
     }
 
     private void setupFragments(Bundle savedInstanceState) {

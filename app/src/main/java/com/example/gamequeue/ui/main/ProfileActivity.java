@@ -1,10 +1,12 @@
 package com.example.gamequeue.ui.main;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,29 +15,29 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.gamequeue.R;
-import com.example.gamequeue.data.model.ProfileModel;
+import com.example.gamequeue.data.model.SharedProfileModel;
 import com.example.gamequeue.data.repository.AuthRepository;
 import com.example.gamequeue.utils.ApplicationContext;
+import com.example.gamequeue.utils.CustomCallback;
 
 public class ProfileActivity extends AppCompatActivity {
     // Variables
     private LinearLayout editProfileContainer;
     private ImageView backBtn, profileImg;
-    private EditText usernameField, emailField, passwordField, confirmPasswordField;
+    private EditText usernameField, emailField, oldPasswordField, passwordField, confirmPasswordField;
     private Button editBtn, saveBtn, logoutBtn;
     private boolean isEdit = false;
     private boolean skipFetch = true;
+    private Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Auth Check before Rendering - Unless Dev Mode
-        if(!ApplicationContext.getDevMode()) {
-            if (AuthRepository.isLoggedIn()) {
-                skipFetch = !skipFetch;
-                return;
-            }
+        if(AuthRepository.isLoggedIn()) {
+            skipFetch = ApplicationContext.getDevMode();
+        } else {
             finish();
         }
 
@@ -53,6 +55,7 @@ public class ProfileActivity extends AppCompatActivity {
         profileImg = findViewById(R.id.profileImage);
         usernameField = findViewById(R.id.usernameField);
         emailField = findViewById(R.id.emailField);
+        oldPasswordField = findViewById(R.id.oldPassword);
         passwordField = findViewById(R.id.passwordField);
         confirmPasswordField = findViewById(R.id.confirmPasswordField);
         editBtn = findViewById(R.id.editProfileButton);
@@ -75,8 +78,9 @@ public class ProfileActivity extends AppCompatActivity {
             return;
         }
 
-        usernameField.setText(ProfileModel.getName());
-        emailField.setText(ProfileModel.getEmail());
+        usernameField.setText(SharedProfileModel.getName());
+        emailField.setText(SharedProfileModel.getEmail());
+        profileImg.setImageURI(SharedProfileModel.getProfileImageUrl());
     }
 
     private void setupListeners() {
@@ -85,35 +89,97 @@ public class ProfileActivity extends AppCompatActivity {
 
         // Change UI to edit or normal
         editBtn.setOnClickListener(v -> {
-            isEdit = !isEdit;
-            if(isEdit) {
-                editBtn.setText("Batal");
-                editBtn.setBackgroundResource(R.drawable.red_button_background);
-                editProfileContainer.setVisibility(LinearLayout.VISIBLE);
-                usernameField.setEnabled(true);
-                emailField.setEnabled(true);
-                logoutBtn.setVisibility(Button.GONE);
-                return;
-            }
-
-            editBtn.setText("Ubah Email & Password");
-            editBtn.setBackgroundResource(R.drawable.blue_button_background);
-            editProfileContainer.setVisibility(LinearLayout.GONE);
-            usernameField.setEnabled(false);
-            emailField.setEnabled(false);
-            logoutBtn.setVisibility(Button.VISIBLE);
+            changeUiMode();
         });
 
         // Saving Changes
         saveBtn.setOnClickListener(v -> {
-            // TODO: Implement save changes after login-flow done
-            finish();
+            String name, email, oldPassword, newPassword;
+            name = usernameField.getText().toString();
+            email = emailField.getText().toString();
+            oldPassword = oldPasswordField.getText().toString();
+            newPassword = passwordField.getText().toString();
+
+            Boolean canSubmit = true;
+
+            if(name.isEmpty()) {
+                usernameField.setError("Nama tidak boleh kosong");
+                canSubmit = false;
+            }
+
+            if(email.isEmpty()) {
+                emailField.setError("Email tidak boleh kosong");
+                canSubmit = false;
+            }
+
+            if(oldPassword.isEmpty()) {
+                oldPasswordField.setError("Password lama tidak boleh kosong");
+                canSubmit = false;
+            }
+
+            if(newPassword.isEmpty()) {
+                passwordField.setError("Password baru tidak boleh kosong");
+                canSubmit = false;
+            }
+
+            if(!newPassword.equals(confirmPasswordField.getText().toString())) {
+                passwordField.setError("Password baru tidak sama");
+                confirmPasswordField.setError("Password baru tidak sama");
+                canSubmit = false;
+            }
+
+            if(canSubmit) {
+                AuthRepository.updateProfile(name, email, oldPassword, newPassword, new CustomCallback() {
+                    @Override
+                    public void onSuccess() {
+                        SharedProfileModel.removeAll();
+                        SharedProfileModel.setAll();
+                        setupView();
+                        changeUiMode();
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
         });
 
         // Logout
         logoutBtn.setOnClickListener(v -> {
-            // TODO: Implement logout after login-flow done
-            finish();
+            AuthRepository.logout(new CustomCallback() {
+                @Override
+                public void onSuccess() {
+                    finish();
+                }
+
+                @Override
+                public void onError(String error) {
+                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+                }
+            });
         });
+    }
+
+    private void changeUiMode() {
+        isEdit = !isEdit;
+        if(isEdit) {
+            editBtn.setText("Batal");
+            editBtn.setBackgroundResource(R.drawable.red_button_background);
+            editProfileContainer.setVisibility(LinearLayout.VISIBLE);
+            usernameField.setEnabled(true);
+            emailField.setEnabled(true);
+            logoutBtn.setVisibility(Button.GONE);
+            return;
+        }
+
+        editBtn.setText("Ubah Email & Password");
+        editBtn.setBackgroundResource(R.drawable.blue_button_background);
+        editProfileContainer.setVisibility(LinearLayout.GONE);
+        usernameField.setEnabled(false);
+        emailField.setEnabled(false);
+        logoutBtn.setVisibility(Button.VISIBLE);
     }
 }

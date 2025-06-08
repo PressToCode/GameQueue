@@ -6,14 +6,15 @@ import java.util.ArrayList;
 
 // Used to pass data between fragments
 public class MainSharedViewModel extends ViewModel {
-    private ArrayList<ConsoleModel> consoleList;
+    private final ArrayList<ConsoleModel> consoleList = new ArrayList<>();
+
     public void fetchSetup() {
         // Setup logic to fetch ONLY ONCE to avoid re-fetching
         // Though i doubt we'll be using this since Firebase
         // Already have a realtime database listener built-in
         // But this is good for dummy data for now
 
-        consoleList = new ArrayList<>();
+        consoleList.clear();
         consoleList.add(new ConsoleModel("XBOX", 0, "Day, DD MM YY", "Time Timezone", "XBOX X Series", "Gigabyte Curved 120Hz", "Wireless Dualsense Stick"));
         consoleList.add(new ConsoleModel("Playstation 5", 1, "Day, DD MM YY", "Time Timezone", "Playstation 5 Pro", "2K HDR AMOLED 120Hz", "PS Pro Limited Pad"));
         consoleList.add(new ConsoleModel("Desktop PC", 2, "Day, DD MM YY", "Time Timezone", "Alienware X", "4K HDR Monitor 240Hz", "Razer Viper"));

@@ -34,12 +34,6 @@ public class ReservationProcessActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Auth Check before Rendering - Unless Dev Mode
-        if(!ApplicationContext.getDevMode()) {
-            if (AuthRepository.isLoggedIn()) { return; }
-            finish();
-        }
-
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_reservation_process);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -47,6 +41,11 @@ public class ReservationProcessActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        // Auth Check before Rendering - Unless Dev Mode
+        if(!AuthRepository.isLoggedIn()) {
+            finish();
+        }
 
         // Initialization
         backBtn = findViewById(R.id.reservationProcessBackButton);
