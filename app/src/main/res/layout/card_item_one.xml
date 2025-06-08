@@ -7,6 +7,7 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="2dp"
     android:layout_marginVertical="12dp"
+    app:cardBackgroundColor="@color/white"
     app:cardCornerRadius="24dp"
     app:contentPadding="16dp">
 
@@ -43,6 +44,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/inter"
                     android:text="ConsoleName"
+                    android:textColor="@color/black"
                     android:textStyle="bold" />
 
                 <TextView
@@ -96,7 +98,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Day, DD MM YY" />
+                android:text="Day, DD MM YY"
+                android:textColor="@color/black" />
 
             <TextView
                 android:id="@+id/cardOneTime"
@@ -104,7 +107,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Time Timezone"
-                android:textAlignment="textEnd" />
+                android:textAlignment="textEnd"
+                android:textColor="@color/black" />
         </LinearLayout>
 
     </LinearLayout>

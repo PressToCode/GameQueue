@@ -12,20 +12,30 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ConsoleModel;
 import com.example.gamequeue.data.model.MainSharedViewModel;
+import com.example.gamequeue.data.model.SharedProfileModel;
 import com.example.gamequeue.ui.adapter.ConsoleAdapter;
 import com.example.gamequeue.ui.main.ProfileActivity;
 import com.example.gamequeue.ui.main.ReservationProcessActivity;
+import com.example.gamequeue.utils.ApplicationContext;
 
 import java.util.ArrayList;
 
@@ -33,13 +43,18 @@ public class HomeFragment extends Fragment {
     private RecyclerView recyclerView;
     private TextView statusReservationText;
     private NestedScrollView scrollContainer;
-    private LinearLayout contentHolder, filterButtons;
+    private LinearLayout contentHolder;
     private ConsoleAdapter adapter;
     private ArrayList<ConsoleModel> consoleList;
     private MainSharedViewModel viewModel;
     private CardView recommendationCard;
     private ImageView recommendedImage;
-    private TextView recommendedTitle, recommendedStatus, recommendedSpecificationOne, recommendedSpecificationTwo, recommendedSpecificationThree;
+    private ImageButton searchButton;
+    private EditText searchField;
+    private TextView greetingText, recommendedTitle, recommendedStatus, recommendedSpecificationOne, recommendedSpecificationTwo, recommendedSpecificationThree;
+    private RadioGroup radioGroup;
+    private RadioButton radioPending, radioCompleted, radioCanceled;
+    private int currentFilterId = -1;
 
     // Add profile button variable
     private ImageButton profileButton;
@@ -72,8 +87,10 @@ public class HomeFragment extends Fragment {
         statusReservationText = view.findViewById(R.id.statusReservationText);
         scrollContainer = view.findViewById(R.id.scroll_container);
         contentHolder = view.findViewById(R.id.scroll_container_content);
-        filterButtons = view.findViewById(R.id.filter_radio_group);
         profileButton = view.findViewById(R.id.imageButton2);
+        greetingText = view.findViewById(R.id.text_greeting);
+        searchButton = view.findViewById(R.id.searchButton);
+        searchField = view.findViewById(R.id.edit_search);
         recommendationCard = view.findViewById(R.id.card_recommendation);
         recommendedImage = view.findViewById(R.id.recommendedImage);
         recommendedTitle = view.findViewById(R.id.recommendedTitle);
@@ -81,7 +98,14 @@ public class HomeFragment extends Fragment {
         recommendedSpecificationOne = view.findViewById(R.id.recommendedSpecificationOne);
         recommendedSpecificationTwo = view.findViewById(R.id.recommendedSpecificationTwo);
         recommendedSpecificationThree = view.findViewById(R.id.recommendedSpecificationThree);
+        radioGroup = view.findViewById(R.id.filter_radio_group);
+        radioPending = view.findViewById(R.id.radio_button_pending);
+        radioCompleted = view.findViewById(R.id.radio_button_completed);
+        radioCanceled = view.findViewById(R.id.radio_button_canceled);
         viewModel = new ViewModelProvider(requireActivity()).get(MainSharedViewModel.class);
+
+        // Change Greeting
+        setupGreeting();
 
         // Setup profile button click listener
         setupProfileButton();
@@ -98,6 +122,17 @@ public class HomeFragment extends Fragment {
 
         // Load Recommendation Data
         loadRecommendedData();
+
+        // Set up filter function
+        setupFilterer();
+    }
+
+    private void setupGreeting() {
+        if(ApplicationContext.getDevMode()) {
+            greetingText.setText("Hai, [Dev Mode]!");
+        } else {
+            greetingText.setText("Hai, " + SharedProfileModel.getName() + "!");
+        }
     }
 
     private void setupProfileButton() {
@@ -138,8 +173,8 @@ public class HomeFragment extends Fragment {
             int statusReservationTextTotalHeightWithMargins = statusReservationTextHeight + statusReservationTextMargins.topMargin + statusReservationTextMargins.bottomMargin;
 
             // 4. Get height of filter buttons (including its margins)
-            int filterButtonsHeight = filterButtons.getHeight();
-            ViewGroup.MarginLayoutParams filterMargins = (ViewGroup.MarginLayoutParams) filterButtons.getLayoutParams();
+            int filterButtonsHeight = radioGroup.getHeight();
+            ViewGroup.MarginLayoutParams filterMargins = (ViewGroup.MarginLayoutParams) radioGroup.getLayoutParams();
             int filterButtonsTotalHeightWithMargins = filterButtonsHeight + filterMargins.topMargin + filterMargins.bottomMargin;
 
             // 5. Calculate target height for RecyclerView
@@ -159,9 +194,6 @@ public class HomeFragment extends Fragment {
             if (rvLayoutParams.height != recyclerViewTargetHeight) {
                 rvLayoutParams.height = recyclerViewTargetHeight;
                 recyclerView.setLayoutParams(rvLayoutParams);
-//                 Log.d("RV_RESIZE", "Set RV height to: " + recyclerViewTargetHeight);
-            } else {
-//                 Log.d("RV_RESIZE", "RV height already correct: " + rvLayoutParams.height);
             }
         });
     }
@@ -178,5 +210,88 @@ public class HomeFragment extends Fragment {
             // We need to pass the current console data to the next activity
             startActivity(new Intent(getContext(), ReservationProcessActivity.class));
         });
+    }
+
+    private void setupFilterer() {
+        // Create OnClickListener Instance
+        View.OnClickListener radioBtnListener = v -> {
+          RadioButton clickedButton = (RadioButton) v;
+
+          if(clickedButton.isChecked() && clickedButton.getId() == currentFilterId) {
+              radioGroup.clearCheck();
+          }
+
+          currentFilterId = radioGroup.getCheckedRadioButtonId();
+        };
+
+        // Apply Listeners
+        radioPending.setOnClickListener(radioBtnListener);
+        radioCompleted.setOnClickListener(radioBtnListener);
+        radioCanceled.setOnClickListener(radioBtnListener);
+
+        // Check Changed Listener
+        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            applyFilter(checkedId);
+        });
+
+        // TODO: Implement actual search function
+        // Currently disabled due to broken implementation
+//        searchField.setOnEditorActionListener((textView, actionId, keyEvent) -> {
+//            if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+//                    actionId == EditorInfo.IME_ACTION_DONE ||
+//                    (keyEvent != null && keyEvent.getAction() == KeyEvent.ACTION_DOWN && keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+//
+//                // If the event is a key-down event on the Enter key
+//                // (This part is to handle cases where actionId might not be set, e.g., on some hardware keyboards)
+//                if (keyEvent != null && keyEvent.getAction() != KeyEvent.ACTION_DOWN) {
+//                    return true;
+//                }
+//
+//                if(searchField.getText().toString().isEmpty()) {
+//                    Toast.makeText(getContext(), "Search Field is Empty", Toast.LENGTH_SHORT).show();
+//                    return true;
+//                }
+//
+//                // Get Search Filters
+//                String[] searchText = searchField.getText().toString().trim().split("\\s+");
+//
+//                // Hide the keyboard
+//                InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(getContext().INPUT_METHOD_SERVICE);
+//                if (imm != null && requireActivity().getCurrentFocus() != null) {
+//                    imm.hideSoftInputFromWindow(requireActivity().getCurrentFocus().getWindowToken(), 0);
+//                }
+//                searchField.clearFocus();
+//
+//                if (searchText.length == 1 && searchText[0].isEmpty()) {
+//                    return true;
+//                }
+//
+//                for(String word : searchText) {
+//                    if(!word.isEmpty()) {
+//                        consoleList.stream().filter(consoleModel -> !consoleModel.getTitle().toLowerCase().contains(word.toLowerCase())).forEach(consoleModel -> consoleList.remove(consoleModel));
+//                    }
+//                }
+//                return true;
+//            }
+//            return false;
+//        });
+    }
+
+    private void applyFilter(int checkedId) {
+        // Clear List
+        consoleList.clear();
+
+        // Apply Filtering
+        if(checkedId == R.id.radio_button_pending) {
+            consoleList.addAll(viewModel.getPendingConsoleList());
+        } else if(checkedId == R.id.radio_button_completed) {
+            consoleList.addAll(viewModel.getCompletedConsoleList());
+        } else if(checkedId == R.id.radio_button_canceled) {
+            consoleList.addAll(viewModel.getCanceledConsoleList());
+        } else if(checkedId == -1) {
+            consoleList.addAll(viewModel.getConsoleList());
+        }
+
+        adapter.notifyDataSetChanged();
     }
 }

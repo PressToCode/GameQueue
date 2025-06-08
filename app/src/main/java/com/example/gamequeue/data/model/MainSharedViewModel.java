@@ -3,6 +3,8 @@ package com.example.gamequeue.data.model;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 // Used to pass data between fragments
 public class MainSharedViewModel extends ViewModel {
@@ -30,5 +32,17 @@ public class MainSharedViewModel extends ViewModel {
 
     public ArrayList<ConsoleModel> getConsoleList() {
         return consoleList;
+    }
+
+    public ArrayList<ConsoleModel> getPendingConsoleList() {
+        return consoleList.stream().filter(consoleModel -> consoleModel.getRawStatus() == 0).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    public ArrayList<ConsoleModel> getCompletedConsoleList() {
+        return consoleList.stream().filter(consoleModel -> consoleModel.getRawStatus() == 1).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    public ArrayList<ConsoleModel> getCanceledConsoleList() {
+        return consoleList.stream().filter(consoleModel -> consoleModel.getRawStatus() == 2).collect(Collectors.toCollection(ArrayList::new));
     }
 }

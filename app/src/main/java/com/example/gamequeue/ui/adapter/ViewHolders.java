@@ -19,6 +19,9 @@ import com.example.gamequeue.utils.CardTwoID;
 import java.util.Objects;
 
 public class ViewHolders {
+
+    private final static String confirmedBgColor = "#ACE66A";
+    private final static String confirmedTxtColor = "#4CAF50";
     private final static String pendingBgColor = "#FFF5CC";
     private final static String pendingTxtColor = "#CCA300";
     private final static String rejectedBgColor = "#FACCCC";
@@ -107,6 +110,11 @@ public class ViewHolders {
         if(Objects.equals(status.getText(), "Pending")) {
             status.setTextColor(Color.parseColor(pendingTxtColor));
             status.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(pendingBgColor)));
+        }
+
+        if (Objects.equals(status.getText(), "Confirmed")) {
+            status.setTextColor(Color.parseColor(confirmedTxtColor));
+            status.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(confirmedBgColor)));
         }
 
         if (Objects.equals(status.getText(), "Rejected")) {

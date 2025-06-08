@@ -3,6 +3,7 @@ package com.example.gamequeue.data.model;
 // Used as base model for cards
 public class ConsoleModel {
     private String title = "NO TITLE";
+    private int rawStatus = -1;
     private String status = "NO STATUS";
     private String date = "NO DATE";
     private String time = "NO TIME";
@@ -18,6 +19,7 @@ public class ConsoleModel {
     // Constructor
     public ConsoleModel(String title, int status, String date, String time, String specificationOne, String specificationTwo, String specificationThree) {
         this.title = title;
+        this.rawStatus = status;
         this.status = statusConverter(status);
         this.date = date;
         this.time = time;
@@ -30,6 +32,8 @@ public class ConsoleModel {
     public String getTitle() {
         return title;
     }
+
+    public int getRawStatus() { return rawStatus; }
 
     public String getStatus() {
         return status;

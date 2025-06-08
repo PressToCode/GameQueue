@@ -56,7 +56,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:checkedButton="@id/radio_button_pending_status"
             android:gravity="center"
             android:orientation="horizontal"
             android:weightSum="3">
