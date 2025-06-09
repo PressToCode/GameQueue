@@ -236,60 +236,83 @@ public class HomeFragment extends Fragment {
 
         // TODO: Implement actual search function
         // Currently disabled due to broken implementation
-//        searchField.setOnEditorActionListener((textView, actionId, keyEvent) -> {
-//            if (actionId == EditorInfo.IME_ACTION_SEARCH ||
-//                    actionId == EditorInfo.IME_ACTION_DONE ||
-//                    (keyEvent != null && keyEvent.getAction() == KeyEvent.ACTION_DOWN && keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
-//
-//                // If the event is a key-down event on the Enter key
-//                // (This part is to handle cases where actionId might not be set, e.g., on some hardware keyboards)
-//                if (keyEvent != null && keyEvent.getAction() != KeyEvent.ACTION_DOWN) {
-//                    return true;
-//                }
-//
-//                if(searchField.getText().toString().isEmpty()) {
-//                    Toast.makeText(getContext(), "Search Field is Empty", Toast.LENGTH_SHORT).show();
-//                    return true;
-//                }
-//
-//                // Get Search Filters
-//                String[] searchText = searchField.getText().toString().trim().split("\\s+");
-//
-//                // Hide the keyboard
-//                InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(getContext().INPUT_METHOD_SERVICE);
-//                if (imm != null && requireActivity().getCurrentFocus() != null) {
-//                    imm.hideSoftInputFromWindow(requireActivity().getCurrentFocus().getWindowToken(), 0);
-//                }
-//                searchField.clearFocus();
-//
-//                if (searchText.length == 1 && searchText[0].isEmpty()) {
-//                    return true;
-//                }
-//
-//                for(String word : searchText) {
-//                    if(!word.isEmpty()) {
-//                        consoleList.stream().filter(consoleModel -> !consoleModel.getTitle().toLowerCase().contains(word.toLowerCase())).forEach(consoleModel -> consoleList.remove(consoleModel));
-//                    }
-//                }
-//                return true;
-//            }
-//            return false;
-//        });
+        searchField.setOnEditorActionListener((textView, actionId, keyEvent) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                    actionId == EditorInfo.IME_ACTION_DONE ||
+                    (keyEvent != null && keyEvent.getAction() == KeyEvent.ACTION_DOWN && keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+
+                // If the event is a key-down event on the Enter key
+                // (This part is to handle cases where actionId might not be set, e.g., on some hardware keyboards)
+                if (keyEvent != null && keyEvent.getAction() != KeyEvent.ACTION_DOWN) {
+                    return true;
+                }
+
+                if(searchField.getText().toString().isEmpty()) {
+                    Toast.makeText(getContext(), "Search Field is Empty", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+
+                // Get Search Filters
+                String[] searchText = searchField.getText().toString().trim().split("\\s+");
+
+                // Hide the keyboard
+                InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(getContext().INPUT_METHOD_SERVICE);
+                if (imm != null && requireActivity().getCurrentFocus() != null) {
+                    imm.hideSoftInputFromWindow(requireActivity().getCurrentFocus().getWindowToken(), 0);
+                }
+                searchField.clearFocus();
+
+                if (searchText.length == 1 && searchText[0].isEmpty()) {
+                    return true;
+                }
+
+                if(searchText.length != 0) {
+                    if(radioGroup.getCheckedRadioButtonId() != -1) {
+                        // Get Which Status is clicked
+                        int checkedId = radioGroup.getCheckedRadioButtonId();
+                        int status = -1;
+
+                        if(checkedId == R.id.radio_button_pending) {
+                            status = 0;
+                        } else if (checkedId == R.id.radio_button_completed) {
+                            status = 1;
+                        } else if (checkedId == R.id.radio_button_canceled) {
+                            status = 2;
+                        }
+
+                        // Filter by status AND word
+                        consoleList.clear();
+                        consoleList.addAll(viewModel.getFilteredStatusWordList(searchText, status));
+                    } else {
+                        // Filter by word only
+                        consoleList.clear();
+                        consoleList.addAll(viewModel.getFilteredWordList(searchText));
+                    }
+
+                    adapter.notifyDataSetChanged();
+                }
+                return true;
+            }
+            return false;
+        });
     }
 
     private void applyFilter(int checkedId) {
         // Clear List
         consoleList.clear();
 
+        // See if there's ongoing filter
+        String[] searchText = searchField.getText().toString().trim().split("\\s+");
+
         // Apply Filtering
         if(checkedId == R.id.radio_button_pending) {
-            consoleList.addAll(viewModel.getPendingConsoleList());
+            consoleList.addAll(viewModel.getFilteredStatusWordList(searchText, 0));
         } else if(checkedId == R.id.radio_button_completed) {
-            consoleList.addAll(viewModel.getCompletedConsoleList());
+            consoleList.addAll(viewModel.getFilteredStatusWordList(searchText, 1));
         } else if(checkedId == R.id.radio_button_canceled) {
-            consoleList.addAll(viewModel.getCanceledConsoleList());
+            consoleList.addAll(viewModel.getFilteredStatusWordList(searchText, 2));
         } else if(checkedId == -1) {
-            consoleList.addAll(viewModel.getConsoleList());
+            consoleList.addAll(viewModel.getFilteredStatusWordList(searchText, -1));
         }
 
         adapter.notifyDataSetChanged();

@@ -45,4 +45,24 @@ public class MainSharedViewModel extends ViewModel {
     public ArrayList<ConsoleModel> getCanceledConsoleList() {
         return consoleList.stream().filter(consoleModel -> consoleModel.getRawStatus() == 2).collect(Collectors.toCollection(ArrayList::new));
     }
+
+    public ArrayList<ConsoleModel> getFilteredWordList(String[] word) {
+        // Filter by word
+        return consoleList.stream().filter(consoleModel -> consoleModel.getTitle().toLowerCase().contains(word[0].toLowerCase())).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    public ArrayList<ConsoleModel> getFilteredStatusWordList(String[] word, int status) {
+        // Filter by status first
+        ArrayList<ConsoleModel> filteredList = new ArrayList<>();
+
+        // Check Status
+        if (status == -1) {
+            filteredList.addAll(consoleList);
+        } else {
+            filteredList.addAll(consoleList.stream().filter(consoleModel -> consoleModel.getRawStatus() == status).collect(Collectors.toCollection(ArrayList::new)));
+        }
+
+        // Filter by word
+        return filteredList.stream().filter(consoleModel -> consoleModel.getTitle().toLowerCase().contains(word[0].toLowerCase())).collect(Collectors.toCollection(ArrayList::new));
+    }
 }
