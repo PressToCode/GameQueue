@@ -2,6 +2,7 @@ package com.example.gamequeue.data.model;
 
 // Used as base model for cards
 public class ConsoleModel {
+    private int id = -1;
     private String title = "NO TITLE";
     private int rawStatus = -1;
     private String status = "NO STATUS";
@@ -17,7 +18,9 @@ public class ConsoleModel {
     }
 
     // Constructor
-    public ConsoleModel(String title, int status, String date, String time, String specificationOne, String specificationTwo, String specificationThree) {
+    public ConsoleModel(int id, String title, int status, String date, String time, String specificationOne, String specificationTwo, String specificationThree) {
+        // ID SHOULD BE GET FROM FIREBASE REALTIME DATABASE
+        this.id = id;
         this.title = title;
         this.rawStatus = status;
         this.status = statusConverter(status);
@@ -29,6 +32,8 @@ public class ConsoleModel {
     }
 
     // Getter
+    public int getId() { return id; }
+
     public String getTitle() {
         return title;
     }

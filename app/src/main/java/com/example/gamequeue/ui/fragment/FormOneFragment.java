@@ -8,7 +8,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,10 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.example.gamequeue.R;
+import com.example.gamequeue.data.model.ConsoleModel;
+import com.example.gamequeue.data.model.ConsoleSharedViewModel;
 import com.example.gamequeue.data.model.ReservationSharedViewModel;
+import com.example.gamequeue.ui.adapter.ViewHolders;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -27,6 +29,8 @@ public class FormOneFragment extends Fragment {
     private List<LinearLayout> buttonDayCard;
     private List<RadioButton> buttonTime;
     private ReservationSharedViewModel sharedViewModel;
+    private TextView consoleName, status, specificationOne, specificationTwo, specificationThree;
+    private ConsoleModel currentConsole;
 
     public FormOneFragment() {
         // Required empty public constructor
@@ -64,11 +68,41 @@ public class FormOneFragment extends Fragment {
         buttonTime.add(view.findViewById(R.id.radio_time6));
         buttonTime.add(view.findViewById(R.id.radio_time7));
         buttonTime.add(view.findViewById(R.id.radio_time8));
+        consoleName = view.findViewById(R.id.formCardConsoleName);
+        status = view.findViewById(R.id.formCardStatus);
+        specificationOne = view.findViewById(R.id.formCardSpecificationOne);
+        specificationTwo = view.findViewById(R.id.formCardSpecificationTwo);
+        specificationThree = view.findViewById(R.id.formCardSpecificationThree);
         sharedViewModel = new ViewModelProvider(requireActivity()).get(ReservationSharedViewModel.class);
 
         // Set UI Visual
+        fetchConsole();
         setupCards();
         setupListener();
+    }
+
+    // TODO: CHANGE IMPLEMENTATION TO FETCH THROUGH DATABASE
+    private void fetchConsole() {
+        // Ensure ID is passed from Adapter
+        int id = getActivity().getIntent().getIntExtra("id", -1);
+
+        if (id == -1) {
+            return;
+        }
+
+        currentConsole = ConsoleSharedViewModel.getConsoleList().stream().filter(it -> it.getId() == id).findFirst().orElse(null);
+
+        if (currentConsole != null) {
+            consoleName.setText(currentConsole.getTitle());
+            status.setText(currentConsole.getStatus());
+            ViewHolders.statusChanger(status);
+            specificationOne.setText(currentConsole.getSpecificationOne());
+            specificationTwo.setText(currentConsole.getSpecificationTwo());
+            specificationThree.setText(currentConsole.getSpecificationThree());
+
+            // Pass it to ReservationFormModel
+            sharedViewModel.getReservationForm().getValue().setConsoleId(id);
+        }
     }
 
     private void setupCards() {

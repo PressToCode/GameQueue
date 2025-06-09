@@ -8,15 +8,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.example.gamequeue.R;
-import com.example.gamequeue.data.model.MainSharedViewModel;
 import com.example.gamequeue.data.repository.AuthRepository;
 import com.example.gamequeue.ui.fragment.HomeFragment;
 import com.example.gamequeue.ui.fragment.ReservationFragment;
 import com.example.gamequeue.ui.fragment.StatusFragment;
-import com.example.gamequeue.utils.ApplicationContext;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -31,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
     private final ReservationFragment reservationFragment = new ReservationFragment();
     private final StatusFragment statusFragment = new StatusFragment();
     private Fragment activeFragment = homeFragment;
-    private MainSharedViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,10 +44,6 @@ public class MainActivity extends AppCompatActivity {
         // Initialization
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         fabReservasi = findViewById(R.id.fab_reservasi);
-        viewModel = new ViewModelProvider(this).get(MainSharedViewModel.class);
-
-        // Fetch Data
-        viewModel.fetchSetup();
 
         // Setup all fragments and listener
         setupFragments(savedInstanceState);

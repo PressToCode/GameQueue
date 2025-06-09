@@ -8,11 +8,9 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +28,7 @@ import android.widget.Toast;
 
 import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ConsoleModel;
-import com.example.gamequeue.data.model.MainSharedViewModel;
+import com.example.gamequeue.data.model.ConsoleSharedViewModel;
 import com.example.gamequeue.data.model.SharedProfileModel;
 import com.example.gamequeue.ui.adapter.ConsoleAdapter;
 import com.example.gamequeue.ui.main.ProfileActivity;
@@ -46,7 +44,6 @@ public class HomeFragment extends Fragment {
     private LinearLayout contentHolder;
     private ConsoleAdapter adapter;
     private ArrayList<ConsoleModel> consoleList;
-    private MainSharedViewModel viewModel;
     private CardView recommendationCard;
     private ImageView recommendedImage;
     private ImageButton searchButton;
@@ -102,7 +99,6 @@ public class HomeFragment extends Fragment {
         radioPending = view.findViewById(R.id.radio_button_pending);
         radioCompleted = view.findViewById(R.id.radio_button_completed);
         radioCanceled = view.findViewById(R.id.radio_button_canceled);
-        viewModel = new ViewModelProvider(requireActivity()).get(MainSharedViewModel.class);
 
         // Change Greeting
         setupGreeting();
@@ -146,7 +142,7 @@ public class HomeFragment extends Fragment {
     private void loadDummyData() {
         // Dummy data loading logic
         consoleList.clear();
-        consoleList.addAll(viewModel.getConsoleList());
+        consoleList.addAll(ConsoleSharedViewModel.getConsoleList());
     }
 
     private void setupRecycler() {
@@ -207,8 +203,8 @@ public class HomeFragment extends Fragment {
 
         recommendationCard.setVisibility(View.VISIBLE);
         recommendationCard.setOnClickListener(v -> {
-            // We need to pass the current console data to the next activity
-            startActivity(new Intent(getContext(), ReservationProcessActivity.class));
+            // TODO: IMPLEMENT DATA PASSING FROM FIREBASE INSTEAD
+            startActivity(new Intent(getContext(), ReservationProcessActivity.class).putExtra("id", consoleList.get(0).getId()));
         });
     }
 
@@ -267,34 +263,48 @@ public class HomeFragment extends Fragment {
                 }
 
                 if(searchText.length != 0) {
-                    if(radioGroup.getCheckedRadioButtonId() != -1) {
-                        // Get Which Status is clicked
-                        int checkedId = radioGroup.getCheckedRadioButtonId();
-                        int status = -1;
-
-                        if(checkedId == R.id.radio_button_pending) {
-                            status = 0;
-                        } else if (checkedId == R.id.radio_button_completed) {
-                            status = 1;
-                        } else if (checkedId == R.id.radio_button_canceled) {
-                            status = 2;
-                        }
-
-                        // Filter by status AND word
-                        consoleList.clear();
-                        consoleList.addAll(viewModel.getFilteredStatusWordList(searchText, status));
-                    } else {
-                        // Filter by word only
-                        consoleList.clear();
-                        consoleList.addAll(viewModel.getFilteredWordList(searchText));
-                    }
-
-                    adapter.notifyDataSetChanged();
+                    searchFilter(searchText);
                 }
                 return true;
             }
             return false;
         });
+
+        searchButton.setOnClickListener(v -> {
+            if(searchField.getText().toString().isEmpty()) {
+                Toast.makeText(getContext(), "Search Field is Empty", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String[] searchText = searchField.getText().toString().trim().split("\\s+");
+            searchFilter(searchText);
+        });
+    }
+
+    private void searchFilter(String[] searchText) {
+        if(radioGroup.getCheckedRadioButtonId() != -1) {
+            // Get Which Status is clicked
+            int checkedId = radioGroup.getCheckedRadioButtonId();
+            int status = -1;
+
+            if(checkedId == R.id.radio_button_pending) {
+                status = 0;
+            } else if (checkedId == R.id.radio_button_completed) {
+                status = 1;
+            } else if (checkedId == R.id.radio_button_canceled) {
+                status = 2;
+            }
+
+            // Filter by status AND word
+            consoleList.clear();
+            consoleList.addAll(ConsoleSharedViewModel.getFilteredStatusWordList(searchText, status));
+        } else {
+            // Filter by word only
+            consoleList.clear();
+            consoleList.addAll(ConsoleSharedViewModel.getFilteredWordList(searchText));
+        }
+
+        adapter.notifyDataSetChanged();
     }
 
     private void applyFilter(int checkedId) {
@@ -306,13 +316,13 @@ public class HomeFragment extends Fragment {
 
         // Apply Filtering
         if(checkedId == R.id.radio_button_pending) {
-            consoleList.addAll(viewModel.getFilteredStatusWordList(searchText, 0));
+            consoleList.addAll(ConsoleSharedViewModel.getFilteredStatusWordList(searchText, 0));
         } else if(checkedId == R.id.radio_button_completed) {
-            consoleList.addAll(viewModel.getFilteredStatusWordList(searchText, 1));
+            consoleList.addAll(ConsoleSharedViewModel.getFilteredStatusWordList(searchText, 1));
         } else if(checkedId == R.id.radio_button_canceled) {
-            consoleList.addAll(viewModel.getFilteredStatusWordList(searchText, 2));
+            consoleList.addAll(ConsoleSharedViewModel.getFilteredStatusWordList(searchText, 2));
         } else if(checkedId == -1) {
-            consoleList.addAll(viewModel.getFilteredStatusWordList(searchText, -1));
+            consoleList.addAll(ConsoleSharedViewModel.getFilteredStatusWordList(searchText, -1));
         }
 
         adapter.notifyDataSetChanged();

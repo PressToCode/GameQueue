@@ -44,11 +44,13 @@ public class ConsoleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         ConsoleModel currentItem = consoleList.get(position);
         if (holder instanceof ViewHolders.ViewHolderOne) {
+            // TODO: IMPLEMENT INTENT DATA PASSING
             ((ViewHolders.ViewHolderOne) holder).bind(currentItem);
         } else if (holder instanceof ViewHolders.ViewHolderTwo) {
             ((ViewHolders.ViewHolderTwo) holder).bind(currentItem);
-            holder.itemView.setOnClickListener(v -> context.startActivity(new Intent(context, ReservationProcessActivity.class)));
+            holder.itemView.setOnClickListener(v -> context.startActivity(new Intent(context, ReservationProcessActivity.class).putExtra("id", currentItem.getId())));
         } else if (holder instanceof ViewHolders.ViewHolderThree) {
+            // TODO: IMPLEMENT INTENT DATA PASSING
             ((ViewHolders.ViewHolderThree) holder).bind(currentItem);
         }
     }

@@ -5,11 +5,9 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +16,7 @@ import android.widget.RadioGroup;
 
 import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ConsoleModel;
-import com.example.gamequeue.data.model.MainSharedViewModel;
+import com.example.gamequeue.data.model.ConsoleSharedViewModel;
 import com.example.gamequeue.ui.adapter.ConsoleAdapter;
 
 import java.util.ArrayList;
@@ -26,7 +24,6 @@ import java.util.ArrayList;
 public class StatusFragment extends Fragment {
     private RecyclerView recyclerView;
     private ArrayList<ConsoleModel> consoleList;
-    private MainSharedViewModel viewModel;
     private ConsoleAdapter adapter;
     private RadioGroup radioGroup;
     private RadioButton radioPending, radioCompleted, radioCanceled;
@@ -59,7 +56,6 @@ public class StatusFragment extends Fragment {
         radioPending = view.findViewById(R.id.radio_button_pending_status);
         radioCompleted = view.findViewById(R.id.radio_button_completed_status);
         radioCanceled = view.findViewById(R.id.radio_button_canceled_status);
-        viewModel = new ViewModelProvider(requireActivity()).get(MainSharedViewModel.class);
 
         // Set Adapter
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -76,7 +72,7 @@ public class StatusFragment extends Fragment {
     private void loadDummyData() {
         // Dummy data loading logic
         consoleList.clear();
-        consoleList.addAll(viewModel.getConsoleList());
+        consoleList.addAll(ConsoleSharedViewModel.getConsoleList());
     }
 
     private void setupFilterer() {
@@ -105,13 +101,13 @@ public class StatusFragment extends Fragment {
 
         // Apply Filtering
         if(checkedId == R.id.radio_button_pending_status) {
-            consoleList.addAll(viewModel.getPendingConsoleList());
+            consoleList.addAll(ConsoleSharedViewModel.getPendingConsoleList());
         } else if(checkedId == R.id.radio_button_completed_status) {
-            consoleList.addAll(viewModel.getCompletedConsoleList());
+            consoleList.addAll(ConsoleSharedViewModel.getCompletedConsoleList());
         } else if(checkedId == R.id.radio_button_canceled_status) {
-            consoleList.addAll(viewModel.getCanceledConsoleList());
+            consoleList.addAll(ConsoleSharedViewModel.getCanceledConsoleList());
         } else if(checkedId == -1) {
-            consoleList.addAll(viewModel.getConsoleList());
+            consoleList.addAll(ConsoleSharedViewModel.getConsoleList());
         }
 
         adapter.notifyDataSetChanged();

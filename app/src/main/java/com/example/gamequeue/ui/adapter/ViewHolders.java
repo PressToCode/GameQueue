@@ -106,7 +106,7 @@ public class ViewHolders {
         }
     }
 
-    private static void statusChanger(@NonNull TextView status) {
+    public static void statusChanger(@NonNull TextView status) {
         if(Objects.equals(status.getText(), "Pending")) {
             status.setTextColor(Color.parseColor(pendingTxtColor));
             status.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(pendingBgColor)));
