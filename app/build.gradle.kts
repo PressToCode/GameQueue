@@ -38,6 +38,7 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.database)
     implementation(libs.firebase.analytics)
+    implementation(libs.imagePicker)
     implementation(libs.googleid)
     implementation(libs.credentials.play.services.auth)
     implementation(libs.credentials)

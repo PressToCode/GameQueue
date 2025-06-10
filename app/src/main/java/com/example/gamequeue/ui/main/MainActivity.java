@@ -1,6 +1,7 @@
 package com.example.gamequeue.ui.main;
 
 import android.os.Bundle;
+import android.widget.ProgressBar;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -8,13 +9,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.gamequeue.R;
-import com.example.gamequeue.data.model.SharedViewModel;
+import com.example.gamequeue.data.model.ConsoleModel;
+import com.example.gamequeue.data.model.ConsoleSharedViewModel;
+import com.example.gamequeue.data.model.ReservationFormSharedViewModel;
+import com.example.gamequeue.data.repository.AuthRepository;
 import com.example.gamequeue.ui.fragment.HomeFragment;
 import com.example.gamequeue.ui.fragment.ReservationFragment;
 import com.example.gamequeue.ui.fragment.StatusFragment;
+import com.example.gamequeue.utils.CustomCallback;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -22,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     // Variables
     private BottomNavigationView bottomNavigationView;
     private FloatingActionButton fabReservasi;
+    private ProgressBar loadingIndicator;
     private static final String TAG_HOME = "home_fragment";
     private static final String TAG_RESERVATION = "reservation_fragment";
     private static final String TAG_STATUS = "status_fragment";
@@ -29,80 +36,108 @@ public class MainActivity extends AppCompatActivity {
     private final ReservationFragment reservationFragment = new ReservationFragment();
     private final StatusFragment statusFragment = new StatusFragment();
     private Fragment activeFragment = homeFragment;
-    private SharedViewModel viewModel;
+    private ConsoleSharedViewModel consoleSharedViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        overridePendingTransition(android.R.anim.fade_in, 0);
-
         super.onCreate(savedInstanceState);
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        // Auth Check before Rendering - Unless Dev Mode
+        if(!AuthRepository.isLoggedIn()) {
+            finish();
+        }
 
         // Initialization
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         fabReservasi = findViewById(R.id.fab_reservasi);
-        viewModel = new ViewModelProvider(this).get(SharedViewModel.class);
+        loadingIndicator = findViewById(R.id.loading_indicator);
 
-        // Fetch Data
-        viewModel.fetchSetup();
+        // Important to import data from Firebase
+        consoleSharedViewModel = new ViewModelProvider(this).get(ConsoleSharedViewModel.class);
 
         // Setup all fragments and listener
         setupFragments(savedInstanceState);
-        setupListeners();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Check Auth Status
+        if(!AuthRepository.isLoggedIn()) {
+            finish();
+        }
     }
 
     private void setupFragments(Bundle savedInstanceState) {
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
+        consoleSharedViewModel.getConsoleListLive().observe(this, consoleModels -> {
+            if(consoleModels == null || consoleModels.isEmpty()) {
+                return;
+            }
 
-        // Restore active fragment tag if available
-        String activeTagRestored = null;
-        if (savedInstanceState != null) {
-            activeTagRestored = savedInstanceState.getString("active_fragment_tag");
-        }
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
 
-        // Add HomeFragment
-        if (fm.findFragmentByTag(TAG_HOME) == null) {
-            ft.add(R.id.fragment_container, homeFragment, TAG_HOME);
-        }
-        // Add ReservationFragment (and hide it)
-        if (fm.findFragmentByTag(TAG_RESERVATION) == null) {
-            ft.add(R.id.fragment_container, reservationFragment, TAG_RESERVATION).hide(reservationFragment);
-        }
-        // Add StatusFragment (and hide it)
-        if (fm.findFragmentByTag(TAG_STATUS) == null) {
-            ft.add(R.id.fragment_container, statusFragment, TAG_STATUS).hide(statusFragment);
-        }
+            // Restore active fragment tag if available
+            String activeTagRestored = null;
+            if (savedInstanceState != null) {
+                activeTagRestored = savedInstanceState.getString("active_fragment_tag");
+            }
 
-        // Determine which fragment to show
-        if (activeTagRestored != null) {
-            if (activeTagRestored.equals(TAG_RESERVATION)) activeFragment = reservationFragment;
-            else if (activeTagRestored.equals(TAG_STATUS)) activeFragment = statusFragment;
-            else activeFragment = homeFragment; // Default or TAG_HOME
-        } else {
-            activeFragment = homeFragment; // Default on first creation
-        }
+            // Add HomeFragment
+            if (fm.findFragmentByTag(TAG_HOME) == null) {
+                ft.add(R.id.fragment_container, homeFragment, TAG_HOME);
+            }
+            // Add ReservationFragment (and hide it)
+            if (fm.findFragmentByTag(TAG_RESERVATION) == null) {
+                ft.add(R.id.fragment_container, reservationFragment, TAG_RESERVATION).hide(reservationFragment);
+            }
+            // Add StatusFragment (and hide it)
+            if (fm.findFragmentByTag(TAG_STATUS) == null) {
+                ft.add(R.id.fragment_container, statusFragment, TAG_STATUS).hide(statusFragment);
+            }
 
-        // Hide all fragments first to handle cases where multiple might have been visible
-        // due to incorrect previous state or prior to this logic being implemented.
-        // This is a defensive measure.
-        if (homeFragment.isAdded()) ft.hide(homeFragment);
-        if (reservationFragment.isAdded()) ft.hide(reservationFragment);
-        if (statusFragment.isAdded()) ft.hide(statusFragment);
+            // Determine which fragment to show
+            if (activeTagRestored != null) {
+                if (activeTagRestored.equals(TAG_RESERVATION)) activeFragment = reservationFragment;
+                else if (activeTagRestored.equals(TAG_STATUS)) activeFragment = statusFragment;
+                else activeFragment = homeFragment; // Default or TAG_HOME
+            } else {
+                activeFragment = homeFragment; // Default on first creation
+            }
 
-        // Then show the active one
-        ft.show(activeFragment);
-        ft.commit();
+            // Hide all fragments first to handle cases where multiple might have been visible
+            // due to incorrect previous state or prior to this logic being implemented.
+            // This is a defensive measure.
+            if (homeFragment.isAdded()) ft.hide(homeFragment);
+            if (reservationFragment.isAdded()) ft.hide(reservationFragment);
+            if (statusFragment.isAdded()) ft.hide(statusFragment);
 
-        // Update BottomNavigationView selection based on the active fragment
-        if (activeFragment == reservationFragment) {
-            bottomNavigationView.setSelectedItemId(R.id.nav_reservation);
-        } else if (activeFragment == statusFragment) {
-            bottomNavigationView.setSelectedItemId(R.id.nav_status);
-        } else { // homeFragment is active
-            bottomNavigationView.setSelectedItemId(R.id.nav_home);
-        }
+            // Then show the active one
+            ft.show(activeFragment);
+            ft.commit();
+
+            // Update BottomNavigationView selection based on the active fragment
+            if (activeFragment == reservationFragment) {
+                bottomNavigationView.setSelectedItemId(R.id.nav_reservation);
+            } else if (activeFragment == statusFragment) {
+                bottomNavigationView.setSelectedItemId(R.id.nav_status);
+            } else { // homeFragment is active
+                bottomNavigationView.setSelectedItemId(R.id.nav_home);
+            }
+
+            // Setup Listener
+            setupListeners();
+
+            // Remove Loading
+            loadingIndicator.setVisibility(android.view.View.GONE);
+
+            // Remove Observer
+            consoleSharedViewModel.getConsoleListLive().removeObservers(this);
+        });
     }
 
     private void setupListeners() {

@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,14 +16,21 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.example.gamequeue.R;
+import com.example.gamequeue.data.model.ConsoleModel;
+import com.example.gamequeue.data.model.ConsoleSharedViewModel;
+import com.example.gamequeue.data.model.ReservationFormSharedViewModel;
+import com.example.gamequeue.ui.adapter.ViewHolders;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class FormOneFragment extends Fragment {
     private List<LinearLayout> buttonDayCard;
     private List<RadioButton> buttonTime;
+    private ReservationFormSharedViewModel sharedViewModel;
+    private TextView consoleName, status, specificationOne, specificationTwo, specificationThree;
 
     public FormOneFragment() {
         // Required empty public constructor
@@ -60,10 +68,46 @@ public class FormOneFragment extends Fragment {
         buttonTime.add(view.findViewById(R.id.radio_time6));
         buttonTime.add(view.findViewById(R.id.radio_time7));
         buttonTime.add(view.findViewById(R.id.radio_time8));
+        consoleName = view.findViewById(R.id.formCardConsoleName);
+        status = view.findViewById(R.id.formCardStatus);
+        specificationOne = view.findViewById(R.id.formCardSpecificationOne);
+        specificationTwo = view.findViewById(R.id.formCardSpecificationTwo);
+        specificationThree = view.findViewById(R.id.formCardSpecificationThree);
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(ReservationFormSharedViewModel.class);
 
         // Set UI Visual
+        fetchConsole();
         setupCards();
         setupListener();
+    }
+
+    // TODO: CHANGE IMPLEMENTATION TO FETCH THROUGH DATABASE
+    private void fetchConsole() {
+        // Ensure ID is passed from Adapter
+        String id = getActivity().getIntent().getStringExtra("id");
+
+        if (id == null || id.isEmpty()) {
+            return;
+        }
+
+        // Get Other Metadata
+        String txtTitle, txtStatus, txtSpecificationOne, txtSpecificationTwo, txtSpecificationThree;
+        txtTitle = getActivity().getIntent().getStringExtra("title");
+        txtStatus = getActivity().getIntent().getStringExtra("status");
+        txtSpecificationOne = getActivity().getIntent().getStringExtra("specificationOne");
+        txtSpecificationTwo = getActivity().getIntent().getStringExtra("specificationTwo");
+        txtSpecificationThree = getActivity().getIntent().getStringExtra("specificationThree");
+
+        if (txtTitle != null && txtStatus != null && txtSpecificationOne != null && txtSpecificationTwo != null && txtSpecificationThree != null) {
+            consoleName.setText(txtTitle);
+            status.setText(txtStatus);
+            specificationOne.setText(txtSpecificationOne);
+            specificationTwo.setText(txtSpecificationTwo);
+            specificationThree.setText(txtSpecificationThree);
+
+            // Pass it to ReservationFormModel
+            sharedViewModel.getReservationForm().getValue().setConsoleId(id);
+        }
     }
 
     private void setupCards() {
@@ -107,6 +151,11 @@ public class FormOneFragment extends Fragment {
                 });
                 button.setChecked(true);
                 button.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+
+                sharedViewModel.getReservationForm().getValue().setTime(button.getText().toString());
+
+                // Since this is radio button, and date is pre-filled
+                sharedViewModel.setFormOneFilled(true);
             });
         });
     }
@@ -125,5 +174,9 @@ public class FormOneFragment extends Fragment {
             tvDay.setTextColor(color);
             tvDate.setTextColor(color);
         }
+
+        // Update Reservation Form
+        TextView date = buttonDayCard.get(selectedIndex).findViewById(R.id.tvDate);
+        sharedViewModel.getReservationForm().getValue().setDate(date.getText().toString());
     }
 }

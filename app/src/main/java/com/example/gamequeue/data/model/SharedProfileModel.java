@@ -2,19 +2,15 @@ package com.example.gamequeue.data.model;
 
 import android.net.Uri;
 
-import androidx.lifecycle.ViewModel;
-
 import com.example.gamequeue.data.repository.AuthRepository;
-import com.example.gamequeue.data.repository.DatabaseRepository;
-import com.example.gamequeue.utils.CustomCallbackWithString;
 
-public class ProfileModel extends ViewModel {
+public class SharedProfileModel {
     private static String uid;
     private static String name;
     private static String email;
     private static Uri profileImageUrl;
 
-    public ProfileModel() {
+    public SharedProfileModel() {
         // Default constructor required for Firebase
     }
 
@@ -22,6 +18,8 @@ public class ProfileModel extends ViewModel {
     public static void setAll() {
         setUid();
         setName();
+        setEmail();
+        setProfileImageUrl();
     }
 
     public static void removeAll() {
@@ -40,25 +38,14 @@ public class ProfileModel extends ViewModel {
         // Get from firebase auth first (case: google sign-in)
         name = AuthRepository.getFirebaseAuthUserName();
 
-        // fallback 1 - Get username from database
-        if(name == null || name.isEmpty()) {
-            DatabaseRepository.getFirebaseDatabaseUserName(new CustomCallbackWithString() {
-                @Override
-                public void onSuccess(String message) {
-                    name = message;
-                }
+        // Fallback 1 - get name from email
+        if (name == null || name.isEmpty()) {
+            name = AuthRepository.getFirebaseAuthUserEmail().split("@")[0];
+        }
 
-                @Override
-                public void onError(String error) {
-                    // Fallback 2 - get name from email
-                    name = AuthRepository.getFirebaseAuthUserEmail().split("@")[0];
-
-                    // Last Fallback - if firebase failed to get email / offline
-                    if (name == null || name.isEmpty()) {
-                        name = "Guest";
-                    }
-                }
-            });
+        // Last Fallback - if firebase failed to get email / offline
+        if (name == null || name.isEmpty()) {
+            name = "Guest";
         }
     }
 
@@ -69,5 +56,22 @@ public class ProfileModel extends ViewModel {
     public static void setProfileImageUrl() {
         // Can be null - Setup later in profile activity
         profileImageUrl = AuthRepository.getFirebaseAuthUserPhotoUrl();
+    }
+
+    // Getter
+    public static String getUid() {
+        return uid;
+    }
+
+    public static String getName() {
+        return name;
+    }
+
+    public static String getEmail() {
+        return email;
+    }
+
+    public static Uri getProfileImageUrl() {
+        return profileImageUrl;
     }
 }

@@ -3,12 +3,11 @@ package com.example.gamequeue.data.firebase;
 import static com.example.gamequeue.utils.FirebaseConst.DATABASE_URL;
 import static com.example.gamequeue.utils.FirebaseConst.FIREBASE_WEB_CLIENT_ID;
 
-import android.content.Context;
-
 import androidx.credentials.ClearCredentialStateRequest;
 import androidx.credentials.CredentialManager;
 import androidx.credentials.GetCredentialRequest;
 
+import com.example.gamequeue.utils.ApplicationContext;
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -16,35 +15,39 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class FirebaseUtil {
     // Authentication
-    private static final FirebaseAuth auth = FirebaseAuth.getInstance();
+    private static final FirebaseAuth auth;
 
     // Database References
-    private static final FirebaseDatabase database = FirebaseDatabase.getInstance(DATABASE_URL);
-    public static final DatabaseReference profilesRef = database.getReference("profiles");
-    public static final DatabaseReference gamesRef = database.getReference("games");
-    public static final DatabaseReference reservationsRef = database.getReference("reservations");
+    private static final FirebaseDatabase database;
+    public static final DatabaseReference consolesRef;
+    public static final DatabaseReference reservationsRef;
+    public static final DatabaseReference requestRef;
 
     // Google Sign In Credential Manager Object
-    private static CredentialManager credentialManager;
-    private static ClearCredentialStateRequest clearCredentialStateRequest;
-    private static GetCredentialRequest request;
+    private static final CredentialManager credentialManager;
+    private static final ClearCredentialStateRequest clearCredentialStateRequest;
+    private static final GetCredentialRequest request;
 
-    // Prevent Data gone
+    // Initialize ONCE upon any method call
     static {
+        // Initialize Firebase Objects
+        auth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance(DATABASE_URL);
+
+        // Set Data Persistence in case of offline - MUST BE CALLED BEFORE DB OPERATION
         database.setPersistenceEnabled(true);
-    }
 
-    // Prevent instantiation
-    private FirebaseUtil() {}
+        // Get References
+        consolesRef = database.getReference("consoles");
+        reservationsRef = database.getReference("reservations");
+        requestRef = database.getReference("requests");
 
-    // RUN THIS ONCE TO LET GOOGLE SIGN-IN (Preferably in Splash or Login)
-    public void setup(Context context) {
         // Create Google Request Object for Credential Manager
         request = new GetCredentialRequest.Builder()
                 .addCredentialOption(
                         new GetSignInWithGoogleOption
-                        .Builder(FIREBASE_WEB_CLIENT_ID)
-                        .build()
+                                .Builder(FIREBASE_WEB_CLIENT_ID)
+                                .build()
                 )
                 .build();
 
@@ -52,13 +55,16 @@ public class FirebaseUtil {
         clearCredentialStateRequest = new ClearCredentialStateRequest(ClearCredentialStateRequest.TYPE_CLEAR_CREDENTIAL_STATE);
 
         // Create CredentialManager
-        credentialManager = CredentialManager.create(context);
+        credentialManager = CredentialManager.create(ApplicationContext.getAppContext());
     }
 
+    // Prevent instantiation
+    private FirebaseUtil() {}
+
     // Getter
-    public static DatabaseReference getProfilesRef() { return profilesRef; }
-    public static DatabaseReference getGamesRef() { return gamesRef; }
+    public static DatabaseReference getConsolesRef() { return consolesRef; }
     public static DatabaseReference getReservationsRef() { return reservationsRef; }
+    public static DatabaseReference getRequestRef() { return requestRef; }
     public static FirebaseAuth getAuth() { return auth; }
     public static CredentialManager getCredentialManager() { return credentialManager; }
     public static ClearCredentialStateRequest getClearCredentialStateRequest() { return clearCredentialStateRequest; }

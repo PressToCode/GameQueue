@@ -1,0 +1,27 @@
+
+// Console - Meant to be in fixed amount - Globally readable
+- Consoles
+-- [ConsoleUid]
+--- ConsoleName
+--- ...
+--- LenderStatus        <-- To track whether console is available or not
+--- LenderUid           <-- To track who's booking it
+
+// Reservation - Meant to be unique per user
+- Reservations
+-- [User UID]
+--- [Reservation UID]   <-- Each user can have more than 1 reservations
+---- ConsoleId          <-- Which console is being reserved
+---- date
+---- time
+---- lender..           <-- Verify later with document
+---- document           <-- Verification Document (eg. KTP/KTM/etc)
+
+// Duplicate for admin to review request
+- Requests
+-- [Reservation UID]
+--- UserUID             <-- Who is doing the request
+--- ConsoleId           <-- Which console is being requested
+
+-----------------------
+// Model Refactor Plan

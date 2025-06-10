@@ -1,5 +1,7 @@
 package com.example.gamequeue.ui.adapter;
 
+import com.example.gamequeue.data.model.ConsoleSharedViewModel;
+import com.example.gamequeue.data.model.ReservationModel;
 import com.example.gamequeue.ui.main.ReservationProcessActivity;
 import com.example.gamequeue.utils.CardLayoutConst;
 
@@ -10,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamequeue.data.model.ConsoleModel;
@@ -20,11 +23,15 @@ public class ConsoleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private final Context context;
     private final int ChosenLayout;
     private final ArrayList<ConsoleModel> consoleList;
+    private final ArrayList<ReservationModel> reservationList;
+    private final ConsoleSharedViewModel consoleViewModel;
 
-    public ConsoleAdapter(Context context, int ChosenLayout, ArrayList<ConsoleModel> consoleList) {
+    public ConsoleAdapter(Context context, int ChosenLayout, ArrayList<ConsoleModel> consoleList, @Nullable ArrayList<ReservationModel> reservationList, ConsoleSharedViewModel consoleViewModel) {
         this.context = context;
         this.ChosenLayout = ChosenLayout;
         this.consoleList = consoleList;
+        this.reservationList = reservationList;
+        this.consoleViewModel = consoleViewModel;
     }
 
     @NonNull
@@ -42,19 +49,74 @@ public class ConsoleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ConsoleModel currentItem = consoleList.get(position);
         if (holder instanceof ViewHolders.ViewHolderOne) {
-            ((ViewHolders.ViewHolderOne) holder).bind(currentItem);
+            ReservationModel currentReservation = reservationList.get(position);
+            ConsoleModel currentConsole = consoleViewModel.getConsoleById(currentReservation.getConsoleId());
+
+            // Bind
+            if (currentConsole != null) {
+                ((ViewHolders.ViewHolderOne) holder).bind(currentReservation, currentConsole);
+                return;
+            }
+
+            // If fail however..
+            ((ViewHolders.ViewHolderOne) holder).bind(currentReservation, null);
+
+            // Set click listener to status page
+            // TODO: IMPLEMENT HERE
         } else if (holder instanceof ViewHolders.ViewHolderTwo) {
-            ((ViewHolders.ViewHolderTwo) holder).bind(currentItem);
-            holder.itemView.setOnClickListener(v -> context.startActivity(new Intent(context, ReservationProcessActivity.class)));
+            ConsoleModel currentConsole = consoleList.get(position);
+            ((ViewHolders.ViewHolderTwo) holder).bind(currentConsole);
+
+            // Only currently not lended item can be clicked
+            if(!currentConsole.getLendingStatus()) {
+                Intent intent = getIntent(currentConsole);
+
+                holder.itemView.setOnClickListener(v -> context.startActivity(intent));
+            }
         } else if (holder instanceof ViewHolders.ViewHolderThree) {
-            ((ViewHolders.ViewHolderThree) holder).bind(currentItem);
+            ReservationModel currentReservation = reservationList.get(position);
+            ConsoleModel currentConsole = consoleViewModel.getConsoleById(currentReservation.getConsoleId());
+
+            // Bind
+            if (currentConsole != null) {
+                ((ViewHolders.ViewHolderThree) holder).bind(currentReservation, currentConsole);
+                return;
+            }
+
+            // Initial Bind
+            ((ViewHolders.ViewHolderThree) holder).bind(currentReservation, null);
+
+            // Set click listener to status page
+            // TODO: IMPLEMENT HERE
         }
+    }
+
+    @NonNull
+    private Intent getIntent(ConsoleModel currentConsole) {
+        Intent intent = new Intent(context, ReservationProcessActivity.class);
+        intent.putExtra("id", currentConsole.getId());
+        intent.putExtra("title", currentConsole.getTitle());
+        intent.putExtra("status", currentConsole.getLendingStatus() ? "Tidak Tersedia" : "Tersedia");
+        intent.putExtra("specificationOne", currentConsole.getSpecificationOne());
+        intent.putExtra("specificationTwo", currentConsole.getSpecificationTwo());
+        intent.putExtra("specificationThree", currentConsole.getSpecificationThree());
+        return intent;
     }
 
     @Override
     public int getItemCount() {
-        return consoleList.size();
+        if (ChosenLayout == CardLayoutConst.LAYOUT_THREE || ChosenLayout == CardLayoutConst.LAYOUT_ONE) {
+            return reservationList.size();
+        } else if (ChosenLayout == CardLayoutConst.LAYOUT_TWO) {
+            return consoleList.size();
+        }
+
+        return 0;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return ChosenLayout;
     }
 }

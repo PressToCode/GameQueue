@@ -20,7 +20,7 @@
             android:padding="8dp">
 
             <ImageView
-                android:id="@+id/cardTwoImage"
+                android:id="@+id/formCardImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="2"
@@ -38,7 +38,7 @@
                 android:paddingStart="10dp">
 
                 <TextView
-                    android:id="@+id/cardTwoConsoleName"
+                    android:id="@+id/formCardConsoleName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/inter"
@@ -46,7 +46,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/cardTwoStatus"
+                    android:id="@+id/formCardStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="4dp"
@@ -73,7 +73,7 @@
                         app:srcCompat="@drawable/hugeicons_video_console" />
 
                     <TextView
-                        android:id="@+id/CardTwoSpecificationOne"
+                        android:id="@+id/formCardSpecificationOne"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -96,7 +96,7 @@
                         app:srcCompat="@drawable/solar_monitor_linear" />
 
                     <TextView
-                        android:id="@+id/CardTwoSpecificationTwo"
+                        android:id="@+id/formCardSpecificationTwo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -118,7 +118,7 @@
                         app:srcCompat="@drawable/carbon_game_console" />
 
                     <TextView
-                        android:id="@+id/CardTwoSpecificationThree"
+                        android:id="@+id/formCardSpecificationThree"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
