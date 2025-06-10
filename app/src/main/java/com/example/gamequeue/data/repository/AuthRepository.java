@@ -1,112 +1,250 @@
+/*
+ * We do NOT need to store data
+ * our app is ONLINE-only
+ * due to the nature of data-fetching
+ * real-time reservation, and authentication
+ *
+ * DO NOT STORE DATA LOCALLY
+ */
+
 package com.example.gamequeue.data.repository;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.net.Uri;
+
+import androidx.annotation.NonNull;
+import androidx.credentials.Credential;
+import androidx.credentials.CredentialManagerCallback;
+import androidx.credentials.CustomCredential;
+import androidx.credentials.GetCredentialResponse;
+import androidx.credentials.exceptions.ClearCredentialException;
+import androidx.credentials.exceptions.GetCredentialException;
 
 import com.example.gamequeue.data.firebase.FirebaseUtil;
+import com.example.gamequeue.data.model.SharedProfileModel;
+import com.example.gamequeue.utils.ApplicationContext;
+import com.example.gamequeue.utils.CustomCallback;
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.UserProfileChangeRequest;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class AuthRepository {
-    private static final String PREF_NAME = "GameQueuePrefs";
-    private static final String KEY_USER_NAME = "user_name";
-    private static final String KEY_USER_EMAIL = "user_email";
+    // Firebase Utilities Singletons Alias
+    private static final FirebaseAuth auth;
 
-    private SharedPreferences sharedPreferences;
-    private FirebaseAuth firebaseAuth;
-    private DatabaseReference databaseReference;
+    // Executor for Async Call
+    private static final Executor executor;
 
-    public AuthRepository(Context context) {
-        sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        firebaseAuth = FirebaseAuth.getInstance();
-        databaseReference = FirebaseUtil.getDatabaseInstance().getReference();
+    // Static Constructor - ensure Singleton
+    static {
+        auth = FirebaseUtil.getAuth();
+        executor = Executors.newSingleThreadExecutor();
     }
 
-    // Save user data to SharedPreferences
-    public void saveUserData(String userName, String userEmail) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(KEY_USER_NAME, userName);
-        editor.putString(KEY_USER_EMAIL, userEmail);
-        editor.apply();
-    }
+    // Firebase Authenticated User Metadata
+    public static String getFirebaseAuthUserUid() { return auth.getCurrentUser().getUid(); }
+    public static String getFirebaseAuthUserName() { return auth.getCurrentUser().getDisplayName(); }
+    public static String getFirebaseAuthUserEmail() { return auth.getCurrentUser().getEmail(); }
+    public static Uri getFirebaseAuthUserPhotoUrl() { return auth.getCurrentUser().getPhotoUrl(); }
 
-    // Get user name from SharedPreferences
-    public String getUserName() {
-        return sharedPreferences.getString(KEY_USER_NAME, "");
-    }
+    // Firebase Authenticated User Modify
+    public static void updateProfile(String name, String email, String oldPassword, String newPassword, CustomCallback callback) {
+        // Track All Steps Success Update
+        AtomicReference<Boolean> success = new AtomicReference<>(true);
 
-    // Get user email from SharedPreferences
-    public String getUserEmail() {
-        return sharedPreferences.getString(KEY_USER_EMAIL, "");
-    }
+        // Create Profile Update Request
+        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                .setDisplayName(name)
+                .build();
 
-    // Get current Firebase user
-    public FirebaseUser getCurrentUser() {
-        return firebaseAuth.getCurrentUser();
-    }
+        // Update DisplayName
+        auth.getCurrentUser().updateProfile(profileUpdates).addOnCompleteListener(task -> {
+            if(task.isSuccessful()) {
+                return;
+            }
 
-    // Update user profile in Firebase
-    public void updateUserProfile(String userName, String email, UpdateProfileCallback callback) {
-        FirebaseUser user = getCurrentUser();
-        if (user != null) {
-            // Update email
-            user.updateEmail(email).addOnCompleteListener(emailTask -> {
-                if (emailTask.isSuccessful()) {
-                    // Update name in Firebase Database
-                    databaseReference.child("users").child(user.getUid())
-                            .child("name").setValue(userName)
-                            .addOnCompleteListener(nameTask -> {
-                                if (nameTask.isSuccessful()) {
-                                    // Save to local storage
-                                    saveUserData(userName, email);
-                                    callback.onSuccess();
-                                } else {
-                                    callback.onError("Failed to update name");
-                                }
-                            });
-                } else {
-                    callback.onError("Failed to update email");
-                }
-            });
-        } else {
-            callback.onError("User not authenticated");
+            callback.onError(task.getException().getMessage());
+            success.set(false);
+        });
+
+        // Stop if error occurs
+        if(!success.get()) {
+            return;
         }
+
+        // Re-Authenticate
+        // Needed to update email and password
+        reAuthenticate(oldPassword, new CustomCallback() {
+            @Override
+            public void onSuccess() {}
+            @Override
+            public void onError(String message) {
+                callback.onError(message);
+                success.set(false);
+            }
+        });
+
+        // Stop if error occurs
+        if(!success.get()) {
+            return;
+        }
+
+        // Update Email
+        auth.getCurrentUser().updateEmail(email).addOnCompleteListener(task -> {
+            if(task.isSuccessful()) {
+                return;
+            }
+
+            callback.onError(task.getException().getMessage());
+            success.set(false);
+        });
+
+        // Stop if error occurs
+        if(!success.get()) {
+            return;
+        }
+
+        // Update Password
+        auth.getCurrentUser().updatePassword(newPassword).addOnCompleteListener(task -> {
+            if(task.isSuccessful()) {
+                return;
+            }
+
+            callback.onError(task.getException().getMessage());
+            success.set(false);
+        });
+
+        // Re-Authenticate
+        // After successful change
+        reAuthenticate(newPassword, new CustomCallback() {
+            @Override
+            public void onSuccess() { callback.onSuccess(); }
+            @Override
+            public void onError(String message) {
+                callback.onError(message);
+                success.set(false);
+            }
+        });
     }
 
-    // Update password
-    public void updatePassword(String newPassword, UpdatePasswordCallback callback) {
-        FirebaseUser user = getCurrentUser();
-        if (user != null) {
-            user.updatePassword(newPassword).addOnCompleteListener(task -> {
+    // Re-authenticate for profile change
+    public static void reAuthenticate(String oldPassword, CustomCallback callback) {
+        AuthCredential credential = EmailAuthProvider.getCredential(FirebaseUtil.getAuth().getCurrentUser().getEmail(), oldPassword);
+
+        auth.getCurrentUser().reauthenticate(credential).addOnCompleteListener(task -> {
+            if(task.isSuccessful()) {
+                callback.onSuccess();
+                return;
+            }
+
+            callback.onError(task.getException().getMessage());
+        });
+    }
+
+    // Check Authentication Status
+    public static boolean isLoggedIn() {
+        // TODO: REMOVE ON PRODUCTION
+        if (ApplicationContext.getDevMode()) {
+            return true;
+        }
+        return auth.getCurrentUser() != null;
+    }
+
+    // Register Using Email & Password
+    public static void registerWithEmailAndPassword(String name, String email, String password, CustomCallback callback) {
+        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+            if(task.isSuccessful()) {
+                callback.onSuccess();
+                return;
+            }
+
+            callback.onError("Register Failed");
+        });
+    }
+
+    // Login Using Email & Password
+    public static void loginWithEmailAndPassword(String email, String password, CustomCallback callback) {
+        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+            if(task.isSuccessful()) {
+                SharedProfileModel.setAll();
+                callback.onSuccess();
+                return;
+            }
+
+            callback.onError("Login Failed");
+        });
+    }
+
+    // Login with Google -------------------------
+    public static void loginWithGoogle(Context context, CustomCallback callback) {
+        FirebaseUtil.getCredentialManager()
+                .getCredentialAsync(context, FirebaseUtil.getRequest(), null, executor, new CredentialManagerCallback<>() {
+                    @Override
+                    public void onResult(GetCredentialResponse getCredentialResponse) {
+                        handleSignIn(getCredentialResponse.getCredential(), callback);
+                    }
+
+                    @Override
+                    public void onError(@NonNull GetCredentialException e) {
+                        callback.onError(e.getMessage());
+                    }
+                });
+    }
+
+    private static void handleSignIn(Credential credential, CustomCallback callback) {
+        if (credential instanceof CustomCredential && credential.getType().equals(GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL)) {
+
+            AuthCredential authCredential = GoogleAuthProvider.getCredential(GoogleIdTokenCredential.createFrom(credential.getData()).getIdToken(), null);
+            auth.signInWithCredential(authCredential).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
+                    SharedProfileModel.setAll();
                     callback.onSuccess();
-                } else {
-                    callback.onError("Failed to update password");
+                    return;
                 }
+
+                callback.onError("Login Failed");
             });
         } else {
-            callback.onError("User not authenticated");
+            callback.onError("Mismatched Credential");
         }
     }
 
-    // Logout
-    public void logout() {
-        firebaseAuth.signOut();
-        // Clear local data
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.clear();
-        editor.apply();
-    }
+    // End of Login with Google -----------------
 
-    // Callback interfaces
-    public interface UpdateProfileCallback {
-        void onSuccess();
-        void onError(String error);
-    }
 
-    public interface UpdatePasswordCallback {
-        void onSuccess();
-        void onError(String error);
+    // Logout - Async to prevent UI Thread Stuck
+    public static void logout(CustomCallback callback) {
+        // TODO: REMOVE ON PRODUCTION
+        if (ApplicationContext.getDevMode()) {
+            callback.onSuccess();
+            return;
+        }
+
+        FirebaseUtil.getCredentialManager()
+                .clearCredentialStateAsync(
+                        FirebaseUtil.getClearCredentialStateRequest(),
+                        null,
+                        executor,
+                        new CredentialManagerCallback<>() {
+                            @Override
+                            public void onResult(Void unused) {
+                                SharedProfileModel.removeAll();
+                                auth.signOut();
+                                callback.onSuccess();
+                            }
+
+                            @Override
+                            public void onError(@NonNull ClearCredentialException e) {
+                                callback.onError(e.getMessage());
+                            }
+                        }
+                );
     }
 }

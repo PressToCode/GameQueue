@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             app:contentScrim="@color/light_blue"
             app:layout_collapseMode="parallax"
-            app:layout_scrollFlags="scroll|enterAlways">
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -85,7 +85,7 @@
                     android:orientation="horizontal">
 
                     <ImageButton
-                        android:id="@+id/imageButton"
+                        android:id="@+id/searchButton"
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
                         android:layout_weight="8"
@@ -101,7 +101,9 @@
                         android:background="@drawable/right_rounded_corner_background"
                         android:fontFamily="@font/inter"
                         android:hint="Cari konsol tersedia"
+                        android:imeOptions="actionSearch"
                         android:paddingHorizontal="16dp"
+                        android:singleLine="true"
                         android:textColor="@color/black" />
                 </LinearLayout>
 
@@ -113,6 +115,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
+                    app:cardBackgroundColor="@color/white"
                     app:cardCornerRadius="20dp"
                     app:cardElevation="6dp">
 
@@ -129,6 +132,7 @@
                             android:layout_marginBottom="12dp"
                             android:fontFamily="@font/inter_bold"
                             android:text="Console Tersedia Saat ini"
+                            android:textColor="@color/black"
                             android:textSize="16sp"
                             android:textStyle="bold" />
 
@@ -138,7 +142,7 @@
                             android:orientation="horizontal">
 
                             <ImageView
-                                android:id="@+id/imageView2"
+                                android:id="@+id/recommendedImage"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_weight="2"
@@ -156,15 +160,16 @@
                                 android:paddingStart="10dp">
 
                                 <TextView
-                                    android:id="@+id/textView6"
+                                    android:id="@+id/recommendedTitle"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/inter"
                                     android:text="ConsoleName (Amount)"
+                                    android:textColor="@color/black"
                                     android:textStyle="bold" />
 
                                 <TextView
-                                    android:id="@+id/textView7"
+                                    android:id="@+id/recommendedStatus"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginVertical="4dp"
@@ -191,12 +196,13 @@
                                         app:srcCompat="@drawable/hugeicons_video_console" />
 
                                     <TextView
-                                        android:id="@+id/textView8"
+                                        android:id="@+id/recommendedSpecificationOne"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
                                         android:paddingStart="4dp"
-                                        android:text="ConsoleName" />
+                                        android:text="ConsoleName"
+                                        android:textColor="@color/black" />
                                 </LinearLayout>
 
                                 <LinearLayout
@@ -214,12 +220,13 @@
                                         app:srcCompat="@drawable/solar_monitor_linear" />
 
                                     <TextView
-                                        android:id="@+id/textView9"
+                                        android:id="@+id/recommendedSpecificationTwo"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
                                         android:paddingStart="4dp"
-                                        android:text="ShortSpecification" />
+                                        android:text="ShortSpecification"
+                                        android:textColor="@color/black" />
                                 </LinearLayout>
 
                                 <LinearLayout
@@ -236,12 +243,13 @@
                                         app:srcCompat="@drawable/carbon_game_console" />
 
                                     <TextView
-                                        android:id="@+id/textView10"
+                                        android:id="@+id/recommendedSpecificationThree"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_weight="1"
                                         android:paddingStart="4dp"
-                                        android:text="Input Control" />
+                                        android:text="Input Control"
+                                        android:textColor="@color/black" />
                                 </LinearLayout>
 
                             </LinearLayout>
@@ -291,7 +299,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:checkedButton="@id/radio_button_pending"
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:weightSum="3">

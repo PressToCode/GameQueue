@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
+    tools:context=".ui.fragment.FormOneFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="8dp">
+
+            <ImageView
+                android:id="@+id/formCardImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:adjustViewBounds="true"
+                android:cropToPadding="true"
+                app:srcCompat="@drawable/user"
+                tools:srcCompat="@drawable/user" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:paddingVertical="6dp"
+                android:paddingStart="10dp">
+
+                <TextView
+                    android:id="@+id/formCardConsoleName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter"
+                    android:text="ConsoleName (Amount)"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/formCardStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="4dp"
+                    android:background="@drawable/rounded_corner_background"
+                    android:backgroundTint="@color/light_green_bg"
+                    android:fontFamily="@font/inter_bold"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="4dp"
+                    android:text="Status"
+                    android:textColor="@color/light_green_fg"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/imageView3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:paddingHorizontal="2dp"
+                        app:srcCompat="@drawable/hugeicons_video_console" />
+
+                    <TextView
+                        android:id="@+id/formCardSpecificationOne"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:paddingStart="4dp"
+                        android:text="ConsoleName" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="4dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/imageView4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="2dp"
+                        app:srcCompat="@drawable/solar_monitor_linear" />
+
+                    <TextView
+                        android:id="@+id/formCardSpecificationTwo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:paddingStart="4dp"
+                        android:text="ShortSpecification" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/imageView5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="2dp"
+                        app:srcCompat="@drawable/carbon_game_console" />
+
+                    <TextView
+                        android:id="@+id/formCardSpecificationThree"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:paddingStart="4dp"
+                        android:text="Input Control" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter"
+                android:text="Pilih Berdasarkan Jadwal"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <include
+                        android:id="@+id/buttonDayCard1"
+                        layout="@layout/button_day_card" />
+
+                    <include
+                        android:id="@+id/buttonDayCard2"
+                        layout="@layout/button_day_card" />
+
+                    <include
+                        android:id="@+id/buttonDayCard3"
+                        layout="@layout/button_day_card" />
+
+                    <include
+                        android:id="@+id/buttonDayCard4"
+                        layout="@layout/button_day_card" />
+
+                    <include
+                        android:id="@+id/buttonDayCard5"
+                        layout="@layout/button_day_card" />
+                </LinearLayout>
+            </HorizontalScrollView>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter"
+                android:text="Pilih Berdasarkan Waktu"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingVertical="10dp">
+
+                <!-- First Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:orientation="horizontal"
+                    android:weightSum="4">
+
+                    <RadioButton
+                        android:id="@+id/radio_time1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/button_time_radio"
+                        android:button="@null"
+                        android:minWidth="30dp"
+                        android:minHeight="34dp"
+                        android:text="09:30"
+                        android:textAlignment="center"
+                        android:textColor="@color/black" />
+
+                    <RadioButton
+                        android:id="@+id/radio_time2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_button_background_selector"
+                        android:button="@null"
+                        android:minWidth="30dp"
+                        android:minHeight="34dp"
+                        android:text="10:30"
+                        android:textAlignment="center"
+                        android:textColor="@color/black" />
+
+                    <RadioButton
+                        android:id="@+id/radio_time3"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_button_background_selector"
+                        android:button="@null"
+                        android:minWidth="30dp"
+                        android:minHeight="34dp"
+                        android:text="11:30"
+                        android:textAlignment="center"
+                        android:textColor="@color/black" />
+
+                    <RadioButton
+                        android:id="@+id/radio_time4"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_button_background_selector"
+                        android:button="@null"
+                        android:minWidth="30dp"
+                        android:minHeight="34dp"
+                        android:text="12:30"
+                        android:textAlignment="center"
+                        android:textColor="@color/black" />
+
+                </LinearLayout>
+
+                <!-- Second Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="4">
+
+                    <RadioButton
+                        android:id="@+id/radio_time5"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_button_background_selector"
+                        android:button="@null"
+                        android:minWidth="30dp"
+                        android:minHeight="34dp"
+                        android:text="13:00"
+                        android:textAlignment="center"
+                        android:textColor="@color/black" />
+
+                    <RadioButton
+                        android:id="@+id/radio_time6"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_button_background_selector"
+                        android:button="@null"
+                        android:minWidth="30dp"
+                        android:minHeight="34dp"
+                        android:text="14:00"
+                        android:textAlignment="center"
+                        android:textColor="@color/black" />
+
+                    <RadioButton
+                        android:id="@+id/radio_time7"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_button_background_selector"
+                        android:button="@null"
+                        android:minWidth="30dp"
+                        android:minHeight="34dp"
+                        android:text="15:00"
+                        android:textAlignment="center"
+                        android:textColor="@color/black" />
+
+                    <RadioButton
+                        android:id="@+id/radio_time8"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_button_background_selector"
+                        android:button="@null"
+                        android:minWidth="30dp"
+                        android:minHeight="34dp"
+                        android:text="16:00"
+                        android:textAlignment="center"
+                        android:textColor="@color/black" />
+                </LinearLayout>
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

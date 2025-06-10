@@ -39,9 +39,9 @@ public class SplashActivity extends AppCompatActivity {
         textGame.startAnimation(fadein);
         textQueue.startAnimation(fadein);
 
-        // Async to Main Activity
+        // Async to Login Activity
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            startActivity(new Intent(this, LoginActivity.class));
+            startActivity(new Intent(this, AuthActivity.class));
             overridePendingTransition(0, 0);
             finish();
         }, 1700);

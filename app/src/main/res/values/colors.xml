@@ -3,12 +3,23 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="light_blue">#3355FF</color>
+    <color name="alpha_light_blue">#263355FF</color>
     <color name="white_blue_smoke">#99AAFF</color>
     <color name="transparent">#00FFFFFF</color>
     <color name="light_green_bg">#ACE66A</color>
     <color name="light_green_fg">#4CAF50</color>
     <color name="gray">#818181</color>
+    <color name="alpha_gray">#27818181</color>
     <color name="pastel_blue">#D6DDFF</color>
     <color name="pastel_red">#F6D9D9</color>
     <color name="blind_red">#EA3333</color>
+    <color name="link_color">#4285F4</color>
+
+    <!-- Color Const used dynamically in activities -->
+    <color name="confirmed_bg">#ACE66A</color>
+    <color name="confirmed_fg">#4CAF50</color>
+    <color name="pending_bg">#FFF5CC</color>
+    <color name="pending_fg">#CCA300</color>
+    <color name="rejected_bg">#FACCCC</color>
+    <color name="rejected_fg">#E50000</color>
 </resources>

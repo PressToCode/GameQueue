@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 
 import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ConsoleModel;
-import com.example.gamequeue.data.model.SharedViewModel;
+import com.example.gamequeue.data.model.ConsoleSharedViewModel;
 import com.example.gamequeue.ui.adapter.ConsoleAdapter;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 public class ReservationFragment extends Fragment {
     private RecyclerView recyclerView;
     private ArrayList<ConsoleModel> consoleList;
-    private SharedViewModel viewModel;
+    private ConsoleSharedViewModel consoleSharedViewModel;
 
     public ReservationFragment() {
         // Required empty public constructor
@@ -48,19 +48,24 @@ public class ReservationFragment extends Fragment {
 
         // Initialization
         recyclerView = view.findViewById(R.id.reservationRecycler);
-        viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
-
-        // Set Adapter
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        ConsoleAdapter adapter = new ConsoleAdapter(getContext(), R.layout.card_item_two, consoleList);
-        recyclerView.setAdapter(adapter);
+        consoleSharedViewModel = new ViewModelProvider(requireActivity()).get(ConsoleSharedViewModel.class);
 
-        // Load Dummy Data
-        loadDummyData();
+        // Load Data
+        loadData();
+        ConsoleAdapter adapter = new ConsoleAdapter(getContext(), R.layout.card_item_two, consoleList, null, consoleSharedViewModel);
+        recyclerView.setAdapter(adapter);
     }
 
-    private void loadDummyData() {
+    // TODO: IMPLEMENT THIS
+    private void loadData() {
         consoleList.clear();
-        consoleList.addAll(viewModel.getConsoleList());
+        consoleSharedViewModel.getConsoleListLive().observe(getViewLifecycleOwner(), consoleModels -> {
+            if(consoleModels == null || consoleModels.isEmpty()) {
+                return;
+            }
+
+            consoleList.addAll(consoleModels);
+        });
     }
 }
