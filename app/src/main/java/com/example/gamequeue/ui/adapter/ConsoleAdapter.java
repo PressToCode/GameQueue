@@ -87,7 +87,7 @@ public class ConsoleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             // Initial Bind
             ((ViewHolders.ViewHolderThree) holder).bind(currentReservation, null);
 
-            // Set click listener to status page
+            // Set click listener to status page : test
             // TODO: IMPLEMENT HERE
         }
     }
