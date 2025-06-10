@@ -1,17 +1,20 @@
 package com.example.gamequeue.ui.adapter;
 
-import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ConsoleModel;
+import com.example.gamequeue.data.model.ReservationModel;
+import com.example.gamequeue.utils.ApplicationContext;
 import com.example.gamequeue.utils.CardOneID;
 import com.example.gamequeue.utils.CardThreeID;
 import com.example.gamequeue.utils.CardTwoID;
@@ -19,13 +22,6 @@ import com.example.gamequeue.utils.CardTwoID;
 import java.util.Objects;
 
 public class ViewHolders {
-
-    private final static String confirmedBgColor = "#ACE66A";
-    private final static String confirmedTxtColor = "#4CAF50";
-    private final static String pendingBgColor = "#FFF5CC";
-    private final static String pendingTxtColor = "#CCA300";
-    private final static String rejectedBgColor = "#FACCCC";
-    private final static String rejectedTxtColor = "#E50000";
     public static class ViewHolderOne extends RecyclerView.ViewHolder {
         ImageView imageView;
         TextView title, status, date, time;
@@ -39,15 +35,21 @@ public class ViewHolders {
             time = itemView.findViewById(CardOneID.time);
         }
 
-        public void bind(ConsoleModel consoleModel) {
-            if (consoleModel == null) return;
+        public void bind(ReservationModel reservation, @Nullable ConsoleModel consoleModel) {
+            if (reservation == null) return;
 
-//            imageView.setImageResource(consoleModel.getImage());
-            title.setText(consoleModel.getTitle());
-            status.setText(consoleModel.getStatus());
+            if (consoleModel != null) {
+                title.setText(consoleModel.getTitle());
+                date.setText(reservation.getDate());
+                time.setText(reservation.getTime());
+            } else {
+                title.setText("...");
+                date.setText("...");
+                time.setText("...");
+            }
+
+            status.setText(reservation.getStatus());
             statusChanger(status);
-            date.setText(consoleModel.getDate());
-            time.setText(consoleModel.getTime());
         }
     }
 
@@ -70,11 +72,23 @@ public class ViewHolders {
 
 //            imageView.setImageResource(consoleModel.getImage());
             title.setText(consoleModel.getTitle());
-            status.setText(consoleModel.getStatus());
-            statusChanger(status);
+            statusChangerVHtwo(consoleModel, status);
             specificationOne.setText(consoleModel.getSpecificationOne());
             specificationTwo.setText(consoleModel.getSpecificationTwo());
             specificationThree.setText(consoleModel.getSpecificationThree());
+        }
+
+        // Implement it's own statusChanger
+        private void statusChangerVHtwo(@NonNull ConsoleModel consoleModel, @NonNull TextView status) {
+            if(consoleModel.getLendingStatus()) {
+                status.setText("Tidak Tersedia");
+                status.setTextColor(ContextCompat.getColor(ApplicationContext.getAppContext(), R.color.rejected_fg));
+                status.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(ApplicationContext.getAppContext(), R.color.rejected_bg)));
+            } else {
+                status.setText("Tersedia");
+                status.setTextColor(ContextCompat.getColor(ApplicationContext.getAppContext(), R.color.confirmed_fg));
+                status.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(ApplicationContext.getAppContext(), R.color.confirmed_bg)));
+            }
         }
     }
 
@@ -94,32 +108,38 @@ public class ViewHolders {
             removeBtn = itemView.findViewById(CardThreeID.removeBtn);
         }
 
-        public void bind(ConsoleModel consoleModel) {
-            if (consoleModel == null) return;
+        public void bind(ReservationModel reservation, ConsoleModel consoleModel) {
+            if (reservation == null) return;
 
-//            imageView.setImageResource(consoleModel.getImage());
-            title.setText(consoleModel.getTitle());
-            status.setText(consoleModel.getStatus());
+            if (consoleModel != null) {
+                title.setText(consoleModel.getTitle());
+                date.setText(reservation.getDate());
+                time.setText(reservation.getTime());
+            } else {
+                title.setText("...");
+                date.setText("...");
+                time.setText("...");
+            }
+
+            status.setText(reservation.getStatus());
             statusChanger(status);
-            date.setText(consoleModel.getDate());
-            time.setText(consoleModel.getTime());
         }
     }
 
     public static void statusChanger(@NonNull TextView status) {
         if(Objects.equals(status.getText(), "Pending")) {
-            status.setTextColor(Color.parseColor(pendingTxtColor));
-            status.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(pendingBgColor)));
+            status.setTextColor(ContextCompat.getColor(ApplicationContext.getAppContext(), R.color.pending_fg));
+            status.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(ApplicationContext.getAppContext(), R.color.pending_bg)));
         }
 
         if (Objects.equals(status.getText(), "Confirmed")) {
-            status.setTextColor(Color.parseColor(confirmedTxtColor));
-            status.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(confirmedBgColor)));
+            status.setTextColor(ContextCompat.getColor(ApplicationContext.getAppContext(), R.color.confirmed_fg));
+            status.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(ApplicationContext.getAppContext(), R.color.confirmed_bg)));
         }
 
         if (Objects.equals(status.getText(), "Rejected")) {
-            status.setTextColor(Color.parseColor(rejectedTxtColor));
-            status.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(rejectedBgColor)));
+            status.setTextColor(ContextCompat.getColor(ApplicationContext.getAppContext(), R.color.rejected_fg));
+            status.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(ApplicationContext.getAppContext(), R.color.rejected_bg)));
         }
     }
 }

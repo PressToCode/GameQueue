@@ -19,8 +19,9 @@ public class FirebaseUtil {
 
     // Database References
     private static final FirebaseDatabase database;
-    public static final DatabaseReference gamesRef;
+    public static final DatabaseReference consolesRef;
     public static final DatabaseReference reservationsRef;
+    public static final DatabaseReference requestRef;
 
     // Google Sign In Credential Manager Object
     private static final CredentialManager credentialManager;
@@ -37,8 +38,9 @@ public class FirebaseUtil {
         database.setPersistenceEnabled(true);
 
         // Get References
-        gamesRef = database.getReference("games");
+        consolesRef = database.getReference("consoles");
         reservationsRef = database.getReference("reservations");
+        requestRef = database.getReference("requests");
 
         // Create Google Request Object for Credential Manager
         request = new GetCredentialRequest.Builder()
@@ -60,8 +62,9 @@ public class FirebaseUtil {
     private FirebaseUtil() {}
 
     // Getter
-    public static DatabaseReference getGamesRef() { return gamesRef; }
+    public static DatabaseReference getConsolesRef() { return consolesRef; }
     public static DatabaseReference getReservationsRef() { return reservationsRef; }
+    public static DatabaseReference getRequestRef() { return requestRef; }
     public static FirebaseAuth getAuth() { return auth; }
     public static CredentialManager getCredentialManager() { return credentialManager; }
     public static ClearCredentialStateRequest getClearCredentialStateRequest() { return clearCredentialStateRequest; }

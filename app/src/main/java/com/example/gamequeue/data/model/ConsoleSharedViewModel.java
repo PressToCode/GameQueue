@@ -1,61 +1,92 @@
 package com.example.gamequeue.data.model;
 
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
+
+import com.example.gamequeue.data.firebase.FirebaseUtil;
+import com.example.gamequeue.utils.CustomCallback;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 // Used to pass data between activity & fragments
-public class ConsoleSharedViewModel {
-    private static final ArrayList<ConsoleModel> consoleList;
+public class ConsoleSharedViewModel extends ViewModel {
+    private final MutableLiveData<ArrayList<ConsoleModel>> consoleListLive = new MutableLiveData<>();
+    private final ArrayList<ConsoleModel> consoleList = new ArrayList<>();
+    private final DatabaseReference consoleRef = FirebaseUtil.getConsolesRef();
+    private ValueEventListener consoleEventListener;
 
-    static {
-        consoleList = new ArrayList<>();
-        consoleList.clear();
-        consoleList.add(new ConsoleModel(1, "XBOX", 0, "Day, DD MM YY", "Time Timezone", "XBOX X Series", "Gigabyte Curved 120Hz", "Wireless Dualsense Stick"));
-        consoleList.add(new ConsoleModel(2, "Playstation 5", 1, "Day, DD MM YY", "Time Timezone", "Playstation 5 Pro", "2K HDR AMOLED 120Hz", "PS Pro Limited Pad"));
-        consoleList.add(new ConsoleModel(3, "Desktop PC", 2, "Day, DD MM YY", "Time Timezone", "Alienware X", "4K HDR Monitor 240Hz", "Razer Viper"));
-        consoleList.add(new ConsoleModel(4, "Nintendo Switch", 0, "Fri, 31 May 24", "09:00 AM JST", "Nintendo Switch OLED", "Built-in 7-inch OLED", "Joy-Con Pair (Neon Red/Blue)"));
-        consoleList.add(new ConsoleModel(5, "Steam Deck", 1, "Sat, 01 Jun 24", "11:45 AM CET", "Steam Deck 512GB", "7-inch LCD 60Hz", "Integrated Controls"));
-        consoleList.add(new ConsoleModel(6, "ASUS ROG Ally", 2, "Sun, 02 Jun 24", "03:20 PM PST", "ASUS ROG Ally Z1 Extreme", "7-inch 1080p 120Hz IPS", "Integrated ROG Gaming Controls"));
-        consoleList.add(new ConsoleModel(7, "Playstation Portal", 0, "Mon, 03 Jun 24", "08:00 AM EST", "Playstation Portal Remote Player", "8-inch LCD 1080p 60Hz", "DualSense-like Controls"));
-        consoleList.add(new ConsoleModel(8, "Gaming Laptop", 1, "Tue, 04 Jun 24", "06:50 PM GMT", "Razer Blade 16", "16-inch QHD+ 240Hz Mini-LED", "Built-in Keyboard & Trackpad + Razer Naga Mouse"));
-        consoleList.add(new ConsoleModel(9, "Retro Handheld", 2, "Wed, 05 Jun 24", "10:30 AM CST", "Anbernic RG35XX", "3.5-inch IPS Display", "D-pad and Action Buttons"));
-        consoleList.add(new ConsoleModel(10, "Xbox Series S", 0, "Thu, 06 Jun 24", "01:15 PM EST", "Xbox Series S - 1TB Carbon Black", "LG UltraGear 1440p 144Hz", "Xbox Wireless Controller (Carbon Black)"));
-        consoleList.add(new ConsoleModel(11,"Custom Built PC", 1, "Fri, 07 Jun 24", "04:00 PM PST", "AMD Ryzen 9 + NVIDIA RTX 4080", "Samsung Odyssey G9 49-inch 240Hz", "Corsair K95 Keyboard & Logitech G Pro X Superlight"));
+    public ConsoleSharedViewModel() {
+        attachDatabaseListener();
     }
 
-    public static ArrayList<ConsoleModel> getConsoleList() {
-        return consoleList;
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        detachDatabaseReadListener(); // Important for cleanup
     }
 
-    public static ArrayList<ConsoleModel> getPendingConsoleList() {
-        return consoleList.stream().filter(consoleModel -> consoleModel.getRawStatus() == 0).collect(Collectors.toCollection(ArrayList::new));
+    public LiveData<ArrayList<ConsoleModel>> getConsoleListLive() { return consoleListLive; }
+
+    private void attachDatabaseListener() {
+        if (consoleEventListener == null) {
+            consoleEventListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    consoleList.clear();
+
+                    // Get all data under "consoles"
+                    for (DataSnapshot consoleSnapshot : dataSnapshot.getChildren()) {
+                        try {
+                            ConsoleModel console = consoleSnapshot.getValue(ConsoleModel.class);
+                            if (console != null) {
+                                console.setId(consoleSnapshot.getKey());
+                                consoleList.add(console);
+                            }
+                        } catch (Exception e) {
+                            Log.d("[ConsoleSharedViewModel]", "onDataChange: " + e.getMessage());
+                        }
+                    }
+                    // Post the updated list to LiveData.
+                    // If you're on a background thread (which ValueEventListener callbacks can be),
+                    // use postValue. If you're sure you're on the main thread, use setValue.
+                    // For Firebase listeners, it's safer to use postValue as they might not always
+                    // guarantee main thread execution for all scenarios, though typically they do.
+                    consoleListLive.postValue(new ArrayList<>(consoleList)); // Post a new copy
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.d("[ConsoleSharedViewModel]", "onCancelled: " + databaseError.getMessage());
+                }
+            };
+
+            // Add listener
+            consoleRef.addValueEventListener(consoleEventListener);
+        }
     }
 
-    public static ArrayList<ConsoleModel> getCompletedConsoleList() {
-        return consoleList.stream().filter(consoleModel -> consoleModel.getRawStatus() == 1).collect(Collectors.toCollection(ArrayList::new));
+    public void detachDatabaseReadListener() {
+        if (consoleEventListener != null) {
+            consoleRef.removeEventListener(consoleEventListener);
+            consoleEventListener = null;
+        }
     }
 
-    public static ArrayList<ConsoleModel> getCanceledConsoleList() {
-        return consoleList.stream().filter(consoleModel -> consoleModel.getRawStatus() == 2).collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    public static ArrayList<ConsoleModel> getFilteredWordList(String[] word) {
-        // Filter by word
-        return consoleList.stream().filter(consoleModel -> consoleModel.getTitle().toLowerCase().contains(word[0].toLowerCase())).collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    public static ArrayList<ConsoleModel> getFilteredStatusWordList(String[] word, int status) {
-        // Filter by status first
-        ArrayList<ConsoleModel> filteredList = new ArrayList<>();
-
-        // Check Status
-        if (status == -1) {
-            filteredList.addAll(consoleList);
-        } else {
-            filteredList.addAll(consoleList.stream().filter(consoleModel -> consoleModel.getRawStatus() == status).collect(Collectors.toCollection(ArrayList::new)));
+    public ConsoleModel getConsoleById(String id) {
+        for (ConsoleModel console : consoleList) {
+            if (console.getId().equals(id)) {
+                return console;
+            }
         }
 
-        // Filter by word
-        return filteredList.stream().filter(consoleModel -> consoleModel.getTitle().toLowerCase().contains(word[0].toLowerCase())).collect(Collectors.toCollection(ArrayList::new));
+        return null;
     }
 }

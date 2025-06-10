@@ -3,6 +3,8 @@ package com.example.gamequeue.ui.main;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -18,6 +20,7 @@ import com.example.gamequeue.R;
 import com.example.gamequeue.data.firebase.FirebaseUtil;
 import com.example.gamequeue.data.model.SharedProfileModel;
 import com.example.gamequeue.data.repository.AuthRepository;
+import com.example.gamequeue.data.repository.DatabaseRepository;
 import com.example.gamequeue.utils.ApplicationContext;
 import com.example.gamequeue.utils.CustomCallback;
 
@@ -66,6 +69,17 @@ public class AuthActivity extends AppCompatActivity {
 
         // Setup Listener
         setupListeners();
+
+        // Ensure Dev Mode is not active
+        // TODO: REMOVE ON PRODUCTION
+        ApplicationContext.setDevMode(false);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // TODO: REMOVE ON PRODUCTION
+        ApplicationContext.setDevMode(false);
     }
 
     private void setupListeners() {
@@ -74,6 +88,15 @@ public class AuthActivity extends AppCompatActivity {
         devModeBtn.setOnClickListener(v -> {
             ApplicationContext.setDevMode(true);
             startActivity(new Intent(context, MainActivity.class));
+//            DatabaseRepository.addConsolesDataToFirebase(new CustomCallback() {
+//                @Override
+//                public void onSuccess() {
+//                    Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show();
+//                }
+//
+//                @Override
+//                public void onError(String error) {}
+//            });
         });
 
         // Normal Authentication
@@ -174,6 +197,7 @@ public class AuthActivity extends AppCompatActivity {
             @Override
             public void onSuccess() {
                 startActivity(new Intent(context, MainActivity.class));
+                finish();
             }
 
             @Override

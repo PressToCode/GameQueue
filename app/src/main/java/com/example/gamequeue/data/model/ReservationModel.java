@@ -2,9 +2,8 @@ package com.example.gamequeue.data.model;
 
 import android.net.Uri;
 
-public class ReservationFormModel {
-    private int id;
-    private int consoleId;
+public class ReservationModel {
+    private String consoleId;
     private String date;
     private String time;
     private String lenderName;
@@ -12,26 +11,15 @@ public class ReservationFormModel {
     private String lenderPhone;
     private String lenderProdi;
     private Uri document;
+    private String status;
 
-    public ReservationFormModel() {
+    public ReservationModel() {
         // Default Constructor
     }
 
-    public int getConsoleId() {
-        return consoleId;
-    }
+    public String getConsoleId() { return consoleId; }
 
-    public void setConsoleId(int consoleId) {
-        this.consoleId = consoleId;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
+    public void setConsoleId(String consoleId) { this.consoleId = consoleId; }
 
     public String getDate() {
         return date;
@@ -88,4 +76,8 @@ public class ReservationFormModel {
     public void setDocument(Uri document) {
         this.document = document;
     }
+
+    public String getStatus() { return status; }
+
+    public void setStatus(String status) { this.status = status; }
 }

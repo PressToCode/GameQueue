@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,11 +30,14 @@ import android.widget.Toast;
 import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ConsoleModel;
 import com.example.gamequeue.data.model.ConsoleSharedViewModel;
+import com.example.gamequeue.data.model.ReservationModel;
 import com.example.gamequeue.data.model.SharedProfileModel;
+import com.example.gamequeue.data.repository.DatabaseRepository;
 import com.example.gamequeue.ui.adapter.ConsoleAdapter;
 import com.example.gamequeue.ui.main.ProfileActivity;
 import com.example.gamequeue.ui.main.ReservationProcessActivity;
 import com.example.gamequeue.utils.ApplicationContext;
+import com.example.gamequeue.utils.CustomCallbackWithType;
 
 import java.util.ArrayList;
 
@@ -44,6 +48,7 @@ public class HomeFragment extends Fragment {
     private LinearLayout contentHolder;
     private ConsoleAdapter adapter;
     private ArrayList<ConsoleModel> consoleList;
+    private ArrayList<ReservationModel> reservationList;
     private CardView recommendationCard;
     private ImageView recommendedImage;
     private ImageButton searchButton;
@@ -52,6 +57,7 @@ public class HomeFragment extends Fragment {
     private RadioGroup radioGroup;
     private RadioButton radioPending, radioCompleted, radioCanceled;
     private int currentFilterId = -1;
+    private ConsoleSharedViewModel consoleSharedViewModel;
 
     // Add profile button variable
     private ImageButton profileButton;
@@ -66,6 +72,7 @@ public class HomeFragment extends Fragment {
 
         // Data fetching should run here
         consoleList = new ArrayList<>();
+        reservationList = new ArrayList<>();
     }
 
     @Override
@@ -99,6 +106,7 @@ public class HomeFragment extends Fragment {
         radioPending = view.findViewById(R.id.radio_button_pending);
         radioCompleted = view.findViewById(R.id.radio_button_completed);
         radioCanceled = view.findViewById(R.id.radio_button_canceled);
+        consoleSharedViewModel = new ViewModelProvider(requireActivity()).get(ConsoleSharedViewModel.class);
 
         // Change Greeting
         setupGreeting();
@@ -109,15 +117,12 @@ public class HomeFragment extends Fragment {
         // Some Setup because RecyclerView is being an a**
         setupRecycler();
 
+        // Load Data
+        loadData();
+
         // Set Adapter
-        adapter = new ConsoleAdapter(getContext(), R.layout.card_item_one, consoleList);
+        adapter = new ConsoleAdapter(getContext(), R.layout.card_item_one, consoleList, reservationList, consoleSharedViewModel);
         recyclerView.setAdapter(adapter);
-
-        // Load Dummy Data
-        loadDummyData();
-
-        // Load Recommendation Data
-        loadRecommendedData();
 
         // Set up filter function
         setupFilterer();
@@ -139,10 +144,31 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private void loadDummyData() {
-        // Dummy data loading logic
-        consoleList.clear();
-        consoleList.addAll(ConsoleSharedViewModel.getConsoleList());
+    private void loadData() {
+        consoleSharedViewModel.getConsoleListLive().observe(getViewLifecycleOwner(), consoleModels -> {
+            if(consoleModels == null || consoleModels.isEmpty()) {
+                return;
+            }
+
+            consoleList.addAll(consoleModels);
+            loadRecommendedData();
+        });
+
+        if (!ApplicationContext.getDevMode()) {
+            // TODO: EXCHANGE WITH SHARED VIEW MODEL LIVEDATA INSTEAD
+            DatabaseRepository.getUserReservations(new CustomCallbackWithType<>() {
+                @Override
+                public void onSuccess(ArrayList<ReservationModel> reservations) {
+                    reservationList.clear();
+                    reservationList.addAll(reservations);
+                }
+
+                @Override
+                public void onError(String error) {
+                    Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     private void setupRecycler() {
@@ -281,50 +307,52 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    // TODO: IMPLEMENT THIS
     private void searchFilter(String[] searchText) {
-        if(radioGroup.getCheckedRadioButtonId() != -1) {
-            // Get Which Status is clicked
-            int checkedId = radioGroup.getCheckedRadioButtonId();
-            int status = -1;
-
-            if(checkedId == R.id.radio_button_pending) {
-                status = 0;
-            } else if (checkedId == R.id.radio_button_completed) {
-                status = 1;
-            } else if (checkedId == R.id.radio_button_canceled) {
-                status = 2;
-            }
-
-            // Filter by status AND word
-            consoleList.clear();
-            consoleList.addAll(ConsoleSharedViewModel.getFilteredStatusWordList(searchText, status));
-        } else {
-            // Filter by word only
-            consoleList.clear();
-            consoleList.addAll(ConsoleSharedViewModel.getFilteredWordList(searchText));
-        }
-
-        adapter.notifyDataSetChanged();
+//        if(radioGroup.getCheckedRadioButtonId() != -1) {
+//            // Get Which Status is clicked
+//            int checkedId = radioGroup.getCheckedRadioButtonId();
+//            int status = -1;
+//
+//            if(checkedId == R.id.radio_button_pending) {
+//                status = 0;
+//            } else if (checkedId == R.id.radio_button_completed) {
+//                status = 1;
+//            } else if (checkedId == R.id.radio_button_canceled) {
+//                status = 2;
+//            }
+//
+//            // Filter by status AND word
+//            consoleList.clear();
+//            consoleList.addAll(ConsoleSharedViewModel.getFilteredStatusWordList(searchText, status));
+//        } else {
+//            // Filter by word only
+//            consoleList.clear();
+//            consoleList.addAll(ConsoleSharedViewModel.getFilteredWordList(searchText));
+//        }
+//
+//        adapter.notifyDataSetChanged();
     }
 
+    // TODO: IMPLEMENT THIS
     private void applyFilter(int checkedId) {
         // Clear List
-        consoleList.clear();
-
-        // See if there's ongoing filter
-        String[] searchText = searchField.getText().toString().trim().split("\\s+");
-
-        // Apply Filtering
-        if(checkedId == R.id.radio_button_pending) {
-            consoleList.addAll(ConsoleSharedViewModel.getFilteredStatusWordList(searchText, 0));
-        } else if(checkedId == R.id.radio_button_completed) {
-            consoleList.addAll(ConsoleSharedViewModel.getFilteredStatusWordList(searchText, 1));
-        } else if(checkedId == R.id.radio_button_canceled) {
-            consoleList.addAll(ConsoleSharedViewModel.getFilteredStatusWordList(searchText, 2));
-        } else if(checkedId == -1) {
-            consoleList.addAll(ConsoleSharedViewModel.getFilteredStatusWordList(searchText, -1));
-        }
-
-        adapter.notifyDataSetChanged();
+//        consoleList.clear();
+//
+//        // See if there's ongoing filter
+//        String[] searchText = searchField.getText().toString().trim().split("\\s+");
+//
+//        // Apply Filtering
+//        if(checkedId == R.id.radio_button_pending) {
+//            consoleList.addAll(ConsoleSharedViewModel.getFilteredStatusWordList(searchText, 0));
+//        } else if(checkedId == R.id.radio_button_completed) {
+//            consoleList.addAll(ConsoleSharedViewModel.getFilteredStatusWordList(searchText, 1));
+//        } else if(checkedId == R.id.radio_button_canceled) {
+//            consoleList.addAll(ConsoleSharedViewModel.getFilteredStatusWordList(searchText, 2));
+//        } else if(checkedId == -1) {
+//            consoleList.addAll(ConsoleSharedViewModel.getFilteredStatusWordList(searchText, -1));
+//        }
+//
+//        adapter.notifyDataSetChanged();
     }
 }

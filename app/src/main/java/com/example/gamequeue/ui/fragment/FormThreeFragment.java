@@ -22,7 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.gamequeue.R;
-import com.example.gamequeue.data.model.ReservationSharedViewModel;
+import com.example.gamequeue.data.model.ReservationFormSharedViewModel;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 
 import kotlin.Unit;
@@ -32,7 +32,7 @@ public class FormThreeFragment extends Fragment {
     private FrameLayout uploadBox;
     private LinearLayout placeholderLayout;
     private ImageView imagePreview;
-    private ReservationSharedViewModel sharedViewModel;
+    private ReservationFormSharedViewModel sharedViewModel;
     private String[] mimetypes;
 
 
@@ -60,7 +60,7 @@ public class FormThreeFragment extends Fragment {
         uploadBox = view.findViewById(R.id.uploadBox);
         placeholderLayout = view.findViewById(R.id.placeholderLayout);
         imagePreview = view.findViewById(R.id.imagePreview);
-        sharedViewModel = new ViewModelProvider(requireActivity()).get(ReservationSharedViewModel.class);
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(ReservationFormSharedViewModel.class);
 
         // Setup Listener
         setupListeners();

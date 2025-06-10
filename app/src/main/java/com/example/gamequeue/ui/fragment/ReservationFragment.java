@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 public class ReservationFragment extends Fragment {
     private RecyclerView recyclerView;
     private ArrayList<ConsoleModel> consoleList;
+    private ConsoleSharedViewModel consoleSharedViewModel;
 
     public ReservationFragment() {
         // Required empty public constructor
@@ -46,18 +48,24 @@ public class ReservationFragment extends Fragment {
 
         // Initialization
         recyclerView = view.findViewById(R.id.reservationRecycler);
-
-        // Set Adapter
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        ConsoleAdapter adapter = new ConsoleAdapter(getContext(), R.layout.card_item_two, consoleList);
-        recyclerView.setAdapter(adapter);
+        consoleSharedViewModel = new ViewModelProvider(requireActivity()).get(ConsoleSharedViewModel.class);
 
-        // Load Dummy Data
-        loadDummyData();
+        // Load Data
+        loadData();
+        ConsoleAdapter adapter = new ConsoleAdapter(getContext(), R.layout.card_item_two, consoleList, null, consoleSharedViewModel);
+        recyclerView.setAdapter(adapter);
     }
 
-    private void loadDummyData() {
+    // TODO: IMPLEMENT THIS
+    private void loadData() {
         consoleList.clear();
-        consoleList.addAll(ConsoleSharedViewModel.getConsoleList());
+        consoleSharedViewModel.getConsoleListLive().observe(getViewLifecycleOwner(), consoleModels -> {
+            if(consoleModels == null || consoleModels.isEmpty()) {
+                return;
+            }
+
+            consoleList.addAll(consoleModels);
+        });
     }
 }

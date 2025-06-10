@@ -14,4 +14,12 @@
     <color name="pastel_red">#F6D9D9</color>
     <color name="blind_red">#EA3333</color>
     <color name="link_color">#4285F4</color>
+
+    <!-- Color Const used dynamically in activities -->
+    <color name="confirmed_bg">#ACE66A</color>
+    <color name="confirmed_fg">#4CAF50</color>
+    <color name="pending_bg">#FFF5CC</color>
+    <color name="pending_fg">#CCA300</color>
+    <color name="rejected_bg">#FACCCC</color>
+    <color name="rejected_fg">#E50000</color>
 </resources>

@@ -1,6 +1,5 @@
 package com.example.gamequeue.ui.fragment;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,8 +16,8 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.example.gamequeue.R;
-import com.example.gamequeue.data.model.ReservationFormModel;
-import com.example.gamequeue.data.model.ReservationSharedViewModel;
+import com.example.gamequeue.data.model.ReservationModel;
+import com.example.gamequeue.data.model.ReservationFormSharedViewModel;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -29,7 +28,7 @@ public class FormTwoFragment extends Fragment {
     private TextInputEditText formNameField, formNIMField, formPhoneField;
     private List<TextInputEditText> fieldList;
     private MaterialAutoCompleteTextView formProdiDropdown;
-    private ReservationSharedViewModel sharedViewModel;
+    private ReservationFormSharedViewModel sharedViewModel;
 
     public FormTwoFragment() {
         // Required empty public constructor
@@ -57,7 +56,7 @@ public class FormTwoFragment extends Fragment {
         formPhoneField = view.findViewById(R.id.formPhoneField);
         formProdiDropdown = view.findViewById(R.id.formProdiDropdown);
         fieldList = List.of(formNameField, formNIMField, formPhoneField);
-        sharedViewModel = new ViewModelProvider(requireActivity()).get(ReservationSharedViewModel.class);
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(ReservationFormSharedViewModel.class);
 
         // Set Listener
         setupListener();
@@ -107,7 +106,7 @@ public class FormTwoFragment extends Fragment {
             return;
         }
 
-        ReservationFormModel form = sharedViewModel.getReservationForm().getValue();
+        ReservationModel form = sharedViewModel.getReservationForm().getValue();
 
         if(textView.getId() == R.id.formProdiDropdown) {
             form.setLenderProdi(text);

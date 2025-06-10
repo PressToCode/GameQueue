@@ -18,19 +18,19 @@ import android.widget.TextView;
 import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ConsoleModel;
 import com.example.gamequeue.data.model.ConsoleSharedViewModel;
-import com.example.gamequeue.data.model.ReservationSharedViewModel;
+import com.example.gamequeue.data.model.ReservationFormSharedViewModel;
 import com.example.gamequeue.ui.adapter.ViewHolders;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class FormOneFragment extends Fragment {
     private List<LinearLayout> buttonDayCard;
     private List<RadioButton> buttonTime;
-    private ReservationSharedViewModel sharedViewModel;
+    private ReservationFormSharedViewModel sharedViewModel;
     private TextView consoleName, status, specificationOne, specificationTwo, specificationThree;
-    private ConsoleModel currentConsole;
 
     public FormOneFragment() {
         // Required empty public constructor
@@ -73,7 +73,7 @@ public class FormOneFragment extends Fragment {
         specificationOne = view.findViewById(R.id.formCardSpecificationOne);
         specificationTwo = view.findViewById(R.id.formCardSpecificationTwo);
         specificationThree = view.findViewById(R.id.formCardSpecificationThree);
-        sharedViewModel = new ViewModelProvider(requireActivity()).get(ReservationSharedViewModel.class);
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(ReservationFormSharedViewModel.class);
 
         // Set UI Visual
         fetchConsole();
@@ -84,21 +84,26 @@ public class FormOneFragment extends Fragment {
     // TODO: CHANGE IMPLEMENTATION TO FETCH THROUGH DATABASE
     private void fetchConsole() {
         // Ensure ID is passed from Adapter
-        int id = getActivity().getIntent().getIntExtra("id", -1);
+        String id = getActivity().getIntent().getStringExtra("id");
 
-        if (id == -1) {
+        if (id == null || id.isEmpty()) {
             return;
         }
 
-        currentConsole = ConsoleSharedViewModel.getConsoleList().stream().filter(it -> it.getId() == id).findFirst().orElse(null);
+        // Get Other Metadata
+        String txtTitle, txtStatus, txtSpecificationOne, txtSpecificationTwo, txtSpecificationThree;
+        txtTitle = getActivity().getIntent().getStringExtra("title");
+        txtStatus = getActivity().getIntent().getStringExtra("status");
+        txtSpecificationOne = getActivity().getIntent().getStringExtra("specificationOne");
+        txtSpecificationTwo = getActivity().getIntent().getStringExtra("specificationTwo");
+        txtSpecificationThree = getActivity().getIntent().getStringExtra("specificationThree");
 
-        if (currentConsole != null) {
-            consoleName.setText(currentConsole.getTitle());
-            status.setText(currentConsole.getStatus());
-            ViewHolders.statusChanger(status);
-            specificationOne.setText(currentConsole.getSpecificationOne());
-            specificationTwo.setText(currentConsole.getSpecificationTwo());
-            specificationThree.setText(currentConsole.getSpecificationThree());
+        if (txtTitle != null && txtStatus != null && txtSpecificationOne != null && txtSpecificationTwo != null && txtSpecificationThree != null) {
+            consoleName.setText(txtTitle);
+            status.setText(txtStatus);
+            specificationOne.setText(txtSpecificationOne);
+            specificationTwo.setText(txtSpecificationTwo);
+            specificationThree.setText(txtSpecificationThree);
 
             // Pass it to ReservationFormModel
             sharedViewModel.getReservationForm().getValue().setConsoleId(id);

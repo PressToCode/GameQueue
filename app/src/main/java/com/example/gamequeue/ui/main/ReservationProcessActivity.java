@@ -15,10 +15,9 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.badoualy.stepperindicator.StepperIndicator;
 import com.example.gamequeue.R;
-import com.example.gamequeue.data.model.ReservationSharedViewModel;
+import com.example.gamequeue.data.model.ReservationFormSharedViewModel;
 import com.example.gamequeue.data.repository.AuthRepository;
 import com.example.gamequeue.ui.adapter.ReservationPagerAdapter;
-import com.example.gamequeue.utils.ApplicationContext;
 import com.example.gamequeue.widgets.NonSwipeableViewPager;
 
 public class ReservationProcessActivity extends AppCompatActivity {
@@ -28,7 +27,7 @@ public class ReservationProcessActivity extends AppCompatActivity {
     private StepperIndicator indicator;
     private NonSwipeableViewPager viewPager;
     private ReservationPagerAdapter pagerAdapter;
-    private ReservationSharedViewModel sharedViewModel;
+    private ReservationFormSharedViewModel sharedViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +54,7 @@ public class ReservationProcessActivity extends AppCompatActivity {
         viewPager.setAdapter(pagerAdapter);
         indicator = findViewById(R.id.reservationProcessIndicator);
         indicator.setViewPager(viewPager);
-        sharedViewModel = new ViewModelProvider(this).get(ReservationSharedViewModel.class);
+        sharedViewModel = new ViewModelProvider(this).get(ReservationFormSharedViewModel.class);
 
         // Observe Change
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
