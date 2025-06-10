@@ -6,10 +6,10 @@
         android:name="android.hardware.camera"
         android:required="false" />
 
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".utils.ApplicationContext"
@@ -21,6 +21,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GameQueue"
         tools:targetApi="31">
+        <activity
+            android:name=".ui.main.ReservationDetailActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.main.AuthActivity"
             android:exported="false" />
