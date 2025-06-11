@@ -27,6 +27,7 @@ import com.example.gamequeue.utils.CardTwoID;
 import com.example.gamequeue.utils.CustomCallback;
 import com.example.gamequeue.utils.CustomCallbackWithType;
 import com.example.gamequeue.utils.DateConverter;
+import com.example.gamequeue.utils.WidgetModifier;
 
 import java.util.Objects;
 
@@ -58,7 +59,7 @@ public class ViewHolders {
             }
 
             status.setText(reservation.getStatus());
-            statusChanger(status);
+            WidgetModifier.statusChanger(status);
         }
     }
 
@@ -81,23 +82,11 @@ public class ViewHolders {
 
 //            imageView.setImageResource(consoleModel.getImage());
             title.setText(consoleModel.getTitle());
-            statusChangerVHtwo(consoleModel, status);
+            status.setText(consoleModel.getLendingStatus() ? "Tidak Tersedia" : "Tersedia");
+            WidgetModifier.statusChanger(status);
             specificationOne.setText(consoleModel.getSpecificationOne());
             specificationTwo.setText(consoleModel.getSpecificationTwo());
             specificationThree.setText(consoleModel.getSpecificationThree());
-        }
-
-        // Implement it's own statusChanger
-        private void statusChangerVHtwo(@NonNull ConsoleModel consoleModel, @NonNull TextView status) {
-            if(consoleModel.getLendingStatus()) {
-                status.setText("Tidak Tersedia");
-                status.setTextColor(ContextCompat.getColor(ApplicationContext.getAppContext(), R.color.rejected_fg));
-                status.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(ApplicationContext.getAppContext(), R.color.rejected_bg)));
-            } else {
-                status.setText("Tersedia");
-                status.setTextColor(ContextCompat.getColor(ApplicationContext.getAppContext(), R.color.confirmed_fg));
-                status.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(ApplicationContext.getAppContext(), R.color.confirmed_bg)));
-            }
         }
     }
 
@@ -131,7 +120,7 @@ public class ViewHolders {
             }
 
             status.setText(reservation.getStatus());
-            statusChanger(status);
+            WidgetModifier.statusChanger(status);
 
             detailBtn.setOnClickListener(v -> {
                 Intent intent = new Intent(context, ReservationDetailActivity.class);
@@ -153,23 +142,6 @@ public class ViewHolders {
                     }
                 });
             });
-        }
-    }
-
-    public static void statusChanger(@NonNull TextView status) {
-        if(Objects.equals(status.getText(), "Pending")) {
-            status.setTextColor(ContextCompat.getColor(ApplicationContext.getAppContext(), R.color.pending_fg));
-            status.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(ApplicationContext.getAppContext(), R.color.pending_bg)));
-        }
-
-        if (Objects.equals(status.getText(), "Confirmed")) {
-            status.setTextColor(ContextCompat.getColor(ApplicationContext.getAppContext(), R.color.confirmed_fg));
-            status.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(ApplicationContext.getAppContext(), R.color.confirmed_bg)));
-        }
-
-        if (Objects.equals(status.getText(), "Rejected")) {
-            status.setTextColor(ContextCompat.getColor(ApplicationContext.getAppContext(), R.color.rejected_fg));
-            status.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(ApplicationContext.getAppContext(), R.color.rejected_bg)));
         }
     }
 

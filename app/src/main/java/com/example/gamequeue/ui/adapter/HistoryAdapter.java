@@ -15,6 +15,7 @@ import com.example.gamequeue.data.model.ReservationModel;
 import com.example.gamequeue.utils.CardLayoutConst;
 import com.example.gamequeue.utils.CardOneID;
 import com.example.gamequeue.utils.DateConverter;
+import com.example.gamequeue.utils.WidgetModifier;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,6 +57,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
 
             cardTitle.setText(reservation.getConsoleName());
             cardStatus.setText(reservation.getStatus());
+            WidgetModifier.statusChanger(cardStatus);
             cardDate.setText(DateConverter.convertDateToIndonesianLocale(reservation.getDate(), 2));
             cardTime.setText(reservation.getTime());
 
