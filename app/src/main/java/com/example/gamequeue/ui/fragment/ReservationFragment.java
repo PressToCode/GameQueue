@@ -24,6 +24,7 @@ public class ReservationFragment extends Fragment {
     private RecyclerView recyclerView;
     private ArrayList<ConsoleModel> consoleList;
     private ConsoleSharedViewModel consoleSharedViewModel;
+    private ConsoleAdapter adapter;
 
     public ReservationFragment() {
         // Required empty public constructor
@@ -53,19 +54,22 @@ public class ReservationFragment extends Fragment {
 
         // Load Data
         loadData();
-        ConsoleAdapter adapter = new ConsoleAdapter(getContext(), R.layout.card_item_two, consoleList, null, consoleSharedViewModel);
+
+        adapter = new ConsoleAdapter(getContext(), R.layout.card_item_two, consoleList, null, consoleSharedViewModel);
         recyclerView.setAdapter(adapter);
     }
 
-    // TODO: IMPLEMENT THIS
     private void loadData() {
         consoleList.clear();
         consoleSharedViewModel.getConsoleListLive().observe(getViewLifecycleOwner(), consoleModels -> {
             if(consoleModels == null || consoleModels.isEmpty()) {
+                consoleList.clear();
                 return;
             }
 
+            consoleList.clear();
             consoleList.addAll(consoleModels);
+            adapter.notifyDataSetChanged();
         });
     }
 }

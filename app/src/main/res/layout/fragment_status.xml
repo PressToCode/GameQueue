@@ -17,6 +17,7 @@
         android:gravity="center"
         android:orientation="horizontal"
         android:paddingHorizontal="20dp"
+        android:paddingTop="10dp"
         android:paddingBottom="20dp">
 
         <TextView
@@ -55,6 +56,7 @@
             android:id="@+id/filter_radio_group_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:layout_marginBottom="8dp"
             android:gravity="center"
             android:orientation="horizontal"

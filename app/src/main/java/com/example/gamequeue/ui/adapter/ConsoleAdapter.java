@@ -2,14 +2,17 @@ package com.example.gamequeue.ui.adapter;
 
 import com.example.gamequeue.data.model.ConsoleSharedViewModel;
 import com.example.gamequeue.data.model.ReservationModel;
+import com.example.gamequeue.ui.main.ReservationDetailActivity;
 import com.example.gamequeue.ui.main.ReservationProcessActivity;
 import com.example.gamequeue.utils.CardLayoutConst;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -56,22 +59,26 @@ public class ConsoleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             // Bind
             if (currentConsole != null) {
                 ((ViewHolders.ViewHolderOne) holder).bind(currentReservation, currentConsole);
+
+                // Set click listener to status page
+                if (currentReservation.getId() != null && currentReservation.getConsoleName() != null) {
+                    Intent intent = new Intent(context, ReservationDetailActivity.class);
+                    intent.putExtra("id", currentReservation.getId());
+                    intent.putExtra("console_name", currentReservation.getConsoleName());
+                    holder.itemView.setOnClickListener(v -> context.startActivity(intent));
+                }
                 return;
             }
 
-            // If fail however..
+            // Initial Bind
             ((ViewHolders.ViewHolderOne) holder).bind(currentReservation, null);
-
-            // Set click listener to status page
-            // TODO: IMPLEMENT HERE
         } else if (holder instanceof ViewHolders.ViewHolderTwo) {
             ConsoleModel currentConsole = consoleList.get(position);
             ((ViewHolders.ViewHolderTwo) holder).bind(currentConsole);
 
             // Only currently not lended item can be clicked
             if(!currentConsole.getLendingStatus()) {
-                Intent intent = getIntent(currentConsole);
-
+                Intent intent = getReservationProcessIntent(currentConsole);
                 holder.itemView.setOnClickListener(v -> context.startActivity(intent));
             }
         } else if (holder instanceof ViewHolders.ViewHolderThree) {
@@ -80,20 +87,17 @@ public class ConsoleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             // Bind
             if (currentConsole != null) {
-                ((ViewHolders.ViewHolderThree) holder).bind(currentReservation, currentConsole);
+                ((ViewHolders.ViewHolderThree) holder).bind(currentReservation, currentConsole, context);
                 return;
             }
 
             // Initial Bind
-            ((ViewHolders.ViewHolderThree) holder).bind(currentReservation, null);
-
-            // Set click listener to status page
-            // TODO: IMPLEMENT HERE
+            ((ViewHolders.ViewHolderThree) holder).bind(currentReservation, null, context);
         }
     }
 
     @NonNull
-    private Intent getIntent(ConsoleModel currentConsole) {
+    private Intent getReservationProcessIntent(ConsoleModel currentConsole) {
         Intent intent = new Intent(context, ReservationProcessActivity.class);
         intent.putExtra("id", currentConsole.getId());
         intent.putExtra("title", currentConsole.getTitle());

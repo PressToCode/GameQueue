@@ -1,12 +1,10 @@
 package com.example.gamequeue.data.firebase;
 
-import static com.example.gamequeue.utils.FirebaseConst.DATABASE_URL;
-import static com.example.gamequeue.utils.FirebaseConst.FIREBASE_WEB_CLIENT_ID;
-
 import androidx.credentials.ClearCredentialStateRequest;
 import androidx.credentials.CredentialManager;
 import androidx.credentials.GetCredentialRequest;
 
+import com.example.gamequeue.R;
 import com.example.gamequeue.utils.ApplicationContext;
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,7 +30,7 @@ public class FirebaseUtil {
     static {
         // Initialize Firebase Objects
         auth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase.getInstance(DATABASE_URL);
+        database = FirebaseDatabase.getInstance(ApplicationContext.getAppContext().getString(R.string.firebase_database_url));
 
         // Set Data Persistence in case of offline - MUST BE CALLED BEFORE DB OPERATION
         database.setPersistenceEnabled(true);
@@ -46,7 +44,7 @@ public class FirebaseUtil {
         request = new GetCredentialRequest.Builder()
                 .addCredentialOption(
                         new GetSignInWithGoogleOption
-                                .Builder(FIREBASE_WEB_CLIENT_ID)
+                                .Builder(ApplicationContext.getAppContext().getString(R.string.firebase_web_client_id))
                                 .build()
                 )
                 .build();

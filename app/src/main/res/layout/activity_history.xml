@@ -67,7 +67,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false"
-                tools:itemCount="1"
+                tools:itemCount="4"
                 tools:listitem="@layout/card_item_one" />
 
         </LinearLayout>

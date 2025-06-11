@@ -28,7 +28,7 @@ public class AuthActivity extends AppCompatActivity {
     // Variables
     private LinearLayout authNameContainer;
     private TextView authTitle, authSubtitle, authNameField, authEmailField, authPasswordField, authBottomText, authBottomLink;
-    private Button authMainButton, authLoginGoogle, devModeBtn;
+    private Button authMainButton, authLoginGoogle, devModeBtn, resetDb;
     private boolean isRegistering = false;
     private Context context = this;
 
@@ -66,6 +66,7 @@ public class AuthActivity extends AppCompatActivity {
         authMainButton = findViewById(R.id.authMainButton);
         authLoginGoogle = findViewById(R.id.authLoginGoogle);
         devModeBtn = findViewById(R.id.devModeButton);
+        resetDb = findViewById(R.id.resetDb);
 
         // Setup Listener
         setupListeners();
@@ -97,6 +98,20 @@ public class AuthActivity extends AppCompatActivity {
 //                @Override
 //                public void onError(String error) {}
 //            });
+        });
+
+        resetDb.setOnClickListener(v -> {
+            DatabaseRepository.resetAll(new CustomCallback() {
+                @Override
+                public void onSuccess() {
+                    Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onError(String error) {
+                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+                }
+            });
         });
 
         // Normal Authentication

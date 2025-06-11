@@ -22,8 +22,10 @@ import com.example.gamequeue.data.model.ReservationFormSharedViewModel;
 import com.example.gamequeue.ui.adapter.ViewHolders;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class FormOneFragment extends Fragment {
@@ -106,6 +108,7 @@ public class FormOneFragment extends Fragment {
             specificationThree.setText(txtSpecificationThree);
 
             // Pass it to ReservationFormModel
+            sharedViewModel.getReservationForm().getValue().setConsoleName(txtTitle);
             sharedViewModel.getReservationForm().getValue().setConsoleId(id);
         }
     }
@@ -176,7 +179,12 @@ public class FormOneFragment extends Fragment {
         }
 
         // Update Reservation Form
-        TextView date = buttonDayCard.get(selectedIndex).findViewById(R.id.tvDate);
-        sharedViewModel.getReservationForm().getValue().setDate(date.getText().toString());
+        TextView dayOfMonthTextView = buttonDayCard.get(selectedIndex).findViewById(R.id.tvDate);
+        int dayOfMonth = Integer.parseInt(dayOfMonthTextView.getText().toString());
+        LocalDate date = LocalDate.now().withDayOfMonth(dayOfMonth);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy", Locale.getDefault());
+        String formattedDate = date.format(formatter);
+
+        sharedViewModel.getReservationForm().getValue().setDate(formattedDate);
     }
 }

@@ -20,6 +20,7 @@ import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ConsoleModel;
 import com.example.gamequeue.data.model.ConsoleSharedViewModel;
 import com.example.gamequeue.data.model.ReservationModel;
+import com.example.gamequeue.data.model.ReservationSharedViewModel;
 import com.example.gamequeue.data.repository.DatabaseRepository;
 import com.example.gamequeue.ui.adapter.ConsoleAdapter;
 import com.example.gamequeue.utils.ApplicationContext;
@@ -36,6 +37,7 @@ public class StatusFragment extends Fragment {
     private RadioButton radioPending, radioCompleted, radioCanceled;
     private int currentFilterId = -1;
     private ConsoleSharedViewModel consoleSharedViewModel;
+    private ReservationSharedViewModel reservationSharedViewModel;
 
     public StatusFragment() {
         // Required empty public constructor
@@ -66,6 +68,7 @@ public class StatusFragment extends Fragment {
         radioCompleted = view.findViewById(R.id.radio_button_completed_status);
         radioCanceled = view.findViewById(R.id.radio_button_canceled_status);
         consoleSharedViewModel = new ViewModelProvider(requireActivity()).get(ConsoleSharedViewModel.class);
+        reservationSharedViewModel = new ViewModelProvider(requireActivity()).get(ReservationSharedViewModel.class);
 
         // Load Data
         loadData();
@@ -79,29 +82,25 @@ public class StatusFragment extends Fragment {
         setupFilterer();
     }
 
-    // TODO: IMPLEMENT THIS
     private void loadData() {
         consoleSharedViewModel.getConsoleListLive().observe(getViewLifecycleOwner(), consoleModels -> {
             if(consoleModels == null || consoleModels.isEmpty()) {
                 return;
             }
 
+            consoleList.clear();
             consoleList.addAll(consoleModels);
         });
 
         if(!ApplicationContext.getDevMode()) {
-            // TODO: EXCHANGE WITH SHARED VIEW MODEL LIVEDATA INSTEAD
-            DatabaseRepository.getUserReservations(new CustomCallbackWithType<>() {
-                @Override
-                public void onSuccess(ArrayList<ReservationModel> reservations) {
-                    reservationList.clear();
-                    reservationList.addAll(reservations);
+            reservationSharedViewModel.getFilteredReservationListLiveTwo().observe(getViewLifecycleOwner(), reservationModels -> {
+                reservationList.clear();
+
+                if(reservationModels != null && !reservationModels.isEmpty()) {
+                    reservationList.addAll(reservationModels);
                 }
 
-                @Override
-                public void onError(String error) {
-                    Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
-                }
+                adapter.notifyDataSetChanged();
             });
         }
     }
@@ -128,20 +127,17 @@ public class StatusFragment extends Fragment {
 
     // TODO: IMPLEMENT THIS
     private void applyFilter(int checkedId) {
-        // Clear List
-//        consoleList.clear();
-//
-//        // Apply Filtering
-//        if(checkedId == R.id.radio_button_pending_status) {
-//            consoleList.addAll(ConsoleSharedViewModel.getPendingConsoleList());
-//        } else if(checkedId == R.id.radio_button_completed_status) {
-//            consoleList.addAll(ConsoleSharedViewModel.getCompletedConsoleList());
-//        } else if(checkedId == R.id.radio_button_canceled_status) {
-//            consoleList.addAll(ConsoleSharedViewModel.getCanceledConsoleList());
-//        } else if(checkedId == -1) {
-//            consoleList.addAll(ConsoleSharedViewModel.getConsoleList());
-//        }
-//
-//        adapter.notifyDataSetChanged();
+        // Apply Filtering
+        if(checkedId == R.id.radio_button_pending_status) {
+            reservationSharedViewModel.setFilterStatusTwo("pending");
+        } else if(checkedId == R.id.radio_button_completed_status) {
+            reservationSharedViewModel.setFilterStatusTwo("completed");
+        } else if(checkedId == R.id.radio_button_canceled_status) {
+            reservationSharedViewModel.setFilterStatusTwo("canceled");
+        } else if(checkedId == -1) {
+            reservationSharedViewModel.setFilterStatusTwo("");
+        }
+
+        adapter.notifyDataSetChanged();
     }
 }

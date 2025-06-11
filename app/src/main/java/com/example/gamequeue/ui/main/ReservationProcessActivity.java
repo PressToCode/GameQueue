@@ -1,8 +1,11 @@
 package com.example.gamequeue.ui.main;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,7 +20,10 @@ import com.badoualy.stepperindicator.StepperIndicator;
 import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ReservationFormSharedViewModel;
 import com.example.gamequeue.data.repository.AuthRepository;
+import com.example.gamequeue.data.repository.DatabaseRepository;
 import com.example.gamequeue.ui.adapter.ReservationPagerAdapter;
+import com.example.gamequeue.utils.CustomCallback;
+import com.example.gamequeue.utils.CustomCallbackWithType;
 import com.example.gamequeue.widgets.NonSwipeableViewPager;
 
 public class ReservationProcessActivity extends AppCompatActivity {
@@ -28,6 +34,7 @@ public class ReservationProcessActivity extends AppCompatActivity {
     private NonSwipeableViewPager viewPager;
     private ReservationPagerAdapter pagerAdapter;
     private ReservationFormSharedViewModel sharedViewModel;
+    private Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +64,14 @@ public class ReservationProcessActivity extends AppCompatActivity {
         sharedViewModel = new ViewModelProvider(this).get(ReservationFormSharedViewModel.class);
 
         // Observe Change
+        pagerObserver();
+
+        // Set OnClick Listener
+        buttonSetup();
+        observeCurrentFragmentValidity(viewPager.getCurrentItem());
+    }
+
+    private void pagerObserver() {
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
@@ -69,15 +84,16 @@ public class ReservationProcessActivity extends AppCompatActivity {
             @Override
             public void onPageScrollStateChanged(int state) {}
         });
-
-        // Set OnClick Listener
-        buttonSetup();
-        observeCurrentFragmentValidity(viewPager.getCurrentItem());
     }
 
     private void buttonSetup() {
-        // TODO: Replace with fragment navigation and check before removing activity
-        backBtn.setOnClickListener(v -> finish());
+        backBtn.setOnClickListener(v -> {
+            // Invalidate Reservation Form First to avoid Accidental Data Passing
+            invalidateForm();
+
+            // Remove Activity
+            finish();
+        });
 
         continueBtn.setOnClickListener(v -> {
             int currentStep = indicator.getCurrentStep();
@@ -88,8 +104,37 @@ public class ReservationProcessActivity extends AppCompatActivity {
                 return;
             }
 
-            // TODO: Submit Form data & Go To Status Page
-            finish();
+            // Last Check and Send
+            // Note: Default Value is false so NO NULL POINTER EXCEPTION POSSIBLE
+            if (sharedViewModel.getFormOneFilled().getValue()
+                    && sharedViewModel.getFormTwoFilled().getValue()
+                    && sharedViewModel.getFormThreeFilled().getValue()
+                    && sharedViewModel.getReservationForm().getValue() != null) {
+                // Submit Form to Database
+                DatabaseRepository.submitForm(sharedViewModel.getReservationForm().getValue(), new CustomCallbackWithType<>() {
+                    @Override
+                    public void onSuccess(String reservationId) {
+                        // Create Intent
+                        Intent intent = new Intent(context, ReservationDetailActivity.class);
+                        intent.putExtra("id", reservationId);
+                        intent.putExtra("console_name", getIntent().getStringExtra("title"));
+
+                        // Invalidate Form
+                        invalidateForm();
+
+                        // Start Detail Reservation - Fetch From Database in THERE
+                        startActivity(intent);
+
+                        // Remove this page
+                        finish();
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
         });
 
         // Only Allow going back
@@ -126,5 +171,12 @@ public class ReservationProcessActivity extends AppCompatActivity {
         } else {
             continueBtn.setEnabled(false);
         }
+    }
+
+    private void invalidateForm() {
+        sharedViewModel.setReservationForm(null);
+        sharedViewModel.setFormOneFilled(false);
+        sharedViewModel.setFormTwoFilled(false);
+        sharedViewModel.setFormThreeFilled(false);
     }
 }

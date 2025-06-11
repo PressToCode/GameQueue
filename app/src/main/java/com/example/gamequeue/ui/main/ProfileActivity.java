@@ -1,6 +1,7 @@
 package com.example.gamequeue.ui.main;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -152,6 +153,7 @@ public class ProfileActivity extends AppCompatActivity {
             AuthRepository.logout(new CustomCallback() {
                 @Override
                 public void onSuccess() {
+                    startActivity(new Intent(context, AuthActivity.class));
                     finish();
                 }
 

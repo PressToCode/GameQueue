@@ -82,7 +82,8 @@ public class FormThreeFragment extends Fragment {
                 imagePreview.setImageURI(fileUri);
                 imagePreview.setVisibility(View.VISIBLE);
                 placeholderLayout.setVisibility(View.GONE);
-                sharedViewModel.getReservationForm().getValue().setDocument(fileUri);
+                // TODO: Implement actual image storing please
+//                sharedViewModel.getReservationForm().getValue().setDocument(fileUri);
                 sharedViewModel.setFormThreeFilled(true);
             } else if (resultCode == ImagePicker.RESULT_ERROR) {
                 Toast.makeText(getContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show();

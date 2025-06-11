@@ -31,6 +31,7 @@ import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ConsoleModel;
 import com.example.gamequeue.data.model.ConsoleSharedViewModel;
 import com.example.gamequeue.data.model.ReservationModel;
+import com.example.gamequeue.data.model.ReservationSharedViewModel;
 import com.example.gamequeue.data.model.SharedProfileModel;
 import com.example.gamequeue.data.repository.DatabaseRepository;
 import com.example.gamequeue.ui.adapter.ConsoleAdapter;
@@ -40,6 +41,8 @@ import com.example.gamequeue.utils.ApplicationContext;
 import com.example.gamequeue.utils.CustomCallbackWithType;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Optional;
 
 public class HomeFragment extends Fragment {
     private RecyclerView recyclerView;
@@ -58,6 +61,7 @@ public class HomeFragment extends Fragment {
     private RadioButton radioPending, radioCompleted, radioCanceled;
     private int currentFilterId = -1;
     private ConsoleSharedViewModel consoleSharedViewModel;
+    private ReservationSharedViewModel reservationSharedViewModel;
 
     // Add profile button variable
     private ImageButton profileButton;
@@ -107,6 +111,7 @@ public class HomeFragment extends Fragment {
         radioCompleted = view.findViewById(R.id.radio_button_completed);
         radioCanceled = view.findViewById(R.id.radio_button_canceled);
         consoleSharedViewModel = new ViewModelProvider(requireActivity()).get(ConsoleSharedViewModel.class);
+        reservationSharedViewModel = new ViewModelProvider(requireActivity()).get(ReservationSharedViewModel.class);
 
         // Change Greeting
         setupGreeting();
@@ -150,23 +155,20 @@ public class HomeFragment extends Fragment {
                 return;
             }
 
+            consoleList.clear();
             consoleList.addAll(consoleModels);
             loadRecommendedData();
         });
 
         if (!ApplicationContext.getDevMode()) {
-            // TODO: EXCHANGE WITH SHARED VIEW MODEL LIVEDATA INSTEAD
-            DatabaseRepository.getUserReservations(new CustomCallbackWithType<>() {
-                @Override
-                public void onSuccess(ArrayList<ReservationModel> reservations) {
-                    reservationList.clear();
-                    reservationList.addAll(reservations);
+            reservationSharedViewModel.getFilteredReservationListLiveOne().observe(getViewLifecycleOwner(), reservationModels -> {
+                reservationList.clear();
+
+                if(reservationModels != null || !reservationModels.isEmpty()) {
+                    reservationList.addAll(reservationModels);
                 }
 
-                @Override
-                public void onError(String error) {
-                    Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
-                }
+                adapter.notifyDataSetChanged();
             });
         }
     }
@@ -221,16 +223,26 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadRecommendedData() {
-        recommendedTitle.setText(consoleList.get(0).getTitle());
+        if (consoleList == null) {
+            return;
+        }
+
+        Optional<ConsoleModel> firstMatch = consoleList.stream().filter(consoleModel -> consoleModel != null && !consoleModel.getLendingStatus()).findFirst();
+
+        if (firstMatch.isEmpty()) {
+            return;
+        }
+
+        recommendedTitle.setText(firstMatch.get().getTitle());
         recommendedStatus.setText("Available");
-        recommendedSpecificationOne.setText(consoleList.get(0).getSpecificationOne());
-        recommendedSpecificationTwo.setText(consoleList.get(0).getSpecificationTwo());
-        recommendedSpecificationThree.setText(consoleList.get(0).getSpecificationThree());
+        recommendedSpecificationOne.setText(firstMatch.get().getSpecificationOne());
+        recommendedSpecificationTwo.setText(firstMatch.get().getSpecificationTwo());
+        recommendedSpecificationThree.setText(firstMatch.get().getSpecificationThree());
 
         recommendationCard.setVisibility(View.VISIBLE);
+
         recommendationCard.setOnClickListener(v -> {
-            // TODO: IMPLEMENT DATA PASSING FROM FIREBASE INSTEAD
-            startActivity(new Intent(getContext(), ReservationProcessActivity.class).putExtra("id", consoleList.get(0).getId()));
+            startActivity(new Intent(getContext(), ReservationProcessActivity.class).putExtra("id", firstMatch.get().getId()));
         });
     }
 
@@ -256,8 +268,7 @@ public class HomeFragment extends Fragment {
             applyFilter(checkedId);
         });
 
-        // TODO: Implement actual search function
-        // Currently disabled due to broken implementation
+        // Search Field Listener
         searchField.setOnEditorActionListener((textView, actionId, keyEvent) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                     actionId == EditorInfo.IME_ACTION_DONE ||
@@ -289,13 +300,14 @@ public class HomeFragment extends Fragment {
                 }
 
                 if(searchText.length != 0) {
-                    searchFilter(searchText);
+                    searchFilter(new ArrayList<>(Arrays.asList(searchText)));
                 }
                 return true;
             }
             return false;
         });
 
+        // Search Button Listener
         searchButton.setOnClickListener(v -> {
             if(searchField.getText().toString().isEmpty()) {
                 Toast.makeText(getContext(), "Search Field is Empty", Toast.LENGTH_SHORT).show();
@@ -303,56 +315,57 @@ public class HomeFragment extends Fragment {
             }
 
             String[] searchText = searchField.getText().toString().trim().split("\\s+");
-            searchFilter(searchText);
+            searchFilter(new ArrayList<>(Arrays.asList(searchText)));
         });
     }
 
     // TODO: IMPLEMENT THIS
-    private void searchFilter(String[] searchText) {
-//        if(radioGroup.getCheckedRadioButtonId() != -1) {
-//            // Get Which Status is clicked
-//            int checkedId = radioGroup.getCheckedRadioButtonId();
-//            int status = -1;
-//
-//            if(checkedId == R.id.radio_button_pending) {
-//                status = 0;
-//            } else if (checkedId == R.id.radio_button_completed) {
-//                status = 1;
-//            } else if (checkedId == R.id.radio_button_canceled) {
-//                status = 2;
-//            }
-//
-//            // Filter by status AND word
-//            consoleList.clear();
-//            consoleList.addAll(ConsoleSharedViewModel.getFilteredStatusWordList(searchText, status));
-//        } else {
-//            // Filter by word only
-//            consoleList.clear();
-//            consoleList.addAll(ConsoleSharedViewModel.getFilteredWordList(searchText));
-//        }
-//
-//        adapter.notifyDataSetChanged();
+    private void searchFilter(ArrayList<String> searchText) {
+        if(radioGroup.getCheckedRadioButtonId() != -1) {
+            // Get Which Status is clicked
+            int checkedId = radioGroup.getCheckedRadioButtonId();
+            String status = "";
+
+            if(checkedId == R.id.radio_button_pending) {
+                status = "pending";
+            } else if (checkedId == R.id.radio_button_completed) {
+                status = "completed";
+            } else if (checkedId == R.id.radio_button_canceled) {
+                status = "canceled";
+            }
+
+            // Filter by status AND word
+            reservationSharedViewModel.setFilterStatusOne(status);
+            reservationSharedViewModel.setFilterWordOne(searchText);
+
+            // Update is already handled by observer
+        } else {
+            reservationSharedViewModel.setFilterWordOne(searchText);
+        }
+
+        adapter.notifyDataSetChanged();
     }
 
     // TODO: IMPLEMENT THIS
     private void applyFilter(int checkedId) {
-        // Clear List
-//        consoleList.clear();
-//
-//        // See if there's ongoing filter
-//        String[] searchText = searchField.getText().toString().trim().split("\\s+");
-//
-//        // Apply Filtering
-//        if(checkedId == R.id.radio_button_pending) {
-//            consoleList.addAll(ConsoleSharedViewModel.getFilteredStatusWordList(searchText, 0));
-//        } else if(checkedId == R.id.radio_button_completed) {
-//            consoleList.addAll(ConsoleSharedViewModel.getFilteredStatusWordList(searchText, 1));
-//        } else if(checkedId == R.id.radio_button_canceled) {
-//            consoleList.addAll(ConsoleSharedViewModel.getFilteredStatusWordList(searchText, 2));
-//        } else if(checkedId == -1) {
-//            consoleList.addAll(ConsoleSharedViewModel.getFilteredStatusWordList(searchText, -1));
-//        }
-//
-//        adapter.notifyDataSetChanged();
+        // See if there's ongoing filter
+        String[] searchText = searchField.getText().toString().trim().split("\\s+");
+
+        // Apply Filtering
+        if(checkedId == R.id.radio_button_pending) {
+            reservationSharedViewModel.setFilterStatusOne("pending");
+            reservationSharedViewModel.setFilterWordOne(new ArrayList<>(Arrays.asList(searchText)));
+        } else if(checkedId == R.id.radio_button_completed) {
+            reservationSharedViewModel.setFilterStatusOne("completed");
+            reservationSharedViewModel.setFilterWordOne(new ArrayList<>(Arrays.asList(searchText)));
+        } else if(checkedId == R.id.radio_button_canceled) {
+            reservationSharedViewModel.setFilterStatusOne("canceled");
+            reservationSharedViewModel.setFilterWordOne(new ArrayList<>(Arrays.asList(searchText)));
+        } else if(checkedId == -1) {
+            reservationSharedViewModel.setFilterStatusOne("");
+            reservationSharedViewModel.setFilterWordOne(new ArrayList<>(Arrays.asList(searchText)));
+        }
+
+        adapter.notifyDataSetChanged();
     }
 }

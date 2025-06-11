@@ -22,6 +22,3 @@
 -- [Reservation UID]
 --- UserUID             <-- Who is doing the request
 --- ConsoleId           <-- Which console is being requested
-
------------------------
-// Model Refactor Plan

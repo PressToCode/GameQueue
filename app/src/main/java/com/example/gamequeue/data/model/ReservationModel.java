@@ -2,8 +2,12 @@ package com.example.gamequeue.data.model;
 
 import android.net.Uri;
 
+import com.google.firebase.database.Exclude;
+
 public class ReservationModel {
+    private String id;
     private String consoleId;
+    private String consoleName;
     private String date;
     private String time;
     private String lenderName;
@@ -11,15 +15,26 @@ public class ReservationModel {
     private String lenderPhone;
     private String lenderProdi;
     private Uri document;
+    private String verificationCode;
     private String status;
 
     public ReservationModel() {
         // Default Constructor
     }
 
+    @Exclude
+    public String getId() { return id; }
+
+    @Exclude
+    public void setId(String id) { this.id = id; }
+
     public String getConsoleId() { return consoleId; }
 
     public void setConsoleId(String consoleId) { this.consoleId = consoleId; }
+
+    public String getConsoleName() { return consoleName; }
+
+    public void setConsoleName(String consoleName) { this.consoleName = consoleName; }
 
     public String getDate() {
         return date;
@@ -80,4 +95,8 @@ public class ReservationModel {
     public String getStatus() { return status; }
 
     public void setStatus(String status) { this.status = status; }
+
+    public String getVerificationCode() { return verificationCode; }
+
+    public void setVerificationCode(String verificationCode) { this.verificationCode = verificationCode; }
 }

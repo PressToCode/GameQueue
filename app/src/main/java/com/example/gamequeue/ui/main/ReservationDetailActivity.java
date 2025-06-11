@@ -1,5 +1,6 @@
 package com.example.gamequeue.ui.main;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -8,44 +9,42 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.gamequeue.R;
+import com.example.gamequeue.data.firebase.FirebaseUtil;
+import com.example.gamequeue.data.model.ReservationModel;
+import com.example.gamequeue.data.repository.DatabaseRepository;
+import com.example.gamequeue.utils.CustomCallbackWithType;
+import com.google.firebase.Firebase;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class ReservationDetailActivity extends AppCompatActivity {
 
     // UI Components
     private ImageView statusIcon;
-    private TextView statusTitle;
-    private LinearLayout additionalInfoContainer;
-    private TextView verificationCode;
-    private TextView confirmationTime;
-    private TextView reservationId;
-    private TextView reservationPlace;
-    private TextView reservationDate;
-    private TextView reservationTime;
-    private LinearLayout rentalLimitContainer;
-    private TextView rentalLimit;
-    private TextView infoText;
+    private TextView statusTitle, verificationCode, confirmationTime, reservationId, reservationPlace, reservationDate, reservationTime, rentalLimit, infoText;
+    private LinearLayout additionalInfoContainer, rentalLimitContainer;
     private Button backButton;
 
     // Data variables
+    private ReservationModel reservation;
     private String reservationStatus = "PENDING"; // PENDING, APPROVED, REJECTED
     private CountDownTimer countDownTimer;
-
-    // Intent keys
-    public static final String EXTRA_RESERVATION_ID = "reservation_id";
-    public static final String EXTRA_RESERVATION_STATUS = "reservation_status";
-    public static final String EXTRA_CONSOLE_NAME = "console_name";
-    public static final String EXTRA_RESERVATION_DATE = "reservation_date";
-    public static final String EXTRA_RESERVATION_TIME = "reservation_time";
-    public static final String EXTRA_VERIFICATION_CODE = "verification_code";
-    public static final String EXTRA_RENTAL_LIMIT = "rental_limit";
+    private Context context = this;
+    private ValueEventListener statusListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,16 +57,19 @@ public class ReservationDetailActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Initialize UI components
+        // Guard - Must have id passed along
+        if (getIntent().getStringExtra("id") == null || getIntent().getStringExtra("console_name") == null) {
+            Toast.makeText(this, "Invalid", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
+        // Initialization
         initializeViews();
 
-        // Get data from intent
-        getIntentData();
+        // Fetch Data
+        loadData();
 
-        // Setup UI based on status
-        setupUIBasedOnStatus();
-
-        // Setup listeners
+        // Setup Listener
         setupListeners();
     }
 
@@ -87,35 +89,60 @@ public class ReservationDetailActivity extends AppCompatActivity {
         backButton = findViewById(R.id.backButton);
     }
 
-    private void getIntentData() {
-        Intent intent = getIntent();
-        if (intent != null) {
-            reservationStatus = intent.getStringExtra(EXTRA_RESERVATION_STATUS);
-            if (reservationStatus == null) reservationStatus = "PENDING";
+    private void loadData() {
+        // Not null - Guard would've caught it
+        String reservationId = getIntent().getStringExtra("id");
 
-            String resId = intent.getStringExtra(EXTRA_RESERVATION_ID);
-            String consoleName = intent.getStringExtra(EXTRA_CONSOLE_NAME);
-            String resDate = intent.getStringExtra(EXTRA_RESERVATION_DATE);
-            String resTime = intent.getStringExtra(EXTRA_RESERVATION_TIME);
-            String verCode = intent.getStringExtra(EXTRA_VERIFICATION_CODE);
-            String rentalLimitTime = intent.getStringExtra(EXTRA_RENTAL_LIMIT);
+        // Fetch data from database
+        DatabaseRepository.getUserReservationById(reservationId, new CustomCallbackWithType<>() {
+            @Override
+            public void onSuccess(ReservationModel reservationModel) {
+                reservation = reservationModel;
+                reservation.setId(reservationId);
+                setupUI();
+                setupUIBasedOnStatus();
+            }
 
-            // Set data with fallback values
-            reservationId.setText(resId != null ? resId : "000085752257");
-            reservationPlace.setText(consoleName != null ? consoleName : "Xbox III");
-            reservationDate.setText(resDate != null ? resDate : "Mar 22, 2023");
-            reservationTime.setText(resTime != null ? resTime : "07:30 AM");
-            verificationCode.setText(verCode != null ? verCode : "5oLFt8");
-            rentalLimit.setText(rentalLimitTime != null ? rentalLimitTime : "10:00 AM");
-        } else {
-            // Set default values
-            reservationId.setText("000085752257");
-            reservationPlace.setText("Xbox III");
-            reservationDate.setText("Mar 22, 2023");
-            reservationTime.setText("07:30 AM");
-            verificationCode.setText("5oLFt8");
-            rentalLimit.setText("10:00 AM");
-        }
+            @Override
+            public void onError(String error) {
+                Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Initial
+        if (reservationStatus == null) reservationStatus = "PENDING";
+    }
+
+    private void setupUI() {
+        // Set Data
+        attachStatusListener(reservation.getId());
+
+        reservationId.setText(reservation.getId());
+        reservationPlace.setText(getIntent().getStringExtra("console_name"));
+        reservationDate.setText(reservation.getDate());
+        reservationTime.setText(reservation.getTime() + " WIB");
+        verificationCode.setText(reservation.getVerificationCode());
+
+        // Date Formatter - Assuming Rental Time is 1 hour
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        rentalLimit.setText(LocalTime.parse(reservation.getTime(), formatter).plusHours(1).toString());
+    }
+
+    private void attachStatusListener(String id) {
+        statusListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                reservationStatus = snapshot.getValue(String.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                reservationStatus = "PENDING";
+                Toast.makeText(context, "Listener Went Wrong..", Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        FirebaseUtil.getReservationsRef().child(FirebaseUtil.getAuth().getCurrentUser().getUid()).child(id).child("status").addValueEventListener(statusListener);
     }
 
     private void setupUIBasedOnStatus() {
@@ -219,25 +246,9 @@ public class ReservationDetailActivity extends AppCompatActivity {
         if (countDownTimer != null) {
             countDownTimer.cancel();
         }
-    }
 
-    // Helper method to create intent for this activity
-    public static Intent createIntent(android.content.Context context,
-                                      String reservationId,
-                                      String status,
-                                      String consoleName,
-                                      String date,
-                                      String time,
-                                      String verificationCode,
-                                      String rentalLimit) {
-        Intent intent = new Intent(context, ReservationDetailActivity.class);
-        intent.putExtra(EXTRA_RESERVATION_ID, reservationId);
-        intent.putExtra(EXTRA_RESERVATION_STATUS, status);
-        intent.putExtra(EXTRA_CONSOLE_NAME, consoleName);
-        intent.putExtra(EXTRA_RESERVATION_DATE, date);
-        intent.putExtra(EXTRA_RESERVATION_TIME, time);
-        intent.putExtra(EXTRA_VERIFICATION_CODE, verificationCode);
-        intent.putExtra(EXTRA_RENTAL_LIMIT, rentalLimit);
-        return intent;
+        if (statusListener != null) {
+            FirebaseUtil.getReservationsRef().child(FirebaseUtil.getAuth().getCurrentUser().getUid()).child(reservation.getId()).removeEventListener(statusListener);
+        }
     }
 }

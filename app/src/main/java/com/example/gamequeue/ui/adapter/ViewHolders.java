@@ -1,10 +1,13 @@
 package com.example.gamequeue.ui.adapter;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,10 +17,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ConsoleModel;
 import com.example.gamequeue.data.model.ReservationModel;
+import com.example.gamequeue.data.repository.DatabaseRepository;
+import com.example.gamequeue.ui.main.ReservationDetailActivity;
 import com.example.gamequeue.utils.ApplicationContext;
 import com.example.gamequeue.utils.CardOneID;
 import com.example.gamequeue.utils.CardThreeID;
 import com.example.gamequeue.utils.CardTwoID;
+import com.example.gamequeue.utils.CustomCallback;
 
 import java.util.Objects;
 
@@ -41,7 +47,7 @@ public class ViewHolders {
             if (consoleModel != null) {
                 title.setText(consoleModel.getTitle());
                 date.setText(reservation.getDate());
-                time.setText(reservation.getTime());
+                time.setText(reservation.getTime() + " WIB");
             } else {
                 title.setText("...");
                 date.setText("...");
@@ -108,13 +114,13 @@ public class ViewHolders {
             removeBtn = itemView.findViewById(CardThreeID.removeBtn);
         }
 
-        public void bind(ReservationModel reservation, ConsoleModel consoleModel) {
+        public void bind(ReservationModel reservation, ConsoleModel consoleModel, Context context) {
             if (reservation == null) return;
 
             if (consoleModel != null) {
                 title.setText(consoleModel.getTitle());
                 date.setText(reservation.getDate());
-                time.setText(reservation.getTime());
+                time.setText(reservation.getTime() + " WIB");
             } else {
                 title.setText("...");
                 date.setText("...");
@@ -123,6 +129,27 @@ public class ViewHolders {
 
             status.setText(reservation.getStatus());
             statusChanger(status);
+
+            detailBtn.setOnClickListener(v -> {
+                Intent intent = new Intent(context, ReservationDetailActivity.class);
+                intent.putExtra("id", reservation.getId());
+                intent.putExtra("console_name", reservation.getConsoleName());
+                context.startActivity(intent);
+            });
+
+            removeBtn.setOnClickListener(v -> {
+                DatabaseRepository.removeUserReservationById(reservation.getId(), consoleModel.getId(), new CustomCallback() {
+                    @Override
+                    public void onSuccess() {
+                        // In theory, it should update the observer in status fragment
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            });
         }
     }
 

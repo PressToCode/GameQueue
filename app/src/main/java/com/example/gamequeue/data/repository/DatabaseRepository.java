@@ -1,13 +1,19 @@
 package com.example.gamequeue.data.repository;
 
+import androidx.annotation.NonNull;
+
 import com.example.gamequeue.data.firebase.FirebaseUtil;
 import com.example.gamequeue.data.model.ConsoleModel;
 import com.example.gamequeue.data.model.RequestModel;
 import com.example.gamequeue.data.model.ReservationModel;
 import com.example.gamequeue.utils.CustomCallback;
 import com.example.gamequeue.utils.CustomCallbackWithType;
+import com.example.gamequeue.utils.RandomGenerator;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -55,23 +61,64 @@ public class DatabaseRepository {
         callback.onSuccess();
     }
 
-    public static void submitForm(ReservationModel form) {
+    // To reset All
+    // SHOULD NOT BE USED IN NORMAL CIRCUMTANCES
+    public static void resetAll(CustomCallback callback) {
+        consolesRef.get().addOnCompleteListener(task -> {
+           if (!task.isSuccessful()) {
+               callback.onError(task.getException().getMessage());
+               return;
+           }
+
+           task.getResult().getChildren().forEach(dataSnapshot -> {
+               dataSnapshot.getRef().child("lendingStatus").setValue(false);
+               dataSnapshot.getRef().child("lenderUid").setValue("");
+           });
+        });
+
+        requestRef.removeValue().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                callback.onError(task.getException().getMessage());
+                return;
+            }
+        });
+
+        reservationsRef.removeValue().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                callback.onError(task.getException().getMessage());
+                return;
+            }
+
+            callback.onSuccess();
+        });
+    }
+
+    public static void submitForm(ReservationModel form, CustomCallbackWithType<String> callback) {
         String reservationId = reservationsRef.child(auth.getCurrentUser().getUid()).push().getKey();
         String userId = auth.getCurrentUser().getUid();
         String consoleId = form.getConsoleId();
 
         // Reservation is unique for each user
+        if (reservationId == null) {
+            callback.onError("reservation failed to generate");
+            return;
+        }
+
+        form.setVerificationCode(RandomGenerator.generateRandomString());
+        form.setStatus("Pending");
         reservationsRef.child(auth.getCurrentUser().getUid()).child(reservationId).setValue(form);
 
         // Update console to reserved status
-        consolesRef.child(form.getConsoleId()).child("lendingStatus").setValue(true);
-        consolesRef.child(form.getConsoleId()).child("lenderUid").setValue(userId);
+        consolesRef.child(consoleId).child("lendingStatus").setValue(true);
+        consolesRef.child(consoleId).child("lenderUid").setValue(userId);
 
         // Send request to admin
         requestRef.child(reservationId).setValue(new RequestModel(userId, reservationId));
+        callback.onSuccess(reservationId);
     }
 
-    public static void getUserReservations(CustomCallbackWithType<ArrayList<ReservationModel>> callback) {
+    // For one time fetch, not recommended
+    private static void getUserReservations(CustomCallbackWithType<ArrayList<ReservationModel>> callback) {
         reservationsRef.child(auth.getCurrentUser().getUid()).get().addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
                 callback.onError(task.getException().getMessage());
@@ -85,6 +132,35 @@ public class DatabaseRepository {
             });
 
             callback.onSuccess(reservations);
+        });
+    }
+
+    public static void getUserReservationById(String id, CustomCallbackWithType<ReservationModel> callback) {
+        reservationsRef.child(auth.getCurrentUser().getUid()).child(id).get().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                callback.onError(task.getException().getMessage());
+                return;
+            }
+
+            callback.onSuccess(task.getResult().getValue(ReservationModel.class));
+        });
+    }
+
+    public static void removeUserReservationById(String reservationId, String consoleId, CustomCallback callback) {
+        // Update Console FIRST
+        consolesRef.child(consoleId).child("lendingStatus").setValue(false);
+        consolesRef.child(consoleId).child("lenderUid").setValue("");
+
+        // Remove Request
+        requestRef.child(reservationId).removeValue();
+
+        // Remove Reservation
+        reservationsRef.child(auth.getCurrentUser().getUid()).child(reservationId).removeValue().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                callback.onError(task.getException().getMessage());
+                return;
+            }
+            callback.onSuccess();
         });
     }
 }

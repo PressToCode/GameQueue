@@ -16,6 +16,7 @@ import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ConsoleModel;
 import com.example.gamequeue.data.model.ConsoleSharedViewModel;
 import com.example.gamequeue.data.model.ReservationFormSharedViewModel;
+import com.example.gamequeue.data.model.ReservationSharedViewModel;
 import com.example.gamequeue.data.repository.AuthRepository;
 import com.example.gamequeue.ui.fragment.HomeFragment;
 import com.example.gamequeue.ui.fragment.ReservationFragment;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private final StatusFragment statusFragment = new StatusFragment();
     private Fragment activeFragment = homeFragment;
     private ConsoleSharedViewModel consoleSharedViewModel;
+    private ReservationSharedViewModel reservationSharedViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Important to import data from Firebase
         consoleSharedViewModel = new ViewModelProvider(this).get(ConsoleSharedViewModel.class);
+        reservationSharedViewModel = new ViewModelProvider(this).get(ReservationSharedViewModel.class);
 
         // Setup all fragments and listener
         setupFragments(savedInstanceState);

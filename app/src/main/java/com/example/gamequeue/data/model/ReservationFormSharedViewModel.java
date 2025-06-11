@@ -12,6 +12,8 @@ public class ReservationFormSharedViewModel extends ViewModel {
     public MutableLiveData<ReservationModel> getReservationForm() {
         return reservationForm;
     }
+    public void setReservationForm(ReservationModel form) { reservationForm.setValue(form); }
+
     public void setFormOneFilled(boolean filled) {
         isFormOneFilled.setValue(filled);
     }
