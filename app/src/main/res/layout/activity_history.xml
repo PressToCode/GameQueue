@@ -39,38 +39,12 @@
             android:textColor="@color/black" />
     </LinearLayout>
 
-    <!-- Content Container with ScrollView for better performance -->
-    <ScrollView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/historyList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp">
+        tools:listitem="@layout/container_history" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <!-- First Date Section -->
-            <TextView
-                android:id="@+id/historyDateHeader1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:fontFamily="@font/inter"
-                android:text="16 Desember, 12:45"
-                android:textColor="@color/gray"
-                android:textSize="14sp" />
-
-            <!-- RecyclerView for First Section -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/historyRecyclerView1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                tools:itemCount="4"
-                tools:listitem="@layout/card_item_one" />
-
-        </LinearLayout>
-    </ScrollView>
+    <!-- Content Container with ScrollView for better performance -->
 
 </LinearLayout>

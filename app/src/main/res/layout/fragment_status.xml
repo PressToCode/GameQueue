@@ -32,7 +32,7 @@
             android:textStyle="bold" />
 
         <ImageButton
-            android:id="@+id/imageButton3"
+            android:id="@+id/toHistoryBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="5"

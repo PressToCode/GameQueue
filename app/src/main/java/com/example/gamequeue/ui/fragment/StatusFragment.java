@@ -1,5 +1,6 @@
 package com.example.gamequeue.ui.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -23,6 +25,7 @@ import com.example.gamequeue.data.model.ReservationModel;
 import com.example.gamequeue.data.model.ReservationSharedViewModel;
 import com.example.gamequeue.data.repository.DatabaseRepository;
 import com.example.gamequeue.ui.adapter.ConsoleAdapter;
+import com.example.gamequeue.ui.main.HistoryActivity;
 import com.example.gamequeue.utils.ApplicationContext;
 import com.example.gamequeue.utils.CustomCallbackWithType;
 
@@ -38,6 +41,7 @@ public class StatusFragment extends Fragment {
     private int currentFilterId = -1;
     private ConsoleSharedViewModel consoleSharedViewModel;
     private ReservationSharedViewModel reservationSharedViewModel;
+    private ImageButton toHistoryBtn;
 
     public StatusFragment() {
         // Required empty public constructor
@@ -67,6 +71,7 @@ public class StatusFragment extends Fragment {
         radioPending = view.findViewById(R.id.radio_button_pending_status);
         radioCompleted = view.findViewById(R.id.radio_button_completed_status);
         radioCanceled = view.findViewById(R.id.radio_button_canceled_status);
+        toHistoryBtn = view.findViewById(R.id.toHistoryBtn);
         consoleSharedViewModel = new ViewModelProvider(requireActivity()).get(ConsoleSharedViewModel.class);
         reservationSharedViewModel = new ViewModelProvider(requireActivity()).get(ReservationSharedViewModel.class);
 
@@ -80,6 +85,11 @@ public class StatusFragment extends Fragment {
 
         // Setup Filterer
         setupFilterer();
+
+        // Redirect to History Activity
+        toHistoryBtn.setOnClickListener(v -> {
+            startActivity(new Intent(getContext(), HistoryActivity.class));
+        });
     }
 
     private void loadData() {

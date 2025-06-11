@@ -22,6 +22,9 @@
         android:theme="@style/Theme.GameQueue"
         tools:targetApi="31">
         <activity
+            android:name=".ui.main.HistoryActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.main.ReservationDetailActivity"
             android:exported="false" />
         <activity
