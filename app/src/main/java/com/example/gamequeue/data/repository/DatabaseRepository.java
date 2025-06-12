@@ -115,7 +115,7 @@ public class DatabaseRepository {
         consolesRef.child(consoleId).child("lenderUid").setValue(userId);
 
         // Send request to admin
-        requestRef.child(reservationId).setValue(new RequestModel(userId, reservationId));
+        requestRef.child(reservationId).setValue(new RequestModel(userId, consoleId));
         callback.onSuccess(reservationId);
     }
 
