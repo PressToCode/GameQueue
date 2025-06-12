@@ -111,6 +111,8 @@ public class HomeFragment extends Fragment {
         radioCompleted = view.findViewById(R.id.radio_button_completed);
         radioCanceled = view.findViewById(R.id.radio_button_canceled);
         consoleSharedViewModel = new ViewModelProvider(requireActivity()).get(ConsoleSharedViewModel.class);
+
+        // TODO: Check for Admin Case --------------------------
         reservationSharedViewModel = new ViewModelProvider(requireActivity()).get(ReservationSharedViewModel.class);
 
         // Change Greeting
@@ -126,10 +128,12 @@ public class HomeFragment extends Fragment {
         loadData();
 
         // Set Adapter
+        // TODO: Check for Admin Case --------------------------
         adapter = new ConsoleAdapter(getContext(), R.layout.card_item_one, consoleList, reservationList, consoleSharedViewModel);
         recyclerView.setAdapter(adapter);
 
         // Set up filter function
+        // TODO: Check for Admin Case --------------------------
         setupFilterer();
     }
 

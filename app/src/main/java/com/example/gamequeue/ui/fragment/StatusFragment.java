@@ -73,12 +73,16 @@ public class StatusFragment extends Fragment {
         radioCanceled = view.findViewById(R.id.radio_button_canceled_status);
         toHistoryBtn = view.findViewById(R.id.toHistoryBtn);
         consoleSharedViewModel = new ViewModelProvider(requireActivity()).get(ConsoleSharedViewModel.class);
+
+        // TODO: Check for Admin Case --------------------------
         reservationSharedViewModel = new ViewModelProvider(requireActivity()).get(ReservationSharedViewModel.class);
 
         // Load Data
+        // TODO: Check for Admin Case --------------------------
         loadData();
 
         // Set Adapter
+        // TODO: Check for Admin Case --------------------------
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new ConsoleAdapter(getContext(), R.layout.card_item_three, consoleList, reservationList, consoleSharedViewModel);
         recyclerView.setAdapter(adapter);

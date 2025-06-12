@@ -6,6 +6,7 @@ import com.example.gamequeue.data.firebase.FirebaseUtil;
 import com.example.gamequeue.data.model.ConsoleModel;
 import com.example.gamequeue.data.model.RequestModel;
 import com.example.gamequeue.data.model.ReservationModel;
+import com.example.gamequeue.utils.ApplicationContext;
 import com.example.gamequeue.utils.CustomCallback;
 import com.example.gamequeue.utils.CustomCallbackWithType;
 import com.example.gamequeue.utils.RandomGenerator;
@@ -26,13 +27,14 @@ import java.util.ArrayList;
 public class DatabaseRepository {
     // Firebase Utilities Singletons Alias
     private static final FirebaseAuth auth;
-    private static final DatabaseReference consolesRef, reservationsRef, requestRef;
+    private static final DatabaseReference consolesRef, reservationsRef, requestRef, adminsRef;
 
     static {
         auth = FirebaseUtil.getAuth();
         consolesRef = FirebaseUtil.getConsolesRef();
         reservationsRef = FirebaseUtil.getReservationsRef();
         requestRef = FirebaseUtil.getRequestRef();
+        adminsRef = FirebaseUtil.getAdminsRef();
     }
 
     // This should NOT be called ANYWHERE unless NEEDED
@@ -146,7 +148,10 @@ public class DatabaseRepository {
         });
     }
 
-    public static void removeUserReservationById(String reservationId, String consoleId, CustomCallback callback) {
+    // type:
+    // 0 = Canceled by User
+    // 1 = Rejected by Admin
+    public static void removeUserReservationById(String reservationId, String consoleId, int type, CustomCallback callback) {
         // Update Console FIRST
         consolesRef.child(consoleId).child("lendingStatus").setValue(false);
         consolesRef.child(consoleId).child("lenderUid").setValue("");
@@ -154,12 +159,30 @@ public class DatabaseRepository {
         // Remove Request
         requestRef.child(reservationId).removeValue();
 
-        // Remove Reservation
-        reservationsRef.child(auth.getCurrentUser().getUid()).child(reservationId).removeValue().addOnCompleteListener(task -> {
+        // Change Reservation Status
+        reservationsRef.child(auth.getCurrentUser().getUid()).child(reservationId).child("status").setValue(type == 0 ? "Canceled" : "Rejected");
+    }
+
+    public static void checkAdmins(CustomCallback callback) {
+        // Get list of admins and check if current user UID match
+        adminsRef.get().addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
                 callback.onError(task.getException().getMessage());
                 return;
             }
+
+            ArrayList<String> admins = new ArrayList<>();
+            task.getResult().getChildren().forEach(dataSnapshot -> {
+                admins.add(dataSnapshot.getValue(String.class));
+            });
+
+            if (admins.contains(auth.getCurrentUser().getUid())) {
+                ApplicationContext.setAdminMode(true);
+                callback.onSuccess();
+                return;
+            }
+
+            ApplicationContext.setAdminMode(false);
             callback.onSuccess();
         });
     }

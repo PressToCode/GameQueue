@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +33,7 @@ import com.example.gamequeue.utils.WidgetModifier;
 import java.util.Objects;
 
 public class ViewHolders {
+    // For Home Fragment
     public static class ViewHolderOne extends RecyclerView.ViewHolder {
         ImageView imageView;
         TextView title, status, date, time;
@@ -63,6 +65,7 @@ public class ViewHolders {
         }
     }
 
+    // For Reservation Fragment
     public static class ViewHolderTwo extends RecyclerView.ViewHolder {
         ImageView imageView;
         TextView title, status, specificationOne, specificationTwo, specificationThree;
@@ -90,6 +93,7 @@ public class ViewHolders {
         }
     }
 
+    // For Status Fragment
     public static class ViewHolderThree extends RecyclerView.ViewHolder {
         ImageView imageView;
         TextView title, status, date, time;
@@ -130,10 +134,11 @@ public class ViewHolders {
             });
 
             removeBtn.setOnClickListener(v -> {
-                DatabaseRepository.removeUserReservationById(reservation.getId(), consoleModel.getId(), new CustomCallback() {
+                DatabaseRepository.removeUserReservationById(reservation.getId(), consoleModel.getId(), 0, new CustomCallback() {
                     @Override
                     public void onSuccess() {
                         // In theory, it should update the observer in status fragment
+                        // And also change the status to "Canceled"
                     }
 
                     @Override
@@ -142,6 +147,19 @@ public class ViewHolders {
                     }
                 });
             });
+        }
+    }
+
+    // For History Activity
+    public static class HistoryViewHolder extends RecyclerView.ViewHolder {
+        // Variables
+        TextView historyDate;
+        LinearLayout innerCardContainer;
+
+        public HistoryViewHolder(@NonNull View itemView) {
+            super(itemView);
+            historyDate = itemView.findViewById(R.id.historyDate);
+            innerCardContainer = itemView.findViewById(R.id.innerCardContainer);
         }
     }
 

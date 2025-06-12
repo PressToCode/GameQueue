@@ -20,7 +20,7 @@ import com.example.gamequeue.utils.WidgetModifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder> {
+public class HistoryAdapter extends RecyclerView.Adapter<ViewHolders.HistoryViewHolder> {
     // Variables
     private final Context context;
     private final HashMap<String, ArrayList<ReservationModel>> historyListMap;
@@ -35,13 +35,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
 
     @NonNull
     @Override
-    public HistoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolders.HistoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.container_history, parent, false);
-        return new HistoryViewHolder(view);
+        return new ViewHolders.HistoryViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull HistoryViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolders.HistoryViewHolder holder, int position) {
         String date = sortedKeys.get(position);
         ArrayList<ReservationModel> reservations = historyListMap.get(date);
 
@@ -68,18 +68,5 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
     @Override
     public int getItemCount() {
         return historyListMap.size();
-    }
-
-
-    public static class HistoryViewHolder extends RecyclerView.ViewHolder {
-        // Variables
-        TextView historyDate;
-        LinearLayout innerCardContainer;
-
-        public HistoryViewHolder(@NonNull View itemView) {
-            super(itemView);
-            historyDate = itemView.findViewById(R.id.historyDate);
-            innerCardContainer = itemView.findViewById(R.id.innerCardContainer);
-        }
     }
 }

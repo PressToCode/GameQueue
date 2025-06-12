@@ -23,6 +23,11 @@
 --- UserUID             <-- Who is doing the request
 --- ConsoleId           <-- Which console is being requested
 
+// Admins Entry - Edit directly in DB
+- Admins
+-- [User UID]           <-- Instead of Email to prevent duplication
+-- ....
+
 // Statuses
 ConsoleModel: Tersedia, Tidak Tersedia
 ReservationModel: Pending, Approved, Rejected, Canceled, Completed

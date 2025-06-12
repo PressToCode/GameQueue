@@ -129,7 +129,8 @@ public class ProfileActivity extends AppCompatActivity {
                 canSubmit = false;
             }
 
-            if(canSubmit) {
+            // TODO: REMOVE DEV MODE ON PRODUCTION
+            if(canSubmit && !ApplicationContext.getDevMode()) {
                 AuthRepository.updateProfile(name, email, oldPassword, newPassword, new CustomCallback() {
                     @Override
                     public void onSuccess() {

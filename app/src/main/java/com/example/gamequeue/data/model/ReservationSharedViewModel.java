@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.gamequeue.data.firebase.FirebaseUtil;
+import com.example.gamequeue.utils.ApplicationContext;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,7 +33,10 @@ public class ReservationSharedViewModel extends ViewModel {
     private ValueEventListener reservationEventListener;
 
     public ReservationSharedViewModel() {
-        attachDatabaseListener();
+        // TODO: REMOVE ON PRODUCTION
+        if (!ApplicationContext.getDevMode()) {
+            attachDatabaseListener();
+        }
 
         // Mirror original list and apply filter immediately if any
         filteredReservationListLiveOne.addSource(reservationListLive, list -> {

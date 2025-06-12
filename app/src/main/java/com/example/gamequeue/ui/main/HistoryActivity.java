@@ -15,6 +15,7 @@ import com.example.gamequeue.R;
 import com.example.gamequeue.data.firebase.FirebaseUtil;
 import com.example.gamequeue.data.model.ReservationModel;
 import com.example.gamequeue.ui.adapter.HistoryAdapter;
+import com.example.gamequeue.utils.ApplicationContext;
 import com.example.gamequeue.utils.CustomCallbackWithType;
 import com.example.gamequeue.utils.DateConverter;
 import com.google.firebase.database.DataSnapshot;
@@ -44,8 +45,8 @@ public class HistoryActivity extends AppCompatActivity {
      * Value: List of Items under that date (ArrayList)
      *
      * Database Structure:
-     * Date: EEEE, dd MMMM yyyy (Day, date month year)
-     * Convert it into dd MMMM yyyy
+     * Date: Stored in yyyy-MM-dd (ISO format)
+     * Convert it into dd MMMM yyyy with Indonesian Locale
      *
      * Time: HH:mm (Hour:Minute)
      * Can just use directly
@@ -65,7 +66,11 @@ public class HistoryActivity extends AppCompatActivity {
         // Load Data
         sortedIsoDateKeys = new ArrayList<>();
         historyListMap = new HashMap<>();
-        loadData();
+
+        // TODO: REMOVE ON PRODUCTION
+        if (!ApplicationContext.getDevMode()) {
+            loadData();
+        }
 
         // Setup Adapter
         historyAdapter = new HistoryAdapter(context, historyListMap, sortedIsoDateKeys);

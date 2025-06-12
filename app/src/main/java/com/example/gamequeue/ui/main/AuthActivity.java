@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -74,6 +75,7 @@ public class AuthActivity extends AppCompatActivity {
         // Ensure Dev Mode is not active
         // TODO: REMOVE ON PRODUCTION
         ApplicationContext.setDevMode(false);
+        ApplicationContext.setAdminMode(false);
     }
 
     @Override
@@ -211,8 +213,24 @@ public class AuthActivity extends AppCompatActivity {
         AuthRepository.loginWithEmailAndPassword(email, password, new CustomCallback() {
             @Override
             public void onSuccess() {
-                startActivity(new Intent(context, MainActivity.class));
-                finish();
+                // Dev mode skips this process entirely and is in it's own code block
+                DatabaseRepository.checkAdmins(new CustomCallback() {
+                    @Override
+                    public void onSuccess() {
+                        // Whether it is an admin or not, it will go to the next page
+                        startActivity(new Intent(context, MainActivity.class));
+                        finish();
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        // We shouldn't need to do anything here nor is it advisable to LOG
+                        // anything when admin check fails, but for the sake of development
+                        // TODO: Remove this later
+                        Log.d("[Auth]", error);
+                    }
+                });
+
             }
 
             @Override

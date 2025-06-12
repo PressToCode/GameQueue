@@ -22,6 +22,7 @@ import com.example.gamequeue.data.model.ReservationFormSharedViewModel;
 import com.example.gamequeue.data.repository.AuthRepository;
 import com.example.gamequeue.data.repository.DatabaseRepository;
 import com.example.gamequeue.ui.adapter.ReservationPagerAdapter;
+import com.example.gamequeue.utils.ApplicationContext;
 import com.example.gamequeue.utils.CustomCallback;
 import com.example.gamequeue.utils.CustomCallbackWithType;
 import com.example.gamequeue.widgets.NonSwipeableViewPager;
@@ -101,6 +102,13 @@ public class ReservationProcessActivity extends AppCompatActivity {
             if(currentStep != indicator.getStepCount() - 1) {
                 indicator.setCurrentStep(currentStep + 1);
                 viewPager.setCurrentItem(currentStep + 1);
+                return;
+            }
+
+            // Prevent Dev Mode and Admin from Submitting
+            // TODO: CHANGE IN PRODUCTION
+            if (ApplicationContext.getDevMode() || ApplicationContext.getAdminMode()) {
+                finish();
                 return;
             }
 

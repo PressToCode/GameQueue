@@ -21,6 +21,7 @@ import com.example.gamequeue.data.repository.AuthRepository;
 import com.example.gamequeue.ui.fragment.HomeFragment;
 import com.example.gamequeue.ui.fragment.ReservationFragment;
 import com.example.gamequeue.ui.fragment.StatusFragment;
+import com.example.gamequeue.utils.ApplicationContext;
 import com.example.gamequeue.utils.CustomCallback;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -59,7 +60,12 @@ public class MainActivity extends AppCompatActivity {
 
         // Important to import data from Firebase
         consoleSharedViewModel = new ViewModelProvider(this).get(ConsoleSharedViewModel.class);
-        reservationSharedViewModel = new ViewModelProvider(this).get(ReservationSharedViewModel.class);
+
+        // Only fetch reservation if it's a normal user
+        // For dev mode case, already covered in ReservationSharedViewModel
+        if (!ApplicationContext.getAdminMode()) {
+            reservationSharedViewModel = new ViewModelProvider(this).get(ReservationSharedViewModel.class);
+        }
 
         // Setup all fragments and listener
         setupFragments(savedInstanceState);
