@@ -94,7 +94,7 @@ public class ReservationDetailActivity extends AppCompatActivity {
         String reservationId = getIntent().getStringExtra("id");
 
         // Fetch data from database
-        DatabaseRepository.getUserReservationById(reservationId, new CustomCallbackWithType<>() {
+        DatabaseRepository.getUserReservationById(reservationId, null, new CustomCallbackWithType<>() {
             @Override
             public void onSuccess(ReservationModel reservationModel) {
                 reservation = reservationModel;

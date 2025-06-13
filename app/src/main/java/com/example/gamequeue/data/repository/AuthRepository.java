@@ -54,6 +54,16 @@ public class AuthRepository {
     public static String getFirebaseAuthUserEmail() { return auth.getCurrentUser().getEmail(); }
     public static Uri getFirebaseAuthUserPhotoUrl() { return auth.getCurrentUser().getPhotoUrl(); }
 
+    // Firebase Update Name Only
+    public static void updateName(String name) {
+        // Create Profile Update Request
+        UserProfileChangeRequest nameUpdate = new UserProfileChangeRequest.Builder()
+                .setDisplayName(name)
+                .build();
+
+        auth.getCurrentUser().updateProfile(nameUpdate);
+    }
+
     // Firebase Authenticated User Modify
     public static void updateProfile(String name, String email, String oldPassword, String newPassword, CustomCallback callback) {
         // Track All Steps Success Update
@@ -159,6 +169,8 @@ public class AuthRepository {
 
     // Register Using Email & Password
     public static void registerWithEmailAndPassword(String name, String email, String password, CustomCallback callback) {
+        updateName(name);
+
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
             if(task.isSuccessful()) {
                 callback.onSuccess();

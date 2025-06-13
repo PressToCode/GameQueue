@@ -10,6 +10,7 @@ public class ReservationModel {
     private String consoleName;
     private String date;
     private String time;
+    private String lenderEmail;
     private String lenderName;
     private String lenderNIM;
     private String lenderPhone;
@@ -51,6 +52,10 @@ public class ReservationModel {
     public void setTime(String time) {
         this.time = time;
     }
+
+    public String getLenderEmail() { return lenderEmail; }
+
+    public void setLenderEmail(String lenderEmail) { this.lenderEmail = lenderEmail; }
 
     public String getLenderName() {
         return lenderName;

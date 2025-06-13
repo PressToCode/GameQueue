@@ -4,6 +4,7 @@ import com.example.gamequeue.data.model.ConsoleSharedViewModel;
 import com.example.gamequeue.data.model.ReservationModel;
 import com.example.gamequeue.ui.main.ReservationDetailActivity;
 import com.example.gamequeue.ui.main.ReservationProcessActivity;
+import com.example.gamequeue.utils.ApplicationContext;
 import com.example.gamequeue.utils.CardLayoutConst;
 
 import android.content.Context;
@@ -41,7 +42,9 @@ public class ConsoleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(ChosenLayout, parent, false);
-        if (ChosenLayout == CardLayoutConst.LAYOUT_THREE) {
+        if (ChosenLayout == CardLayoutConst.LAYOUT_FOUR) {
+            return new ViewHolders.ViewHolderFour(view);
+        } else if (ChosenLayout == CardLayoutConst.LAYOUT_THREE) {
             return new ViewHolders.ViewHolderThree(view);
         } else if (ChosenLayout == CardLayoutConst.LAYOUT_TWO) {
             return new ViewHolders.ViewHolderTwo(view);
@@ -76,9 +79,15 @@ public class ConsoleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             ConsoleModel currentConsole = consoleList.get(position);
             ((ViewHolders.ViewHolderTwo) holder).bind(currentConsole);
 
+            // Disable any onClickListener in Admin Mode
+            if(ApplicationContext.getAdminMode()) {
+                return;
+            }
+
             // Only currently not lended item can be clicked
-            if(!currentConsole.getLendingStatus()) {
-                Intent intent = getReservationProcessIntent(currentConsole);
+            // Disabled for Admins
+            if(!currentConsole.getLendingStatus() && !ApplicationContext.getAdminMode()) {
+                Intent intent = getReservationProcessIntent(context, currentConsole);
                 holder.itemView.setOnClickListener(v -> context.startActivity(intent));
             }
         } else if (holder instanceof ViewHolders.ViewHolderThree) {
@@ -93,11 +102,18 @@ public class ConsoleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             // Initial Bind
             ((ViewHolders.ViewHolderThree) holder).bind(currentReservation, null, context);
+        } else if (holder instanceof ViewHolders.ViewHolderFour) {
+            ReservationModel currentReservation = reservationList.get(position);
+
+            // Bind
+            if (currentReservation != null) {
+                ((ViewHolders.ViewHolderFour) holder).bind(currentReservation);
+            }
         }
     }
 
     @NonNull
-    private Intent getReservationProcessIntent(ConsoleModel currentConsole) {
+    public static Intent getReservationProcessIntent(Context context, ConsoleModel currentConsole) {
         Intent intent = new Intent(context, ReservationProcessActivity.class);
         intent.putExtra("id", currentConsole.getId());
         intent.putExtra("title", currentConsole.getTitle());
@@ -110,7 +126,7 @@ public class ConsoleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemCount() {
-        if (ChosenLayout == CardLayoutConst.LAYOUT_THREE || ChosenLayout == CardLayoutConst.LAYOUT_ONE) {
+        if (ChosenLayout == CardLayoutConst.LAYOUT_THREE || ChosenLayout == CardLayoutConst.LAYOUT_ONE || ChosenLayout == CardLayoutConst.LAYOUT_FOUR) {
             return reservationList.size();
         } else if (ChosenLayout == CardLayoutConst.LAYOUT_TWO) {
             return consoleList.size();

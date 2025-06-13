@@ -246,7 +246,7 @@ public class HomeFragment extends Fragment {
         recommendationCard.setVisibility(View.VISIBLE);
 
         recommendationCard.setOnClickListener(v -> {
-            startActivity(new Intent(getContext(), ReservationProcessActivity.class).putExtra("id", firstMatch.get().getId()));
+            startActivity(ConsoleAdapter.getReservationProcessIntent(getContext(), firstMatch.get()));
         });
     }
 
@@ -285,7 +285,7 @@ public class HomeFragment extends Fragment {
                 }
 
                 if(searchField.getText().toString().isEmpty()) {
-                    Toast.makeText(getContext(), "Search Field is Empty", Toast.LENGTH_SHORT).show();
+                    searchFilter(new ArrayList<>());
                     return true;
                 }
 

@@ -51,8 +51,20 @@ public class AuthActivity extends AppCompatActivity {
         // TODO: CHANGE AFTER DEV MODE IS REMOVED TO AUTH REPOSITORY METHOD
         if(FirebaseUtil.getAuth().getCurrentUser() != null) {
             SharedProfileModel.setAll();
-            startActivity(new Intent(context, MainActivity.class));
-            finish();
+            DatabaseRepository.checkAdmins(new CustomCallback() {
+                @Override
+                public void onSuccess() {
+                    startActivity(new Intent(context, AdminActivity.class));
+                    finish();
+                }
+
+                @Override
+                public void onError(String error) {
+                    Log.d("[Auth]", error);
+                    startActivity(new Intent(context, MainActivity.class));
+                    finish();
+                }
+            });
         }
 
         // Initialization
@@ -217,17 +229,15 @@ public class AuthActivity extends AppCompatActivity {
                 DatabaseRepository.checkAdmins(new CustomCallback() {
                     @Override
                     public void onSuccess() {
-                        // Whether it is an admin or not, it will go to the next page
-                        startActivity(new Intent(context, MainActivity.class));
+                        startActivity(new Intent(context, AdminActivity.class));
                         finish();
                     }
 
                     @Override
                     public void onError(String error) {
-                        // We shouldn't need to do anything here nor is it advisable to LOG
-                        // anything when admin check fails, but for the sake of development
-                        // TODO: Remove this later
                         Log.d("[Auth]", error);
+                        startActivity(new Intent(context, MainActivity.class));
+                        finish();
                     }
                 });
 

@@ -6,69 +6,72 @@ import android.widget.ProgressBar;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.gamequeue.R;
-import com.example.gamequeue.data.model.ConsoleModel;
 import com.example.gamequeue.data.model.ConsoleSharedViewModel;
-import com.example.gamequeue.data.model.ReservationFormSharedViewModel;
-import com.example.gamequeue.data.model.ReservationSharedViewModel;
+import com.example.gamequeue.data.model.RequestSharedViewModel;
 import com.example.gamequeue.data.repository.AuthRepository;
-import com.example.gamequeue.ui.fragment.HomeFragment;
-import com.example.gamequeue.ui.fragment.ReservationFragment;
-import com.example.gamequeue.ui.fragment.StatusFragment;
+import com.example.gamequeue.ui.fragment.AdminConsoleFragment;
+import com.example.gamequeue.ui.fragment.AdminHomeFragment;
 import com.example.gamequeue.utils.ApplicationContext;
-import com.example.gamequeue.utils.CustomCallback;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class MainActivity extends AppCompatActivity {
+public class AdminActivity extends AppCompatActivity {
     // Variables
     private BottomNavigationView bottomNavigationView;
     private FloatingActionButton fabReservasi;
     private ProgressBar loadingIndicator;
-    private static final String TAG_HOME = "home_fragment";
-    private static final String TAG_RESERVATION = "reservation_fragment";
-    private static final String TAG_STATUS = "status_fragment";
-    private final HomeFragment homeFragment = new HomeFragment();
-    private final ReservationFragment reservationFragment = new ReservationFragment();
-    private final StatusFragment statusFragment = new StatusFragment();
-    private Fragment activeFragment = homeFragment;
     private ConsoleSharedViewModel consoleSharedViewModel;
-    private ReservationSharedViewModel reservationSharedViewModel;
+    private RequestSharedViewModel requestSharedViewModel;
+
+    // Tags
+    private static final String TAG_HOME = "home_fragment";
+    private static final String TAG_CONSOLES = "console_fragment";
+
+    // Fragments
+    private final AdminHomeFragment homeFragment = new AdminHomeFragment();
+
+    // TODO: CHANGE THIS
+    private final AdminConsoleFragment consolesFragment = new AdminConsoleFragment();
+    private Fragment activeFragment = homeFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        // Auth Check before Rendering - Unless Dev Mode
-        if(!AuthRepository.isLoggedIn()) {
+        // Guard
+        // Make sure that it is Logged in and IS an admin
+        if(!AuthRepository.isLoggedIn() || !ApplicationContext.getAdminMode()) {
             finish();
         }
 
         // Initialization
         bottomNavigationView = findViewById(R.id.bottom_navigation);
-        fabReservasi = findViewById(R.id.fab_reservasi);
         loadingIndicator = findViewById(R.id.loading_indicator);
+        fabReservasi = findViewById(R.id.fab_reservasi);
 
-        // Important to import data from Firebase
+        // Remove Fab Reservasi
+        fabReservasi.setVisibility(android.view.View.GONE);
+
+        // Change BottomNav Menu
+        bottomNavigationView.getMenu().clear();
+        bottomNavigationView.inflateMenu(R.menu.admin_bottom_nav_menu);
+
+        // Import Consoles Data and Request Data
         consoleSharedViewModel = new ViewModelProvider(this).get(ConsoleSharedViewModel.class);
+        requestSharedViewModel = new ViewModelProvider(this).get(RequestSharedViewModel.class);
 
-        // Only fetch reservation if it's a normal user
-        // For dev mode case, already covered in ReservationSharedViewModel
-        // TODO: REMOVE THIS
-        if (!ApplicationContext.getAdminMode()) {
-            reservationSharedViewModel = new ViewModelProvider(this).get(ReservationSharedViewModel.class);
-        }
-
-        // Setup all fragments and listener
+        // Setup Fragments
         setupFragments(savedInstanceState);
     }
 
@@ -77,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         // Check Auth Status
-        if(!AuthRepository.isLoggedIn()) {
+        if(!AuthRepository.isLoggedIn() || !ApplicationContext.getAdminMode()) {
             finish();
         }
     }
@@ -101,42 +104,38 @@ public class MainActivity extends AppCompatActivity {
             if (fm.findFragmentByTag(TAG_HOME) == null) {
                 ft.add(R.id.fragment_container, homeFragment, TAG_HOME);
             }
-            // Add ReservationFragment (and hide it)
-            if (fm.findFragmentByTag(TAG_RESERVATION) == null) {
-                ft.add(R.id.fragment_container, reservationFragment, TAG_RESERVATION).hide(reservationFragment);
-            }
-            // Add StatusFragment (and hide it)
-            if (fm.findFragmentByTag(TAG_STATUS) == null) {
-                ft.add(R.id.fragment_container, statusFragment, TAG_STATUS).hide(statusFragment);
+
+            // Add ConsoleFragment (and hide it)
+            if (fm.findFragmentByTag(TAG_CONSOLES) == null) {
+                ft.add(R.id.fragment_container, consolesFragment, TAG_CONSOLES).hide(consolesFragment);
             }
 
             // Determine which fragment to show
             if (activeTagRestored != null) {
-                if (activeTagRestored.equals(TAG_RESERVATION)) activeFragment = reservationFragment;
-                else if (activeTagRestored.equals(TAG_STATUS)) activeFragment = statusFragment;
-                else activeFragment = homeFragment; // Default or TAG_HOME
+                if (activeTagRestored.equals(TAG_HOME)) activeFragment = homeFragment;
+                else if (activeTagRestored.equals(TAG_CONSOLES)) activeFragment = consolesFragment;
+                else activeFragment = homeFragment;
             } else {
-                activeFragment = homeFragment; // Default on first creation
+                activeFragment = homeFragment;
             }
 
             // Hide all fragments first to handle cases where multiple might have been visible
             // due to incorrect previous state or prior to this logic being implemented.
             // This is a defensive measure.
             if (homeFragment.isAdded()) ft.hide(homeFragment);
-            if (reservationFragment.isAdded()) ft.hide(reservationFragment);
-            if (statusFragment.isAdded()) ft.hide(statusFragment);
+            if (consolesFragment.isAdded()) ft.hide(consolesFragment);
 
             // Then show the active one
             ft.show(activeFragment);
             ft.commit();
 
             // Update BottomNavigationView selection based on the active fragment
-            if (activeFragment == reservationFragment) {
-                bottomNavigationView.setSelectedItemId(R.id.nav_reservation);
-            } else if (activeFragment == statusFragment) {
-                bottomNavigationView.setSelectedItemId(R.id.nav_status);
-            } else { // homeFragment is active
-                bottomNavigationView.setSelectedItemId(R.id.nav_home);
+            if (activeFragment == homeFragment) {
+                bottomNavigationView.setSelectedItemId(R.id.nav_home_admin);
+            } else if (activeFragment == consolesFragment) {
+                bottomNavigationView.setSelectedItemId(R.id.nav_console_admin);
+            } else {
+                bottomNavigationView.setSelectedItemId(R.id.nav_home_admin);
             }
 
             // Setup Listener
@@ -151,49 +150,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
-        fabReservasi.setOnClickListener(v -> {
-            // Simply select the item, the listener will handle the fragment switch
-            bottomNavigationView.setSelectedItemId(R.id.nav_reservation);
-        });
-
         bottomNavigationView.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
-            String selectedTag = null; // For consistency, though not strictly used in this switchFragment
+            String selectedTag = null;
 
-            if (item.getItemId() == R.id.nav_home) {
+            if (item.getItemId() == R.id.nav_home_admin) {
                 selectedFragment = homeFragment;
                 selectedTag = TAG_HOME;
-            } else if (item.getItemId() == R.id.nav_reservation) {
-                selectedFragment = reservationFragment;
-                selectedTag = TAG_RESERVATION;
-            } else if (item.getItemId() == R.id.nav_status) {
-                selectedFragment = statusFragment;
-                selectedTag = TAG_STATUS;
+            } else if (item.getItemId() == R.id.nav_console_admin) {
+                selectedFragment = consolesFragment;
+                selectedTag = TAG_CONSOLES;
             }
 
             if (selectedFragment != null && selectedFragment != activeFragment) {
-                switchFragment(selectedFragment); // Pass the selected fragment instance
+                switchFragment(selectedFragment);
             }
-            return true; // Return true to display the item as selected
+            return true;
         });
     }
 
-    // --- MODIFIED loadFragment to switchFragment using show/hide ---
     private void switchFragment(Fragment targetFragment) {
-        if (targetFragment == activeFragment) return; // No action if already active
+        if (targetFragment == activeFragment) return;
 
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-
-        // Optional: Add animations
-//        ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
 
         if (activeFragment != null && activeFragment.isAdded()) {
             ft.hide(activeFragment);
         }
 
-        // The fragments should have been added in setupFragments.
-        // If not, this is a problem, but typically show expects it to be added.
         if (targetFragment.isAdded()) {
             ft.show(targetFragment);
         } else {
@@ -212,8 +197,8 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         if (activeFragment != null && activeFragment.getTag() != null) {
             outState.putString("active_fragment_tag", activeFragment.getTag());
-        } else if (activeFragment == homeFragment) { // Fallback if tag was not set/found
+        } else if (activeFragment == homeFragment) {
             outState.putString("active_fragment_tag", TAG_HOME);
-        } // Add similar fallbacks for other fragments if needed
+        }
     }
 }

@@ -1,6 +1,9 @@
 package com.example.gamequeue.data.repository;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.example.gamequeue.data.firebase.FirebaseUtil;
 import com.example.gamequeue.data.model.ConsoleModel;
@@ -107,6 +110,7 @@ public class DatabaseRepository {
         }
 
         form.setVerificationCode(RandomGenerator.generateRandomString());
+        form.setLenderEmail(auth.getCurrentUser().getEmail());
         form.setStatus("Pending");
         reservationsRef.child(auth.getCurrentUser().getUid()).child(reservationId).setValue(form);
 
@@ -137,8 +141,16 @@ public class DatabaseRepository {
         });
     }
 
-    public static void getUserReservationById(String id, CustomCallbackWithType<ReservationModel> callback) {
-        reservationsRef.child(auth.getCurrentUser().getUid()).child(id).get().addOnCompleteListener(task -> {
+    public static void getUserReservationById(String id, @Nullable String userUid, CustomCallbackWithType<ReservationModel> callback) {
+        String userId;
+
+        if (userUid == null || userUid.isEmpty()) {
+            userId = auth.getCurrentUser().getUid();
+        } else {
+            userId = userUid;
+        }
+
+        reservationsRef.child(userId).child(id).get().addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
                 callback.onError(task.getException().getMessage());
                 return;
@@ -163,6 +175,25 @@ public class DatabaseRepository {
         reservationsRef.child(auth.getCurrentUser().getUid()).child(reservationId).child("status").setValue(type == 0 ? "Canceled" : "Rejected");
     }
 
+    // Used to fetch ONCE in requestSharedViewModel
+    // DO NOT USE ANYWHERE ELSE
+    private static void getRequests(CustomCallbackWithType<ArrayList<RequestModel>> callback) {
+        requestRef.get().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                callback.onError(task.getException().getMessage());
+                return;
+            }
+
+            ArrayList<RequestModel> requests = new ArrayList<>();
+            task.getResult().getChildren().forEach(dataSnapshot -> {
+                RequestModel request = dataSnapshot.getValue(RequestModel.class);
+                requests.add(request);
+            });
+
+            callback.onSuccess(requests);
+        });
+    }
+
     public static void checkAdmins(CustomCallback callback) {
         // Get list of admins and check if current user UID match
         adminsRef.get().addOnCompleteListener(task -> {
@@ -173,7 +204,7 @@ public class DatabaseRepository {
 
             ArrayList<String> admins = new ArrayList<>();
             task.getResult().getChildren().forEach(dataSnapshot -> {
-                admins.add(dataSnapshot.getValue(String.class));
+                admins.add(dataSnapshot.getKey());
             });
 
             if (admins.contains(auth.getCurrentUser().getUid())) {
@@ -183,7 +214,7 @@ public class DatabaseRepository {
             }
 
             ApplicationContext.setAdminMode(false);
-            callback.onSuccess();
+            callback.onError("Not Admin");
         });
     }
 }

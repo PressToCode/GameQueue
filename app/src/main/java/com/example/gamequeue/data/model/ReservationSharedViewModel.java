@@ -77,8 +77,6 @@ public class ReservationSharedViewModel extends ViewModel {
         detachDatabaseReadListener(); // Important for cleanup
     }
 
-    private LiveData<ArrayList<ReservationModel>> getReservationListLive() { return reservationListLive; }
-
     public LiveData<ArrayList<ReservationModel>> getFilteredReservationListLiveOne() { return filteredReservationListLiveOne; }
 
     public LiveData<ArrayList<ReservationModel>> getFilteredReservationListLiveTwo() { return filteredReservationListLiveTwo; }
@@ -180,10 +178,31 @@ public class ReservationSharedViewModel extends ViewModel {
                     return false;
                 }
 
+                if (reservation.getStatus() == null) {
+                    return false;
+                }
+
+                if (reservation.getTime() == null) {
+                    return false;
+                }
+
                 String consoleNameToLower = reservation.getConsoleName().toLowerCase();
+                String statusToLower = reservation.getStatus().toLowerCase();
 
                 for (String filterWord : currentTitleFilter) {
                     if (consoleNameToLower.contains(filterWord.toLowerCase())) {
+                        return true;
+                    }
+                }
+
+                for (String filterWord : currentTitleFilter) {
+                    if (statusToLower.contains(filterWord.toLowerCase())) {
+                        return true;
+                    }
+                }
+
+                for (String filterWord : currentTitleFilter) {
+                    if (reservation.getTime().contains(filterWord.toLowerCase())) {
                         return true;
                     }
                 }

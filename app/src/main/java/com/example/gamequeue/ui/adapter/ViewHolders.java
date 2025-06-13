@@ -22,6 +22,7 @@ import com.example.gamequeue.data.model.ReservationModel;
 import com.example.gamequeue.data.repository.DatabaseRepository;
 import com.example.gamequeue.ui.main.ReservationDetailActivity;
 import com.example.gamequeue.utils.ApplicationContext;
+import com.example.gamequeue.utils.CardFourID;
 import com.example.gamequeue.utils.CardOneID;
 import com.example.gamequeue.utils.CardThreeID;
 import com.example.gamequeue.utils.CardTwoID;
@@ -147,6 +148,34 @@ public class ViewHolders {
                     }
                 });
             });
+        }
+    }
+
+    public static class ViewHolderFour extends RecyclerView.ViewHolder {
+        // Variables
+        ImageView image;
+        TextView consoleName, userName, status, email, phone;
+
+        public ViewHolderFour(@NonNull View itemView) {
+            super(itemView);
+            image = itemView.findViewById(CardFourID.image);
+            consoleName = itemView.findViewById(CardFourID.consoleName);
+            userName = itemView.findViewById(CardFourID.userName);
+            status = itemView.findViewById(CardFourID.status);
+            email = itemView.findViewById(CardFourID.email);
+            phone = itemView.findViewById(CardFourID.phone);
+        }
+
+        public void bind(ReservationModel reservation) {
+            if (reservation == null) return;
+
+            consoleName.setText(reservation.getConsoleName());
+            userName.setText(reservation.getLenderName());
+            status.setText(reservation.getStatus());
+            email.setText(reservation.getLenderEmail());
+            phone.setText(reservation.getLenderPhone());
+
+            WidgetModifier.statusChanger(status);
         }
     }
 
