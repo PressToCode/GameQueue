@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 
 import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ConsoleModel;
-import com.example.gamequeue.data.model.ConsoleSharedViewModel;
+import com.example.gamequeue.data.sharedViewModel.ConsoleSharedViewModel;
 import com.example.gamequeue.ui.adapter.ConsoleAdapter;
 
 import java.util.ArrayList;

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,7 +13,6 @@ import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ReservationModel;
 import com.example.gamequeue.utils.CardLayoutConst;
 import com.example.gamequeue.utils.CardOneID;
-import com.example.gamequeue.utils.DateConverter;
 import com.example.gamequeue.utils.WidgetModifier;
 
 import java.util.ArrayList;
@@ -58,7 +56,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<ViewHolders.HistoryView
             cardTitle.setText(reservation.getConsoleName());
             cardStatus.setText(reservation.getStatus());
             WidgetModifier.statusChanger(cardStatus);
-            cardDate.setText(DateConverter.convertDateToIndonesianLocale(reservation.getDate(), 2));
+            cardDate.setText(WidgetModifier.convertDateToIndonesianLocale(reservation.getDate(), 2));
             cardTime.setText(reservation.getTime());
 
             holder.innerCardContainer.addView(card);

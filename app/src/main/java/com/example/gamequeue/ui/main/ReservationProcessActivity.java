@@ -18,12 +18,11 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.badoualy.stepperindicator.StepperIndicator;
 import com.example.gamequeue.R;
-import com.example.gamequeue.data.model.ReservationFormSharedViewModel;
+import com.example.gamequeue.data.sharedViewModel.ReservationFormSharedViewModel;
 import com.example.gamequeue.data.repository.AuthRepository;
 import com.example.gamequeue.data.repository.DatabaseRepository;
 import com.example.gamequeue.ui.adapter.ReservationPagerAdapter;
 import com.example.gamequeue.utils.ApplicationContext;
-import com.example.gamequeue.utils.CustomCallback;
 import com.example.gamequeue.utils.CustomCallbackWithType;
 import com.example.gamequeue.widgets.NonSwipeableViewPager;
 

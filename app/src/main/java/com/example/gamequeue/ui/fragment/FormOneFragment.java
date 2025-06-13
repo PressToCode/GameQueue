@@ -17,10 +17,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.example.gamequeue.R;
-import com.example.gamequeue.data.model.ConsoleModel;
-import com.example.gamequeue.data.model.ConsoleSharedViewModel;
-import com.example.gamequeue.data.model.ReservationFormSharedViewModel;
-import com.example.gamequeue.ui.adapter.ViewHolders;
+import com.example.gamequeue.data.sharedViewModel.ReservationFormSharedViewModel;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -29,8 +26,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 
 public class FormOneFragment extends Fragment {
     private List<LinearLayout> buttonDayCard;

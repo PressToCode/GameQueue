@@ -1,6 +1,6 @@
 package com.example.gamequeue.ui.adapter;
 
-import com.example.gamequeue.data.model.ConsoleSharedViewModel;
+import com.example.gamequeue.data.sharedViewModel.ConsoleSharedViewModel;
 import com.example.gamequeue.data.model.ReservationModel;
 import com.example.gamequeue.ui.main.ReservationDetailActivity;
 import com.example.gamequeue.ui.main.ReservationProcessActivity;
@@ -9,11 +9,9 @@ import com.example.gamequeue.utils.CardLayoutConst;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

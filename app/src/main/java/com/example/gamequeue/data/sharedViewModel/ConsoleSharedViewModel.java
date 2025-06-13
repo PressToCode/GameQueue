@@ -1,4 +1,4 @@
-package com.example.gamequeue.data.model;
+package com.example.gamequeue.data.sharedViewModel;
 
 import android.util.Log;
 
@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.gamequeue.data.firebase.FirebaseUtil;
-import com.example.gamequeue.utils.CustomCallback;
+import com.example.gamequeue.data.model.ConsoleModel;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;

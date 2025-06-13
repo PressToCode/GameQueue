@@ -22,7 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.gamequeue.R;
-import com.example.gamequeue.data.model.ReservationFormSharedViewModel;
+import com.example.gamequeue.data.sharedViewModel.ReservationFormSharedViewModel;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 
 import kotlin.Unit;

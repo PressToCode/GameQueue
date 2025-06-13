@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ReservationModel;
-import com.example.gamequeue.data.model.ReservationFormSharedViewModel;
+import com.example.gamequeue.data.sharedViewModel.ReservationFormSharedViewModel;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
 

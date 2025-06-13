@@ -16,18 +16,15 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 
 import com.example.gamequeue.R;
 import com.example.gamequeue.data.model.ConsoleModel;
-import com.example.gamequeue.data.model.ConsoleSharedViewModel;
+import com.example.gamequeue.data.sharedViewModel.ConsoleSharedViewModel;
 import com.example.gamequeue.data.model.ReservationModel;
-import com.example.gamequeue.data.model.ReservationSharedViewModel;
-import com.example.gamequeue.data.repository.DatabaseRepository;
+import com.example.gamequeue.data.sharedViewModel.ReservationSharedViewModel;
 import com.example.gamequeue.ui.adapter.ConsoleAdapter;
 import com.example.gamequeue.ui.main.HistoryActivity;
 import com.example.gamequeue.utils.ApplicationContext;
-import com.example.gamequeue.utils.CustomCallbackWithType;
 
 import java.util.ArrayList;
 

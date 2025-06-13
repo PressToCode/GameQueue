@@ -6,20 +6,17 @@ import android.widget.ProgressBar;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.gamequeue.R;
-import com.example.gamequeue.data.model.ConsoleSharedViewModel;
-import com.example.gamequeue.data.model.RequestSharedViewModel;
+import com.example.gamequeue.data.sharedViewModel.ConsoleSharedViewModel;
+import com.example.gamequeue.data.sharedViewModel.RequestSharedViewModel;
 import com.example.gamequeue.data.repository.AuthRepository;
-import com.example.gamequeue.ui.fragment.AdminConsoleFragment;
 import com.example.gamequeue.ui.fragment.AdminHomeFragment;
+import com.example.gamequeue.ui.fragment.ReservationFragment;
 import com.example.gamequeue.utils.ApplicationContext;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -40,7 +37,7 @@ public class AdminActivity extends AppCompatActivity {
     private final AdminHomeFragment homeFragment = new AdminHomeFragment();
 
     // TODO: CHANGE THIS
-    private final AdminConsoleFragment consolesFragment = new AdminConsoleFragment();
+    private final ReservationFragment consolesFragment = new ReservationFragment();
     private Fragment activeFragment = homeFragment;
 
     @Override

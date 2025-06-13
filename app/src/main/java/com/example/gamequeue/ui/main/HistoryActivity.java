@@ -16,8 +16,6 @@ import com.example.gamequeue.data.firebase.FirebaseUtil;
 import com.example.gamequeue.data.model.ReservationModel;
 import com.example.gamequeue.ui.adapter.HistoryAdapter;
 import com.example.gamequeue.utils.ApplicationContext;
-import com.example.gamequeue.utils.CustomCallbackWithType;
-import com.example.gamequeue.utils.DateConverter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;

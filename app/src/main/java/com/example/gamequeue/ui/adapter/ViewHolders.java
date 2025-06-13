@@ -2,8 +2,6 @@ package com.example.gamequeue.ui.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -13,7 +11,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamequeue.R;
@@ -21,17 +18,12 @@ import com.example.gamequeue.data.model.ConsoleModel;
 import com.example.gamequeue.data.model.ReservationModel;
 import com.example.gamequeue.data.repository.DatabaseRepository;
 import com.example.gamequeue.ui.main.ReservationDetailActivity;
-import com.example.gamequeue.utils.ApplicationContext;
 import com.example.gamequeue.utils.CardFourID;
 import com.example.gamequeue.utils.CardOneID;
 import com.example.gamequeue.utils.CardThreeID;
 import com.example.gamequeue.utils.CardTwoID;
 import com.example.gamequeue.utils.CustomCallback;
-import com.example.gamequeue.utils.CustomCallbackWithType;
-import com.example.gamequeue.utils.DateConverter;
 import com.example.gamequeue.utils.WidgetModifier;
-
-import java.util.Objects;
 
 public class ViewHolders {
     // For Home Fragment
@@ -193,6 +185,6 @@ public class ViewHolders {
     }
 
     private static void convertDate(String date, TextView dateWidget) {
-        dateWidget.setText(DateConverter.convertDateToIndonesianLocale(date, 1));
+        dateWidget.setText(WidgetModifier.convertDateToIndonesianLocale(date, 1));
     }
 }

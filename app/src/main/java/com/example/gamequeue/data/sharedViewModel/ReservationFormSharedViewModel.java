@@ -1,7 +1,9 @@
-package com.example.gamequeue.data.model;
+package com.example.gamequeue.data.sharedViewModel;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
+import com.example.gamequeue.data.model.ReservationModel;
 
 public class ReservationFormSharedViewModel extends ViewModel {
     private MutableLiveData<Boolean> isFormOneFilled = new MutableLiveData<>(false);
