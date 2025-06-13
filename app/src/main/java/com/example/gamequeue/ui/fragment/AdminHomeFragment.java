@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamequeue.R;
+import com.example.gamequeue.data.sharedViewModel.ConsoleSharedViewModel;
 import com.example.gamequeue.data.sharedViewModel.RequestSharedViewModel;
 import com.example.gamequeue.data.model.ReservationModel;
 import com.example.gamequeue.data.model.SharedProfileModel;
@@ -52,6 +53,7 @@ public class AdminHomeFragment extends Fragment {
     private RadioGroup radioGroup;
     private ArrayList<ReservationModel> reservationList;
     private RequestSharedViewModel requestSharedViewModel;
+    private ConsoleSharedViewModel consoleSharedViewModel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -91,6 +93,7 @@ public class AdminHomeFragment extends Fragment {
 
         // Data fetching
         requestSharedViewModel = new ViewModelProvider(requireActivity()).get(RequestSharedViewModel.class);
+        consoleSharedViewModel = new ViewModelProvider(requireActivity()).get(ConsoleSharedViewModel.class);
 
         // Setup Top-part (Incl. Profile & Greeting)
         setupTopContainer();
@@ -102,7 +105,7 @@ public class AdminHomeFragment extends Fragment {
         loadData();
 
         // Create Adapter Here
-        adapter = new ConsoleAdapter(getContext(), R.layout.card_item_four, null, reservationList, null);
+        adapter = new ConsoleAdapter(getContext(), R.layout.card_item_four, null, reservationList, consoleSharedViewModel, requestSharedViewModel);
 
         // Setup Adapter
         recyclerView.setAdapter(adapter);

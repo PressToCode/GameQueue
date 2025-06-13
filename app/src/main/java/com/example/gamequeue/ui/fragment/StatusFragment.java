@@ -81,7 +81,7 @@ public class StatusFragment extends Fragment {
         // Set Adapter
         // TODO: Check for Admin Case --------------------------
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new ConsoleAdapter(getContext(), R.layout.card_item_three, consoleList, reservationList, consoleSharedViewModel);
+        adapter = new ConsoleAdapter(getContext(), R.layout.card_item_three, consoleList, reservationList, consoleSharedViewModel, null);
         recyclerView.setAdapter(adapter);
 
         // Setup Filterer

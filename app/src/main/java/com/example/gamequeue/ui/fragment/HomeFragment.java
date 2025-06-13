@@ -126,7 +126,7 @@ public class HomeFragment extends Fragment {
 
         // Set Adapter
         // TODO: Check for Admin Case --------------------------
-        adapter = new ConsoleAdapter(getContext(), R.layout.card_item_one, consoleList, reservationList, consoleSharedViewModel);
+        adapter = new ConsoleAdapter(getContext(), R.layout.card_item_one, consoleList, reservationList, consoleSharedViewModel, null);
         recyclerView.setAdapter(adapter);
 
         // Set up filter function

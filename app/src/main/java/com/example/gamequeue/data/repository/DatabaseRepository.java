@@ -109,14 +109,14 @@ public class DatabaseRepository {
             return;
         }
 
-        form.setVerificationCode(RandomGenerator.generateRandomString());
+//        form.setVerificationCode(RandomGenerator.generateRandomString());
         form.setLenderEmail(auth.getCurrentUser().getEmail());
         form.setStatus("Pending");
         reservationsRef.child(auth.getCurrentUser().getUid()).child(reservationId).setValue(form);
 
         // Update console to reserved status
-        consolesRef.child(consoleId).child("lendingStatus").setValue(true);
-        consolesRef.child(consoleId).child("lenderUid").setValue(userId);
+//        consolesRef.child(consoleId).child("lendingStatus").setValue(true);
+//        consolesRef.child(consoleId).child("lenderUid").setValue(userId);
 
         // Send request to admin
         requestRef.child(reservationId).setValue(new RequestModel(userId, consoleId));
@@ -156,7 +156,9 @@ public class DatabaseRepository {
                 return;
             }
 
-            callback.onSuccess(task.getResult().getValue(ReservationModel.class));
+            ReservationModel reservation = task.getResult().getValue(ReservationModel.class);
+            reservation.setId(task.getResult().getKey());
+            callback.onSuccess(reservation);
         });
     }
 
@@ -216,5 +218,30 @@ public class DatabaseRepository {
             ApplicationContext.setAdminMode(false);
             callback.onError("Not Admin");
         });
+    }
+
+    public static void updateReservationRequest(Boolean isAccepted, String reservationId, String userId, String consoleId) {
+        if (isAccepted) {
+            // Update Console
+            consolesRef.child(consoleId).child("lendingStatus").setValue(true);
+            consolesRef.child(consoleId).child("lenderUid").setValue(userId);
+
+            // Update User's Reservation Status
+            reservationsRef.child(userId).child(reservationId).child("status").setValue("Approved");
+            reservationsRef.child(userId).child(reservationId).child("verificationCode").setValue(RandomGenerator.generateRandomString());
+
+            // Lastly, Remove the Request
+            requestRef.child(reservationId).removeValue();
+        } else {
+            // Update Console
+            consolesRef.child(consoleId).child("lendingStatus").setValue(false);
+            consolesRef.child(consoleId).child("lenderUid").setValue("");
+
+            // Update User's Reservation Status
+            reservationsRef.child(userId).child(reservationId).child("status").setValue("Rejected");
+
+            // Lastly, Remove the Request
+            requestRef.child(reservationId).removeValue();
+        }
     }
 }

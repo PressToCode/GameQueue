@@ -35,8 +35,6 @@ public class AdminActivity extends AppCompatActivity {
 
     // Fragments
     private final AdminHomeFragment homeFragment = new AdminHomeFragment();
-
-    // TODO: CHANGE THIS
     private final ReservationFragment consolesFragment = new ReservationFragment();
     private Fragment activeFragment = homeFragment;
 

@@ -55,7 +55,7 @@ public class ReservationFragment extends Fragment {
         // Load Data
         loadData();
 
-        adapter = new ConsoleAdapter(getContext(), R.layout.card_item_two, consoleList, null, consoleSharedViewModel);
+        adapter = new ConsoleAdapter(getContext(), R.layout.card_item_two, consoleList, null, consoleSharedViewModel, null);
         recyclerView.setAdapter(adapter);
     }
 

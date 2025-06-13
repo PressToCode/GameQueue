@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -125,7 +126,7 @@ public class ReservationDetailActivity extends AppCompatActivity {
 
         // Date Formatter - Assuming Rental Time is 1 hour
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        rentalLimit.setText(LocalTime.parse(reservation.getTime(), formatter).plusHours(1).toString());
+        rentalLimit.setText(LocalTime.parse(reservation.getTime(), formatter).plusHours(1).toString() + " WIB");
     }
 
     private void attachStatusListener(String id) {
@@ -133,6 +134,7 @@ public class ReservationDetailActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 reservationStatus = snapshot.getValue(String.class);
+                setupUIBasedOnStatus();
             }
 
             @Override
@@ -174,12 +176,11 @@ public class ReservationDetailActivity extends AppCompatActivity {
         // Set info text
         infoText.setText("Mohon ditunggu admin akan melakukan verifikasi permintaan");
         infoText.setBackgroundResource(R.drawable.info_text_background);
-        infoText.getBackground().setTint(getResources().getColor(R.color.pastel_blue));
     }
 
     private void setupApprovedStatus() {
         // Set status icon and title
-        statusIcon.setImageResource(R.drawable.ic_confirm);
+        statusIcon.setImageResource(R.drawable.ic_succes);
         statusTitle.setText("Reservasi Disetujui");
 
         // Show additional info
@@ -192,7 +193,6 @@ public class ReservationDetailActivity extends AppCompatActivity {
         // Set info text
         infoText.setText("Tunjukkan kode verifikasi ini kepada admin untuk konfirmasi");
         infoText.setBackgroundResource(R.drawable.info_text_background);
-        infoText.getBackground().setTint(getResources().getColor(R.color.light_green_bg));
     }
 
     private void setupRejectedStatus() {
@@ -207,7 +207,6 @@ public class ReservationDetailActivity extends AppCompatActivity {
         // Set info text
         infoText.setText("Maaf, reservasi Anda ditolak. Silakan coba lagi atau hubungi admin");
         infoText.setBackgroundResource(R.drawable.info_text_background);
-        infoText.getBackground().setTint(getResources().getColor(R.color.pastel_red));
     }
 
     private void startConfirmationTimer(long milliseconds) {

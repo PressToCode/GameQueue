@@ -85,6 +85,16 @@ public class RequestSharedViewModel extends ViewModel {
 
     public void setFilterWord(ArrayList<String> words) { filterWordLive.postValue(words); }
 
+    public String getUserIdByReservationId(String reservationId) {
+        for (RequestModel request : requestListLive.getValue()) {
+            if (request.getReservationId().equals(reservationId)) {
+                return request.getUserId();
+            }
+        }
+
+        return null;
+    }
+
     private void attachRequestListener() {
         if (requestEventListener == null) {
             requestEventListener = new ValueEventListener() {
