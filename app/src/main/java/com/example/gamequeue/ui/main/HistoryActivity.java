@@ -22,6 +22,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 
@@ -126,6 +127,17 @@ public class HistoryActivity extends AppCompatActivity {
                         if (dateString == null || dateString.isEmpty()) {
                             return;
                         }
+
+                        String[] blacklistedStatus = {"pending", "approved"};
+
+                        // Also check if it's an ongoing reservation
+                        if (Arrays.asList(blacklistedStatus).contains(reservation.getStatus().toLowerCase())) {
+                            return;
+                        }
+
+                        /*
+                         * Rejected, Completed, or Canceled
+                         */
 
                         if (historyListMap.containsKey(dateString)) {
                             historyListMap.get(dateString).add(reservation);

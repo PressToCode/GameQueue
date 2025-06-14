@@ -10,13 +10,17 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.gamequeue.data.firebase.FirebaseUtil;
 import com.example.gamequeue.data.model.ReservationModel;
+import com.example.gamequeue.data.repository.DatabaseRepository;
 import com.example.gamequeue.utils.ApplicationContext;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -109,6 +113,12 @@ public class ReservationSharedViewModel extends ViewModel {
     }
 
     private void attachDatabaseListener() {
+        // Get Current Time and Date
+        LocalDate today = LocalDate.now();
+
+        // Get current time MINUS one hour
+        LocalTime currentTime = LocalTime.now().minusHours(1);
+
         if (reservationEventListener == null) {
             reservationEventListener = new ValueEventListener() {
                 @Override
@@ -121,6 +131,33 @@ public class ReservationSharedViewModel extends ViewModel {
                             ReservationModel reservation = reservationSnapshot.getValue(ReservationModel.class);
                             if (reservation != null) {
                                 reservation.setId(reservationSnapshot.getKey());
+
+                                // Blacklist Status to not show
+                                String[] blacklistedStatus = {"completed", "canceled", "rejected"};
+
+                                if (Arrays.asList(blacklistedStatus).contains(reservation.getStatus().toLowerCase())) {
+                                    return;
+                                }
+
+                                // Check if reservation is already past their due
+                                LocalDate reservationDate = LocalDate.parse(reservation.getDate());
+
+                                if (reservationDate.isBefore(today)) {
+                                    // Call DatabaseRepository to update status to "Completed"
+                                    DatabaseRepository.updateReservationStatus(reservation);
+                                    return;
+                                }
+
+                                // Check also for the time today
+                                LocalTime reservationTime = LocalTime.parse(reservation.getTime());
+
+                                // If it's today and the reservation is already expired (past 1 hour after the reserved time)
+                                if (reservationDate.isEqual(today) && reservationTime.isBefore(currentTime)) {
+                                    // Call DatabaseRepository to update status to "Completed"
+                                    DatabaseRepository.updateReservationStatus(reservation);
+                                    return;
+                                }
+
                                 reservationList.add(reservation);
                             }
                         } catch (Exception e) {

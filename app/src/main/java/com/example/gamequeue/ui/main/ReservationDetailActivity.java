@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -226,7 +227,7 @@ public class ReservationDetailActivity extends AppCompatActivity {
             @Override
             public void onFinish() {
                 confirmationTime.setText("Waktu konfirmasi habis");
-                confirmationTime.setTextColor(getResources().getColor(R.color.blind_red));
+                confirmationTime.setTextColor(ContextCompat.getColor(context, R.color.blind_red));
             }
         };
 

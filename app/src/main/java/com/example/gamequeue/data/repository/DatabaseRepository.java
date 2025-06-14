@@ -177,6 +177,28 @@ public class DatabaseRepository {
         reservationsRef.child(auth.getCurrentUser().getUid()).child(reservationId).child("status").setValue(type == 0 ? "Canceled" : "Rejected");
     }
 
+    // There is two type
+    // If approved, then the next thing is completed
+    // If pending, then the next thing is cancelled
+    public static void updateReservationStatus(ReservationModel reservation) {
+        // Get current status
+        String status = reservation.getStatus().toLowerCase();
+
+        // Get reservation ID
+        String reservationId = reservation.getId();
+
+        // Update Status
+        if (status.equals("pending")) {
+            reservationsRef.child(auth.getCurrentUser().getUid()).child(reservationId).child("status").setValue("Canceled");
+        } else if (status.equals("approved")) {
+            reservationsRef.child(auth.getCurrentUser().getUid()).child(reservationId).child("status").setValue("Completed");
+        }
+
+        // Update Console to free up reservation
+        consolesRef.child(reservationId).child("lendingStatus").setValue(false);
+        consolesRef.child(reservationId).child("lenderUid").setValue("");
+    }
+
     // Used to fetch ONCE in requestSharedViewModel
     // DO NOT USE ANYWHERE ELSE
     private static void getRequests(CustomCallbackWithType<ArrayList<RequestModel>> callback) {
