@@ -136,7 +136,7 @@ public class ReservationSharedViewModel extends ViewModel {
                                 String[] blacklistedStatus = {"completed", "canceled", "rejected"};
 
                                 if (Arrays.asList(blacklistedStatus).contains(reservation.getStatus().toLowerCase())) {
-                                    return;
+                                    continue;
                                 }
 
                                 // Check if reservation is already past their due

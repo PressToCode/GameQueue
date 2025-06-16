@@ -128,11 +128,9 @@ public class HistoryActivity extends AppCompatActivity {
                             return;
                         }
 
-                        String[] blacklistedStatus = {"pending", "approved"};
-
                         // Also check if it's an ongoing reservation
-                        if (Arrays.asList(blacklistedStatus).contains(reservation.getStatus().toLowerCase())) {
-                            return;
+                        if (reservation.getStatus().equalsIgnoreCase("pending") || reservation.getStatus().equalsIgnoreCase("approved")) {
+                            continue;
                         }
 
                         /*

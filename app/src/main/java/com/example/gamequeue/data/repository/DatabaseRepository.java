@@ -186,6 +186,7 @@ public class DatabaseRepository {
 
         // Get reservation ID
         String reservationId = reservation.getId();
+        String consoleId = reservation.getConsoleId();
 
         // Update Status
         if (status.equals("pending")) {
@@ -195,8 +196,8 @@ public class DatabaseRepository {
         }
 
         // Update Console to free up reservation
-        consolesRef.child(reservationId).child("lendingStatus").setValue(false);
-        consolesRef.child(reservationId).child("lenderUid").setValue("");
+        consolesRef.child(consoleId).child("lendingStatus").setValue(false);
+        consolesRef.child(consoleId).child("lenderUid").setValue("");
     }
 
     // Used to fetch ONCE in requestSharedViewModel

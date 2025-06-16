@@ -44,6 +44,7 @@ public class ReservationDetailActivity extends AppCompatActivity {
     // Data variables
     private ReservationModel reservation;
     private String reservationStatus = "PENDING"; // PENDING, APPROVED, REJECTED
+    private LocalTime timeOfReservation = null;
     private CountDownTimer countDownTimer;
     private Context context = this;
     private ValueEventListener statusListener;
@@ -125,6 +126,9 @@ public class ReservationDetailActivity extends AppCompatActivity {
         reservationTime.setText(reservation.getTime() + " WIB");
         verificationCode.setText(reservation.getVerificationCode());
 
+        // Set Reservation Time
+        timeOfReservation = LocalTime.parse(reservation.getTime());
+
         // Date Formatter - Assuming Rental Time is 1 hour
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         rentalLimit.setText(LocalTime.parse(reservation.getTime(), formatter).plusHours(1).toString() + " WIB");
@@ -188,8 +192,21 @@ public class ReservationDetailActivity extends AppCompatActivity {
         additionalInfoContainer.setVisibility(View.VISIBLE);
         rentalLimitContainer.setVisibility(View.VISIBLE);
 
-        // Start countdown timer (example: 10 minutes)
-        startConfirmationTimer(10 * 60 * 1000); // 10 minutes in milliseconds
+        // Get current Time
+        LocalTime currentTime = LocalTime.now();
+
+        // Get the difference between current time and reservation time
+        // If before reserved time, skip timer
+        // if in range of reserved time - 10 minutes (in 10 minute mark just before reservation)
+        // Trigger timer based on remaining time
+        // if after reserved time however, do nothing, should not be possible to access this activity
+        if (currentTime.isBefore(timeOfReservation)) {
+            return;
+        } else if (currentTime.isBefore(timeOfReservation.minusMinutes(10))) {
+            startConfirmationTimer(10 * 60 * 1000 - (currentTime.toSecondOfDay() - timeOfReservation.toSecondOfDay()) * 1000);
+        } else {
+            return;
+        }
 
         // Set info text
         infoText.setText("Tunjukkan kode verifikasi ini kepada admin untuk konfirmasi");
