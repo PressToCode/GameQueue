@@ -15,9 +15,13 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.gamequeue.R;
+import com.example.gamequeue.data.model.ReserveTimeModel;
+import com.example.gamequeue.data.repository.DatabaseRepository;
 import com.example.gamequeue.data.sharedViewModel.ReservationFormSharedViewModel;
+import com.example.gamequeue.utils.CustomCallbackWithType;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -208,9 +212,11 @@ public class FormOneFragment extends Fragment {
 
         // Update Reservation Form
         TextView dayOfMonthTextView = buttonDayCard.get(selectedIndex).findViewById(R.id.tvDate);
+        String dayName = ((TextView) buttonDayCard.get(selectedIndex).findViewById(R.id.tvDay)).getText().toString().toLowerCase();
         int dayOfMonth = Integer.parseInt(dayOfMonthTextView.getText().toString());
         String date = LocalDate.now().withDayOfMonth(dayOfMonth).format(DateTimeFormatter.ISO_LOCAL_DATE);
         sharedViewModel.getReservationForm().getValue().setDate(date);
+        sharedViewModel.getReservationForm().getValue().setDayName(dayName);
 
         // --- Logic to enable/disable time buttons ---
         LocalDate today = LocalDate.now();
@@ -258,6 +264,31 @@ public class FormOneFragment extends Fragment {
                 timeRadButton.setAlpha(1.0f);
             }
         }
+
+        // Check also for any existing reservations to prevent reserving duplicate time with other users
+        DatabaseRepository.getConsoleTimeSlotLists(sharedViewModel.getReservationForm().getValue().getConsoleId(), dayName, new CustomCallbackWithType<>() {
+            @Override
+            public void onSuccess(ArrayList<ReserveTimeModel> timeModelArrayList) {
+                timeModelArrayList.forEach(reserveTimeModel -> {
+                    for (int i = 0; i < buttonTime.size(); i++) {
+                        RadioButton timeRadButton = buttonTime.get(i);
+                        String timeSlotText = timeRadButton.getText().toString();
+
+                        // Only check if the time is equal and is reserved by someone
+                        if (reserveTimeModel.getTime().equals(timeSlotText) && (reserveTimeModel.getUserId() != null && !reserveTimeModel.getUserId().isEmpty())) {
+                            timeRadButton.setEnabled(false);
+                            timeRadButton.setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+                            timeRadButton.setAlpha(0.5f);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onError(String error) {
+                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+            }
+        });
 
         if (aTimeSlotNeedsToBeUnchecked && sharedViewModel != null && sharedViewModel.getReservationForm().getValue() != null) {
             sharedViewModel.getReservationForm().getValue().setTime(null);

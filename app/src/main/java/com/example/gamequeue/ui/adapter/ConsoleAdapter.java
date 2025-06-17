@@ -11,7 +11,6 @@ import com.example.gamequeue.utils.CardLayoutConst;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,7 +88,7 @@ public class ConsoleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             // Only currently not lended item can be clicked
             // Disabled for Admins
-            if(!currentConsole.getLendingStatus() && !ApplicationContext.getAdminMode()) {
+            if(currentConsole.getAvailabilityStatus() && !ApplicationContext.getAdminMode()) {
                 Intent intent = getReservationProcessIntent(context, currentConsole);
                 holder.itemView.setOnClickListener(v -> context.startActivity(intent));
             }
@@ -126,7 +125,7 @@ public class ConsoleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         Intent intent = new Intent(context, ReservationProcessActivity.class);
         intent.putExtra("id", currentConsole.getId());
         intent.putExtra("title", currentConsole.getTitle());
-        intent.putExtra("status", currentConsole.getLendingStatus() ? "Tidak Tersedia" : "Tersedia");
+        intent.putExtra("status", currentConsole.getAvailabilityStatus() ? "Tersedia" : "Tidak Tersedia");
         intent.putExtra("specificationOne", currentConsole.getSpecificationOne());
         intent.putExtra("specificationTwo", currentConsole.getSpecificationTwo());
         intent.putExtra("specificationThree", currentConsole.getSpecificationThree());

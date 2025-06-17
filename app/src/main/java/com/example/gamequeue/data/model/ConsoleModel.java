@@ -9,8 +9,7 @@ public class ConsoleModel {
     private String specificationOne = "NO SPECIFICATION";
     private String specificationTwo = "NO SPECIFICATION";
     private String specificationThree = "NO SPECIFICATION";
-    private Boolean lendingStatus;
-    private String lenderUid;
+    private Boolean availabilityStatus = true;
 
     // Default Constructor
     public ConsoleModel() {
@@ -44,11 +43,5 @@ public class ConsoleModel {
     public String getSpecificationThree() {
         return specificationThree;
     }
-
-    public void setLending(Boolean lendingStatus, String lenderUid) {
-        this.lendingStatus = lendingStatus;
-        this.lenderUid = lenderUid;
-    }
-    public Boolean getLendingStatus() { return lendingStatus; }
-    public String getLenderUid() { return lenderUid; }
+    public Boolean getAvailabilityStatus() { return availabilityStatus; }
 }

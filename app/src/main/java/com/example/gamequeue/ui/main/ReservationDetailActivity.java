@@ -200,6 +200,10 @@ public class ReservationDetailActivity extends AppCompatActivity {
         // if in range of reserved time - 10 minutes (in 10 minute mark just before reservation)
         // Trigger timer based on remaining time
         // if after reserved time however, do nothing, should not be possible to access this activity
+        if (timeOfReservation == null) {
+            return;
+        }
+
         if (currentTime.isBefore(timeOfReservation)) {
             return;
         } else if (currentTime.isBefore(timeOfReservation.minusMinutes(10))) {
@@ -245,6 +249,9 @@ public class ReservationDetailActivity extends AppCompatActivity {
             public void onFinish() {
                 confirmationTime.setText("Waktu konfirmasi habis");
                 confirmationTime.setTextColor(ContextCompat.getColor(context, R.color.blind_red));
+
+                // Remove Reservation to free up slot
+                DatabaseRepository.updateReservationStatus(reservation);
             }
         };
 

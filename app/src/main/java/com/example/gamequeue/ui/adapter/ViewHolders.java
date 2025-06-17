@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamequeue.R;
+import com.example.gamequeue.data.firebase.FirebaseUtil;
 import com.example.gamequeue.data.model.ConsoleModel;
 import com.example.gamequeue.data.model.ReservationModel;
 import com.example.gamequeue.data.repository.DatabaseRepository;
@@ -78,7 +79,7 @@ public class ViewHolders {
 
 //            imageView.setImageResource(consoleModel.getImage());
             title.setText(consoleModel.getTitle());
-            status.setText(consoleModel.getLendingStatus() ? "Tidak Tersedia" : "Tersedia");
+            status.setText(consoleModel.getAvailabilityStatus() ? "Tersedia" : "Tidak Tersedia");
             WidgetModifier.statusChanger(status);
             specificationOne.setText(consoleModel.getSpecificationOne());
             specificationTwo.setText(consoleModel.getSpecificationTwo());
@@ -130,8 +131,7 @@ public class ViewHolders {
                 DatabaseRepository.removeUserReservationById(reservation.getId(), consoleModel.getId(), 0, new CustomCallback() {
                     @Override
                     public void onSuccess() {
-                        // In theory, it should update the observer in status fragment
-                        // And also change the status to "Canceled"
+                        DatabaseRepository.updateSlot(consoleModel.getId(), reservation.getDayName(), reservation.getDate(), reservation.getTime(), "", "", "", false);
                     }
 
                     @Override

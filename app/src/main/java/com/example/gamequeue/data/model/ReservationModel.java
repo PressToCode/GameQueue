@@ -8,6 +8,7 @@ public class ReservationModel {
     private String id;
     private String consoleId;
     private String consoleName;
+    private String dayName;
     private String date;
     private String time;
     private String lenderEmail;
@@ -36,6 +37,14 @@ public class ReservationModel {
     public String getConsoleName() { return consoleName; }
 
     public void setConsoleName(String consoleName) { this.consoleName = consoleName; }
+
+    public String getDayName() {
+        return dayName;
+    }
+
+    public void setDayName(String dayName) {
+        this.dayName = dayName;
+    }
 
     public String getDate() {
         return date;

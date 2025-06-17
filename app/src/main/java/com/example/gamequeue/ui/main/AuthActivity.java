@@ -101,8 +101,8 @@ public class AuthActivity extends AppCompatActivity {
         // TODO: Remove dev mode on Production
         // Skips authentication directly
         devModeBtn.setOnClickListener(v -> {
-            ApplicationContext.setDevMode(true);
-            startActivity(new Intent(context, MainActivity.class));
+//            ApplicationContext.setDevMode(true);
+//            startActivity(new Intent(context, MainActivity.class));
 //            DatabaseRepository.addConsolesDataToFirebase(new CustomCallback() {
 //                @Override
 //                public void onSuccess() {
@@ -112,6 +112,18 @@ public class AuthActivity extends AppCompatActivity {
 //                @Override
 //                public void onError(String error) {}
 //            });
+
+            DatabaseRepository.setupReserveTimeDateSlots(new CustomCallback() {
+                @Override
+                public void onSuccess() {
+                    Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onError(String error) {
+                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+                }
+            });
         });
 
         resetDb.setOnClickListener(v -> {

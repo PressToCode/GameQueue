@@ -228,7 +228,7 @@ public class HomeFragment extends Fragment {
             return;
         }
 
-        Optional<ConsoleModel> firstMatch = consoleList.stream().filter(consoleModel -> consoleModel != null && !consoleModel.getLendingStatus()).findFirst();
+        Optional<ConsoleModel> firstMatch = consoleList.stream().filter(consoleModel -> consoleModel != null && consoleModel.getAvailabilityStatus()).findFirst();
 
         if (firstMatch.isEmpty()) {
             return;

@@ -2,24 +2,23 @@ package com.example.gamequeue.data.repository;
 
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.gamequeue.data.firebase.FirebaseUtil;
 import com.example.gamequeue.data.model.ConsoleModel;
 import com.example.gamequeue.data.model.RequestModel;
 import com.example.gamequeue.data.model.ReservationModel;
+import com.example.gamequeue.data.model.ReserveTimeDateModel;
+import com.example.gamequeue.data.model.ReserveTimeModel;
 import com.example.gamequeue.utils.ApplicationContext;
 import com.example.gamequeue.utils.CustomCallback;
 import com.example.gamequeue.utils.CustomCallbackWithType;
 import com.example.gamequeue.utils.RandomGenerator;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 
 /*
  * Important Note:
@@ -30,7 +29,7 @@ import java.util.ArrayList;
 public class DatabaseRepository {
     // Firebase Utilities Singletons Alias
     private static final FirebaseAuth auth;
-    private static final DatabaseReference consolesRef, reservationsRef, requestRef, adminsRef;
+    private static final DatabaseReference consolesRef, reservationsRef, requestRef, adminsRef, slotRef;
 
     static {
         auth = FirebaseUtil.getAuth();
@@ -38,6 +37,7 @@ public class DatabaseRepository {
         reservationsRef = FirebaseUtil.getReservationsRef();
         requestRef = FirebaseUtil.getRequestRef();
         adminsRef = FirebaseUtil.getAdminsRef();
+        slotRef = FirebaseUtil.getSlotRef();
     }
 
     // This should NOT be called ANYWHERE unless NEEDED
@@ -58,12 +58,105 @@ public class DatabaseRepository {
 
         // Assuming there is 10 consoles or devices
         for (int i = 0; i < models.size(); i++) {
-            models.get(i).setLending(false, "");
             String id = consolesRef.push().getKey();
             consolesRef.child(id).setValue(models.get(i));
         }
 
         callback.onSuccess();
+    }
+
+    public static void setupReserveTimeDateSlots(CustomCallback callback) {
+        // Time Slots
+        ArrayList<ReserveTimeModel> timeSlots = new ArrayList<>();
+        timeSlots.add(new ReserveTimeModel("09:30", "", "", ""));
+        timeSlots.add(new ReserveTimeModel("10:30", "", "", ""));
+        timeSlots.add(new ReserveTimeModel("11:30", "", "", ""));
+        timeSlots.add(new ReserveTimeModel("12:30", "", "", ""));
+        timeSlots.add(new ReserveTimeModel("13:00", "", "", ""));
+        timeSlots.add(new ReserveTimeModel("14:00", "", "", ""));
+        timeSlots.add(new ReserveTimeModel("15:00", "", "", ""));
+        timeSlots.add(new ReserveTimeModel("16:00", "", "", ""));
+
+        // Day name lists
+        String[] days = {"senin", "selasa", "rabu", "kamis", "jumat"};
+
+        // Date Slots
+        ArrayList<ReserveTimeDateModel> dateSlots = new ArrayList<>();
+        for (int i = 0; i < days.length; i++) {
+            dateSlots.add(new ReserveTimeDateModel(days[i], ""));
+        }
+
+        // Get Console Lists
+        ArrayList<ConsoleModel> consoles = new ArrayList<>();
+
+        getConsoleLists(new CustomCallbackWithType<>() {
+            @Override
+            public void onSuccess(ArrayList<ConsoleModel> consoleFetched) {
+                consoles.addAll(consoleFetched);
+
+                AtomicReference<Boolean> shouldStop = new AtomicReference<>(false);
+
+                // There is 5 days that is reservable
+                consoles.forEach(consoleModel -> {
+                    if (shouldStop.get()) {
+                        return;
+                    }
+
+                    dateSlots.forEach(reserveTimeDateModel -> {
+                        if (shouldStop.get()) {
+                            return;
+                        }
+
+                        slotRef.child(consoleModel.getId()).child(reserveTimeDateModel.getDayName()).setValue(reserveTimeDateModel).addOnCompleteListener(task -> {
+                            if (!task.isSuccessful()) {
+                                callback.onError(task.getException().getMessage());
+                                shouldStop.set(true);
+                                return;
+                            }
+
+                            timeSlots.forEach(reserveTimeModel -> {
+                                if (shouldStop.get()) {
+                                    return;
+                                }
+
+                                slotRef.child(consoleModel.getId()).child(reserveTimeDateModel.getDayName()).child("times").child(reserveTimeModel.getTime()).setValue(reserveTimeModel).addOnCompleteListener(task1 -> {
+                                    if (!task1.isSuccessful()) {
+                                        callback.onError(task1.getException().getMessage());
+                                        shouldStop.set(true);
+                                        return;
+                                    }
+                                });
+                            });
+                        });
+                    });
+                });
+
+                callback.onSuccess();
+            }
+
+            @Override
+            public void onError(String error) {
+                Log.d("[DEBUG]", error);
+            }
+        });
+    }
+
+    private static void getConsoleLists(CustomCallbackWithType<ArrayList<ConsoleModel>> callback) {
+        consolesRef.get().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                callback.onError(task.getException().getMessage());
+                return;
+            }
+
+            ArrayList<ConsoleModel> consoles = new ArrayList<>();
+            task.getResult().getChildren().forEach(dataSnapshot -> {
+                ConsoleModel console = dataSnapshot.getValue(ConsoleModel.class);
+                console.setId(dataSnapshot.getKey());
+                consoles.add(console);
+            });
+
+            callback.onSuccess(consoles);
+        });
     }
 
     // To reset All
@@ -76,8 +169,7 @@ public class DatabaseRepository {
            }
 
            task.getResult().getChildren().forEach(dataSnapshot -> {
-               dataSnapshot.getRef().child("lendingStatus").setValue(false);
-               dataSnapshot.getRef().child("lenderUid").setValue("");
+               dataSnapshot.getRef().child("availabilityStatus").setValue(true);
            });
         });
 
@@ -115,12 +207,32 @@ public class DatabaseRepository {
         reservationsRef.child(auth.getCurrentUser().getUid()).child(reservationId).setValue(form);
 
         // Update console to reserved status
-//        consolesRef.child(consoleId).child("lendingStatus").setValue(true);
+//        consolesRef.child(consoleId).child("availabilityStatus").setValue(true);
 //        consolesRef.child(consoleId).child("lenderUid").setValue(userId);
 
         // Send request to admin
         requestRef.child(reservationId).setValue(new RequestModel(userId, consoleId));
+        updateSlot(consoleId, form.getDayName(), form.getDate(), form.getTime(), reservationId, userId, auth.getCurrentUser().getEmail(), true);
         callback.onSuccess(reservationId);
+    }
+
+    /*
+     * mode:
+     * true -> add/update
+     * false -> remove
+     */
+    public static void updateSlot(String consoleId, String dayName, String date, String time, String reservationId, String userId, String userEmail, Boolean mode) {
+        if (mode) {
+            slotRef.child(consoleId).child(dayName).child("date").setValue(date);
+            slotRef.child(consoleId).child(dayName).child("times").child(time).child("userId").setValue(userId);
+            slotRef.child(consoleId).child(dayName).child("times").child(time).child("userEmail").setValue(userEmail);
+            slotRef.child(consoleId).child(dayName).child("times").child(time).child("reservationId").setValue(reservationId);
+        } else {
+            slotRef.child(consoleId).child(dayName).child("date").setValue("");
+            slotRef.child(consoleId).child(dayName).child("times").child(time).child("userId").setValue("");
+            slotRef.child(consoleId).child(dayName).child("times").child(time).child("userEmail").setValue("");
+            slotRef.child(consoleId).child(dayName).child("times").child(time).child("reservationId").setValue("");
+        }
     }
 
     // For one time fetch, not recommended
@@ -167,8 +279,7 @@ public class DatabaseRepository {
     // 1 = Rejected by Admin
     public static void removeUserReservationById(String reservationId, String consoleId, int type, CustomCallback callback) {
         // Update Console FIRST
-        consolesRef.child(consoleId).child("lendingStatus").setValue(false);
-        consolesRef.child(consoleId).child("lenderUid").setValue("");
+        consolesRef.child(consoleId).child("availabilityStatus").setValue(true);
 
         // Remove Request
         requestRef.child(reservationId).removeValue();
@@ -196,8 +307,10 @@ public class DatabaseRepository {
         }
 
         // Update Console to free up reservation
-        consolesRef.child(consoleId).child("lendingStatus").setValue(false);
-        consolesRef.child(consoleId).child("lenderUid").setValue("");
+        consolesRef.child(consoleId).child("availabilityStatus").setValue(true);
+
+        // Update slots
+        updateSlot(consoleId, reservation.getDayName(), reservation.getDate(), reservation.getTime(), "", "", "", false);
     }
 
     // Used to fetch ONCE in requestSharedViewModel
@@ -246,8 +359,8 @@ public class DatabaseRepository {
     public static void updateReservationRequest(Boolean isAccepted, String reservationId, String userId, String consoleId) {
         if (isAccepted) {
             // Update Console
-            consolesRef.child(consoleId).child("lendingStatus").setValue(true);
-            consolesRef.child(consoleId).child("lenderUid").setValue(userId);
+            // TODO: ADD TIME CHECK BEFORE SETTING TO TRUE
+//            consolesRef.child(consoleId).child("availabilityStatus").setValue(true);
 
             // Update User's Reservation Status
             reservationsRef.child(userId).child(reservationId).child("status").setValue("Approved");
@@ -257,8 +370,7 @@ public class DatabaseRepository {
             requestRef.child(reservationId).removeValue();
         } else {
             // Update Console
-            consolesRef.child(consoleId).child("lendingStatus").setValue(false);
-            consolesRef.child(consoleId).child("lenderUid").setValue("");
+            consolesRef.child(consoleId).child("availabilityStatus").setValue(true);
 
             // Update User's Reservation Status
             reservationsRef.child(userId).child(reservationId).child("status").setValue("Rejected");
@@ -266,5 +378,22 @@ public class DatabaseRepository {
             // Lastly, Remove the Request
             requestRef.child(reservationId).removeValue();
         }
+    }
+
+    public static void getConsoleTimeSlotLists(String consoleId, String dayName, CustomCallbackWithType<ArrayList<ReserveTimeModel>> callback) {
+        slotRef.child(consoleId).child(dayName).child("times").get().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                return;
+            }
+
+            ArrayList<ReserveTimeModel> timeSlots = new ArrayList<>();
+            task.getResult().getChildren().forEach(dataSnapshot -> {
+                ReserveTimeModel timeSlot = dataSnapshot.getValue(ReserveTimeModel.class);
+                timeSlot.setTime(dataSnapshot.getKey());
+                timeSlots.add(timeSlot);
+            });
+
+            callback.onSuccess(timeSlots);
+        });
     }
 }

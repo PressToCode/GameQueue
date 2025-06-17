@@ -4,8 +4,7 @@
 -- [ConsoleUid]
 --- ConsoleName
 --- ...
---- LenderStatus        <-- To track whether console is available or not
---- LenderUid           <-- To track who's booking it
+--- AvailabilityStatus        <-- To track whether console is available or not
 
 // Reservation - Meant to be unique per user
 - Reservations
@@ -27,6 +26,21 @@
 - Admins
 -- [User UID]           <-- Instead of Email to prevent duplication
 -- ....
+
+// ! MIGRATED TO THIS ! //
+[*] Console no longer store lender status or uid
+[*] Console will essentially NEVER be in "unable to reserve" status
+[*] Console status is exchanged with AvailabilityStatus in case of reparation or other issue
+
+// Reservation Slot - Only if request is approved
+- Slot
+--- [Console ID]                    <-- Which Console
+------ [DayName]                    <-- Static (Eg. senin, selasa, etc.)
+--------- [Date]                    <-- Which date is being reserved (dynamically changed for rollover)
+--------- [Times]                   <-- Which time is being reserved (static, multiple time slot for that date)
+------------ [User UID]             <-- Who's reserving at that time
+------------ [User Email]           <-- For added clarity on who's reserving
+------------ [Reservation ID]       <-- To match which reservations
 
 // Statuses
 ConsoleModel: Tersedia, Tidak Tersedia
