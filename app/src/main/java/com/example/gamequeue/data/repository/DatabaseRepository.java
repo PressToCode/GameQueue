@@ -212,7 +212,7 @@ public class DatabaseRepository {
 
         // Send request to admin
         requestRef.child(reservationId).setValue(new RequestModel(userId, consoleId));
-        updateSlot(consoleId, form.getDayName(), form.getDate(), form.getTime(), reservationId, userId, auth.getCurrentUser().getEmail(), true);
+//        updateSlot(consoleId, form.getDayName(), form.getDate(), form.getTime(), reservationId, userId, auth.getCurrentUser().getEmail(), true);
         callback.onSuccess(reservationId);
     }
 
@@ -306,11 +306,16 @@ public class DatabaseRepository {
             reservationsRef.child(auth.getCurrentUser().getUid()).child(reservationId).child("status").setValue("Completed");
         }
 
+        // Remove request
+        requestRef.child(reservationId).removeValue();
+
         // Update Console to free up reservation
         consolesRef.child(consoleId).child("availabilityStatus").setValue(true);
 
-        // Update slots
-        updateSlot(consoleId, reservation.getDayName(), reservation.getDate(), reservation.getTime(), "", "", "", false);
+        // Update slots ONLY if previously did reserve
+        if(status.equalsIgnoreCase("approved")) {
+            updateSlot(consoleId, reservation.getDayName(), reservation.getDate(), reservation.getTime(), "", "", "", false);
+        }
     }
 
     // Used to fetch ONCE in requestSharedViewModel
@@ -358,13 +363,47 @@ public class DatabaseRepository {
 
     public static void updateReservationRequest(Boolean isAccepted, String reservationId, String userId, String consoleId) {
         if (isAccepted) {
-            // Update Console
-            // TODO: ADD TIME CHECK BEFORE SETTING TO TRUE
-//            consolesRef.child(consoleId).child("availabilityStatus").setValue(true);
-
             // Update User's Reservation Status
             reservationsRef.child(userId).child(reservationId).child("status").setValue("Approved");
             reservationsRef.child(userId).child(reservationId).child("verificationCode").setValue(RandomGenerator.generateRandomString());
+
+            // Get User Reservation Data
+            getUserReservationById(reservationId, userId, new CustomCallbackWithType<>() {
+                @Override
+                public void onSuccess(ReservationModel message) {
+                    // Update Slot
+                    updateSlot(consoleId, message.getDayName(), message.getDate(), message.getTime(), reservationId, userId, auth.getCurrentUser().getEmail(), true);
+
+                    // Check Console Availabilty
+//                    getConsoleTimeSlotLists(consoleId, message.getDayName(), new CustomCallbackWithType<>() {
+//                        @Override
+//                        public void onSuccess(ArrayList<ReserveTimeModel> timeSlots) {
+//                            AtomicReference<Boolean> isReservable = new AtomicReference<>(false);
+//
+//                            timeSlots.forEach(reserveTimeModel -> {
+//                                if (reserveTimeModel.getUserId() == null || reserveTimeModel.getUserId().isEmpty()) {
+//                                    isReservable.set(true);
+//                                    return;
+//                                }
+//                            });
+//
+//                            if(isReservable.get()) {
+//                                consolesRef.child(consoleId).child("availabilityStatus").setValue(true); // Still reservable
+//                            } else {
+//                                consolesRef.child(consoleId).child("availabilityStatus").setValue(false); // None is reservable
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onError(String error) {
+//
+//                        }
+//                    });
+                }
+
+                @Override
+                public void onError(String error) {}
+            });
 
             // Lastly, Remove the Request
             requestRef.child(reservationId).removeValue();

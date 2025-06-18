@@ -160,10 +160,6 @@ public class AuthRepository {
 
     // Check Authentication Status
     public static boolean isLoggedIn() {
-        // TODO: REMOVE ON PRODUCTION
-        if (ApplicationContext.getDevMode()) {
-            return true;
-        }
         return auth.getCurrentUser() != null;
     }
 
@@ -233,12 +229,6 @@ public class AuthRepository {
 
     // Logout - Async to prevent UI Thread Stuck
     public static void logout(CustomCallback callback) {
-        // TODO: REMOVE ON PRODUCTION
-        if (ApplicationContext.getDevMode()) {
-            callback.onSuccess();
-            return;
-        }
-
         FirebaseUtil.getCredentialManager()
                 .clearCredentialStateAsync(
                         FirebaseUtil.getClearCredentialStateRequest(),

@@ -38,10 +38,7 @@ public class ReservationSharedViewModel extends ViewModel {
     private ValueEventListener reservationEventListener;
 
     public ReservationSharedViewModel() {
-        // TODO: REMOVE ON PRODUCTION
-        if (!ApplicationContext.getDevMode()) {
-            attachDatabaseListener();
-        }
+        attachDatabaseListener();
 
         // Mirror original list and apply filter immediately if any
         filteredReservationListLiveOne.addSource(reservationListLive, list -> {

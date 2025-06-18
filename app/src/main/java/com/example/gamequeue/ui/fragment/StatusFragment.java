@@ -103,17 +103,15 @@ public class StatusFragment extends Fragment {
             consoleList.addAll(consoleModels);
         });
 
-        if(!ApplicationContext.getDevMode()) {
-            reservationSharedViewModel.getFilteredReservationListLiveTwo().observe(getViewLifecycleOwner(), reservationModels -> {
-                reservationList.clear();
+        reservationSharedViewModel.getFilteredReservationListLiveTwo().observe(getViewLifecycleOwner(), reservationModels -> {
+            reservationList.clear();
 
-                if(reservationModels != null && !reservationModels.isEmpty()) {
-                    reservationList.addAll(reservationModels);
-                }
+            if(reservationModels != null && !reservationModels.isEmpty()) {
+                reservationList.addAll(reservationModels);
+            }
 
-                adapter.notifyDataSetChanged();
-            });
-        }
+            adapter.notifyDataSetChanged();
+        });
     }
 
     private void setupFilterer() {

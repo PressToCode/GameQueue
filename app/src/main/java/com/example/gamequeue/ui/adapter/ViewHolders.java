@@ -131,7 +131,9 @@ public class ViewHolders {
                 DatabaseRepository.removeUserReservationById(reservation.getId(), consoleModel.getId(), 0, new CustomCallback() {
                     @Override
                     public void onSuccess() {
-                        DatabaseRepository.updateSlot(consoleModel.getId(), reservation.getDayName(), reservation.getDate(), reservation.getTime(), "", "", "", false);
+                        if (status.getText().toString().equalsIgnoreCase("approved")) {
+                            DatabaseRepository.updateSlot(consoleModel.getId(), reservation.getDayName(), reservation.getDate(), reservation.getTime(), "", "", "", false);
+                        }
                     }
 
                     @Override

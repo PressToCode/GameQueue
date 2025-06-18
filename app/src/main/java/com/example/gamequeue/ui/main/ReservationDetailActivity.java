@@ -188,10 +188,6 @@ public class ReservationDetailActivity extends AppCompatActivity {
         statusIcon.setImageResource(R.drawable.ic_succes);
         statusTitle.setText("Reservasi Disetujui");
 
-        // Show additional info
-        additionalInfoContainer.setVisibility(View.VISIBLE);
-        rentalLimitContainer.setVisibility(View.VISIBLE);
-
         // Get current Time
         LocalTime currentTime = LocalTime.now();
 
@@ -207,6 +203,10 @@ public class ReservationDetailActivity extends AppCompatActivity {
         if (currentTime.isBefore(timeOfReservation)) {
             return;
         } else if (currentTime.isBefore(timeOfReservation.minusMinutes(10))) {
+            // Show additional info
+            additionalInfoContainer.setVisibility(View.VISIBLE);
+            rentalLimitContainer.setVisibility(View.VISIBLE);
+
             startConfirmationTimer(10 * 60 * 1000 - (currentTime.toSecondOfDay() - timeOfReservation.toSecondOfDay()) * 1000);
         } else {
             return;

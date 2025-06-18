@@ -28,17 +28,15 @@ public class ProfileActivity extends AppCompatActivity {
     private EditText usernameField, emailField, oldPasswordField, passwordField, confirmPasswordField;
     private Button editBtn, saveBtn, logoutBtn;
     private boolean isEdit = false;
-    private boolean skipFetch = true;
+//    private boolean skipFetch = true;
     private Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Auth Check before Rendering - Unless Dev Mode
-        if(AuthRepository.isLoggedIn()) {
-            skipFetch = ApplicationContext.getDevMode();
-        } else {
+        // Auth Check before Rendering
+        if(!AuthRepository.isLoggedIn()) {
             finish();
         }
 
@@ -71,13 +69,12 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void setupView() {
-        // TODO: REMOVE ON PRODUCTION
         // Skip if in dev mode
-        if(skipFetch) {
-            usernameField.setText("[Dev Mode] My Name");
-            emailField.setText("[Dev Mode] My Email");
-            return;
-        }
+//        if(skipFetch) {
+//            usernameField.setText("[Dev Mode] My Name");
+//            emailField.setText("[Dev Mode] My Email");
+//            return;
+//        }
 
         usernameField.setText(SharedProfileModel.getName());
         emailField.setText(SharedProfileModel.getEmail());
@@ -129,8 +126,7 @@ public class ProfileActivity extends AppCompatActivity {
                 canSubmit = false;
             }
 
-            // TODO: REMOVE DEV MODE ON PRODUCTION
-            if(canSubmit && !ApplicationContext.getDevMode()) {
+            if(canSubmit) {
                 AuthRepository.updateProfile(name, email, oldPassword, newPassword, new CustomCallback() {
                     @Override
                     public void onSuccess() {

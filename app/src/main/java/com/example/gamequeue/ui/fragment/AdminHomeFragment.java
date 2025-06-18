@@ -130,7 +130,6 @@ public class AdminHomeFragment extends Fragment {
     }
 
     private void loadData() {
-        // TODO: CHANGE THIS
         requestSharedViewModel.getFilteredReservationListLive().observe(getViewLifecycleOwner(), reservationModels -> {
             reservationList.clear();
 

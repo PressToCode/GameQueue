@@ -48,7 +48,6 @@ public class AuthActivity extends AppCompatActivity {
         });
 
         // Check for Actual Auth
-        // TODO: CHANGE AFTER DEV MODE IS REMOVED TO AUTH REPOSITORY METHOD
         if(FirebaseUtil.getAuth().getCurrentUser() != null) {
             SharedProfileModel.setAll();
             DatabaseRepository.checkAdmins(new CustomCallback() {
@@ -78,29 +77,25 @@ public class AuthActivity extends AppCompatActivity {
         authBottomLink = findViewById(R.id.authBottomLink);
         authMainButton = findViewById(R.id.authMainButton);
         authLoginGoogle = findViewById(R.id.authLoginGoogle);
-        devModeBtn = findViewById(R.id.devModeButton);
+//        devModeBtn = findViewById(R.id.devModeButton);
         resetDb = findViewById(R.id.resetDb);
 
         // Setup Listener
         setupListeners();
 
         // Ensure Dev Mode is not active
-        // TODO: REMOVE ON PRODUCTION
-        ApplicationContext.setDevMode(false);
         ApplicationContext.setAdminMode(false);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // TODO: REMOVE ON PRODUCTION
-        ApplicationContext.setDevMode(false);
+        ApplicationContext.setAdminMode(false);
     }
 
     private void setupListeners() {
-        // TODO: Remove dev mode on Production
         // Skips authentication directly
-        devModeBtn.setOnClickListener(v -> {
+//        devModeBtn.setOnClickListener(v -> {
 //            ApplicationContext.setDevMode(true);
 //            startActivity(new Intent(context, MainActivity.class));
 //            DatabaseRepository.addConsolesDataToFirebase(new CustomCallback() {
@@ -113,32 +108,32 @@ public class AuthActivity extends AppCompatActivity {
 //                public void onError(String error) {}
 //            });
 
-            DatabaseRepository.setupReserveTimeDateSlots(new CustomCallback() {
-                @Override
-                public void onSuccess() {
-                    Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show();
-                }
+//            DatabaseRepository.setupReserveTimeDateSlots(new CustomCallback() {
+//                @Override
+//                public void onSuccess() {
+//                    Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show();
+//                }
+//
+//                @Override
+//                public void onError(String error) {
+//                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+//                }
+//            });
+//        });
 
-                @Override
-                public void onError(String error) {
-                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
-                }
-            });
-        });
-
-        resetDb.setOnClickListener(v -> {
-            DatabaseRepository.resetAll(new CustomCallback() {
-                @Override
-                public void onSuccess() {
-                    Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onError(String error) {
-                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
-                }
-            });
-        });
+//        resetDb.setOnClickListener(v -> {
+//            DatabaseRepository.resetAll(new CustomCallback() {
+//                @Override
+//                public void onSuccess() {
+//                    Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show();
+//                }
+//
+//                @Override
+//                public void onError(String error) {
+//                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+//                }
+//            });
+//        });
 
         // Normal Authentication
         authMainButton.setOnClickListener(v -> {

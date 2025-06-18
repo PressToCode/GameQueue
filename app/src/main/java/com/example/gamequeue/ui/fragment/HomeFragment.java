@@ -135,11 +135,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupGreeting() {
-        if(ApplicationContext.getDevMode()) {
-            greetingText.setText("Hai, [Dev Mode]!");
-        } else {
-            greetingText.setText("Hai, " + SharedProfileModel.getName() + "!");
-        }
+        greetingText.setText("Hai, " + SharedProfileModel.getName() + "!");
     }
 
     private void setupProfileButton() {
@@ -161,17 +157,15 @@ public class HomeFragment extends Fragment {
             loadRecommendedData();
         });
 
-        if (!ApplicationContext.getDevMode()) {
-            reservationSharedViewModel.getFilteredReservationListLiveOne().observe(getViewLifecycleOwner(), reservationModels -> {
-                reservationList.clear();
+        reservationSharedViewModel.getFilteredReservationListLiveOne().observe(getViewLifecycleOwner(), reservationModels -> {
+            reservationList.clear();
 
-                if(reservationModels != null || !reservationModels.isEmpty()) {
-                    reservationList.addAll(reservationModels);
-                }
+            if(reservationModels != null || !reservationModels.isEmpty()) {
+                reservationList.addAll(reservationModels);
+            }
 
-                adapter.notifyDataSetChanged();
-            });
-        }
+            adapter.notifyDataSetChanged();
+        });
     }
 
     private void setupRecycler() {

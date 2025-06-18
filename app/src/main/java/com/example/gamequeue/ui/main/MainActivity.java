@@ -56,13 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Important to import data from Firebase
         consoleSharedViewModel = new ViewModelProvider(this).get(ConsoleSharedViewModel.class);
-
-        // Only fetch reservation if it's a normal user
-        // For dev mode case, already covered in ReservationSharedViewModel
-        // TODO: REMOVE THIS
-        if (!ApplicationContext.getAdminMode()) {
-            reservationSharedViewModel = new ViewModelProvider(this).get(ReservationSharedViewModel.class);
-        }
+        reservationSharedViewModel = new ViewModelProvider(this).get(ReservationSharedViewModel.class);
 
         // Setup all fragments and listener
         setupFragments(savedInstanceState);

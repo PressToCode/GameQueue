@@ -104,9 +104,8 @@ public class ReservationProcessActivity extends AppCompatActivity {
                 return;
             }
 
-            // Prevent Dev Mode and Admin from Submitting
-            // TODO: CHANGE IN PRODUCTION
-            if (ApplicationContext.getDevMode() || ApplicationContext.getAdminMode()) {
+            // Prevent Admin from Submitting
+            if (ApplicationContext.getAdminMode()) {
                 finish();
                 return;
             }

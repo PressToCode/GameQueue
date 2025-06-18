@@ -66,10 +66,8 @@ public class HistoryActivity extends AppCompatActivity {
         sortedIsoDateKeys = new ArrayList<>();
         historyListMap = new HashMap<>();
 
-        // TODO: REMOVE ON PRODUCTION
-        if (!ApplicationContext.getDevMode()) {
-            loadData();
-        }
+        // Fetch Data
+        loadData();
 
         // Setup Adapter
         historyAdapter = new HistoryAdapter(context, historyListMap, sortedIsoDateKeys);
