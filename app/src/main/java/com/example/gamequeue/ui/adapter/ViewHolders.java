@@ -128,19 +128,20 @@ public class ViewHolders {
             });
 
             removeBtn.setOnClickListener(v -> {
-                DatabaseRepository.removeUserReservationById(reservation.getId(), consoleModel.getId(), 0, new CustomCallback() {
-                    @Override
-                    public void onSuccess() {
-                        if (status.getText().toString().equalsIgnoreCase("approved")) {
-                            DatabaseRepository.updateSlot(consoleModel.getId(), reservation.getDayName(), reservation.getDate(), reservation.getTime(), "", "", "", false);
-                        }
-                    }
-
-                    @Override
-                    public void onError(String error) {
-                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
-                    }
-                });
+                DatabaseRepository.updateReservationStatus(reservation, null);
+//                DatabaseRepository.removeUserReservationById(reservation.getId(), consoleModel.getId(), 0, new CustomCallback() {
+//                    @Override
+//                    public void onSuccess() {
+//                        if (status.getText().toString().equalsIgnoreCase("approved")) {
+//                            DatabaseRepository.updateSlot(consoleModel.getId(), reservation.getDayName(), reservation.getDate(), reservation.getTime(), "", "", "", false);
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onError(String error) {
+//                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+//                    }
+//                });
             });
         }
     }

@@ -180,6 +180,13 @@ public class DatabaseRepository {
             }
         });
 
+        slotRef.removeValue().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                callback.onError(task.getException().getMessage());
+                return;
+            }
+        });
+
         reservationsRef.removeValue().addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
                 callback.onError(task.getException().getMessage());
@@ -291,19 +298,34 @@ public class DatabaseRepository {
     // There is two type
     // If approved, then the next thing is completed
     // If pending, then the next thing is cancelled
-    public static void updateReservationStatus(ReservationModel reservation) {
+    public static void updateReservationStatus(ReservationModel reservation, @Nullable String userUid) {
         // Get current status
         String status = reservation.getStatus().toLowerCase();
 
         // Get reservation ID
         String reservationId = reservation.getId();
         String consoleId = reservation.getConsoleId();
+        String userId;
+
+        if (userUid != null && !userUid.isEmpty()) {
+            userId = userUid;
+        } else {
+            userId = auth.getCurrentUser().getUid();
+        }
+
+        if (userId == null) {
+            return;
+        }
 
         // Update Status
         if (status.equals("pending")) {
-            reservationsRef.child(auth.getCurrentUser().getUid()).child(reservationId).child("status").setValue("Canceled");
+            if (userId == auth.getCurrentUser().getUid()) {
+                reservationsRef.child(userId).child(reservationId).child("status").setValue("Canceled");
+            } else {
+                reservationsRef.child(userId).child(reservationId).child("status").setValue("Rejected");
+            }
         } else if (status.equals("approved")) {
-            reservationsRef.child(auth.getCurrentUser().getUid()).child(reservationId).child("status").setValue("Completed");
+            reservationsRef.child(userId).child(reservationId).child("status").setValue("Completed");
         }
 
         // Remove request
@@ -330,6 +352,7 @@ public class DatabaseRepository {
             ArrayList<RequestModel> requests = new ArrayList<>();
             task.getResult().getChildren().forEach(dataSnapshot -> {
                 RequestModel request = dataSnapshot.getValue(RequestModel.class);
+                request.setReservationId(dataSnapshot.getKey());
                 requests.add(request);
             });
 
@@ -368,37 +391,50 @@ public class DatabaseRepository {
             reservationsRef.child(userId).child(reservationId).child("verificationCode").setValue(RandomGenerator.generateRandomString());
 
             // Get User Reservation Data
+            final String[] date = new String[1];
+            final String[] time = new String[1];
+
             getUserReservationById(reservationId, userId, new CustomCallbackWithType<>() {
                 @Override
                 public void onSuccess(ReservationModel message) {
                     // Update Slot
                     updateSlot(consoleId, message.getDayName(), message.getDate(), message.getTime(), reservationId, userId, auth.getCurrentUser().getEmail(), true);
 
-                    // Check Console Availabilty
-//                    getConsoleTimeSlotLists(consoleId, message.getDayName(), new CustomCallbackWithType<>() {
-//                        @Override
-//                        public void onSuccess(ArrayList<ReserveTimeModel> timeSlots) {
-//                            AtomicReference<Boolean> isReservable = new AtomicReference<>(false);
-//
-//                            timeSlots.forEach(reserveTimeModel -> {
-//                                if (reserveTimeModel.getUserId() == null || reserveTimeModel.getUserId().isEmpty()) {
-//                                    isReservable.set(true);
-//                                    return;
-//                                }
-//                            });
-//
-//                            if(isReservable.get()) {
-//                                consolesRef.child(consoleId).child("availabilityStatus").setValue(true); // Still reservable
-//                            } else {
-//                                consolesRef.child(consoleId).child("availabilityStatus").setValue(false); // None is reservable
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void onError(String error) {
-//
-//                        }
-//                    });
+                    date[0] = message.getDate();
+                    time[0] = message.getTime();
+
+                    if (date[0] != null && time[0] != null) {
+                        getRequests(new CustomCallbackWithType<>() {
+                            @Override
+                            public void onSuccess(ArrayList<RequestModel> message) {
+                                message.forEach(requestModel -> {
+                                    getUserReservationById(requestModel.getReservationId(), requestModel.getUserId(), new CustomCallbackWithType<>() {
+                                        @Override
+                                        public void onSuccess(ReservationModel reservationFetched) {
+                                            if (reservationFetched.getDate() == null || reservationFetched.getTime() == null) {
+                                                return;
+                                            }
+
+                                            // Remove all related request with the same date and time for that console
+                                            if (reservationFetched.getConsoleId().equalsIgnoreCase(consoleId) && reservationFetched.getDate().equalsIgnoreCase(date[0]) && reservationFetched.getTime().equalsIgnoreCase(time[0])) {
+                                                updateReservationStatus(reservationFetched, requestModel.getUserId());
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onError(String error) {
+                                            Log.d("[DEBUG]", "onError Line 435 DB_Repo: " + error);
+                                        }
+                                    });
+                                });
+                            }
+
+                            @Override
+                            public void onError(String error) {
+                                Log.d("[DEBUG]", "onError Line 443 DB_Repo: " + error);
+                            }
+                        });
+                    }
                 }
 
                 @Override

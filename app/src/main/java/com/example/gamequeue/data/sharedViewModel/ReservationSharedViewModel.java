@@ -144,8 +144,8 @@ public class ReservationSharedViewModel extends ViewModel {
 
                                 if (reservationDate.isBefore(today)) {
                                     // Call DatabaseRepository to update status to "Completed"
-                                    DatabaseRepository.updateReservationStatus(reservation);
-                                    return;
+                                    DatabaseRepository.updateReservationStatus(reservation, null);
+                                    continue;
                                 }
 
                                 // Check also for the time today
@@ -154,8 +154,8 @@ public class ReservationSharedViewModel extends ViewModel {
                                 // If it's today and the reservation is already expired (past 1 hour after the reserved time)
                                 if (reservationDate.isEqual(today) && (reservationTime.isBefore(currentTime) && currentTime.getHour() != 23)) {
                                     // Call DatabaseRepository to update status to "Completed"
-                                    DatabaseRepository.updateReservationStatus(reservation);
-                                    return;
+                                    DatabaseRepository.updateReservationStatus(reservation, null);
+                                    continue;
                                 }
 
                                 reservationList.add(reservation);

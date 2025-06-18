@@ -77,7 +77,7 @@ public class AuthActivity extends AppCompatActivity {
         authBottomLink = findViewById(R.id.authBottomLink);
         authMainButton = findViewById(R.id.authMainButton);
         authLoginGoogle = findViewById(R.id.authLoginGoogle);
-//        devModeBtn = findViewById(R.id.devModeButton);
+        devModeBtn = findViewById(R.id.devModeButton);
         resetDb = findViewById(R.id.resetDb);
 
         // Setup Listener
@@ -95,7 +95,7 @@ public class AuthActivity extends AppCompatActivity {
 
     private void setupListeners() {
         // Skips authentication directly
-//        devModeBtn.setOnClickListener(v -> {
+        devModeBtn.setOnClickListener(v -> {
 //            ApplicationContext.setDevMode(true);
 //            startActivity(new Intent(context, MainActivity.class));
 //            DatabaseRepository.addConsolesDataToFirebase(new CustomCallback() {
@@ -107,33 +107,33 @@ public class AuthActivity extends AppCompatActivity {
 //                @Override
 //                public void onError(String error) {}
 //            });
-
-//            DatabaseRepository.setupReserveTimeDateSlots(new CustomCallback() {
-//                @Override
-//                public void onSuccess() {
-//                    Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show();
-//                }
 //
-//                @Override
-//                public void onError(String error) {
-//                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
-//                }
-//            });
-//        });
+            DatabaseRepository.setupReserveTimeDateSlots(new CustomCallback() {
+                @Override
+                public void onSuccess() {
+                    Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show();
+                }
 
-//        resetDb.setOnClickListener(v -> {
-//            DatabaseRepository.resetAll(new CustomCallback() {
-//                @Override
-//                public void onSuccess() {
-//                    Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show();
-//                }
-//
-//                @Override
-//                public void onError(String error) {
-//                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
-//                }
-//            });
-//        });
+                @Override
+                public void onError(String error) {
+                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
+        resetDb.setOnClickListener(v -> {
+            DatabaseRepository.resetAll(new CustomCallback() {
+                @Override
+                public void onSuccess() {
+                    Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onError(String error) {
+                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
 
         // Normal Authentication
         authMainButton.setOnClickListener(v -> {

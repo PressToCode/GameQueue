@@ -251,7 +251,7 @@ public class ReservationDetailActivity extends AppCompatActivity {
                 confirmationTime.setTextColor(ContextCompat.getColor(context, R.color.blind_red));
 
                 // Remove Reservation to free up slot
-                DatabaseRepository.updateReservationStatus(reservation);
+                DatabaseRepository.updateReservationStatus(reservation, null);
             }
         };
 

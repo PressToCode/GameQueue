@@ -60,9 +60,7 @@ public class RequestSharedViewModel extends ViewModel {
         attachRequestListener();
 
         // Listen to Request Change then fetch reservationList
-        reservationListLive.addSource(requestListLive, requestModels -> {
-            fetchReservations(requestModels);
-        });
+        reservationListLive.addSource(requestListLive, this::fetchReservations);
 
         // Mirror original list
         filteredReservationListLive.addSource(reservationListLive, requestModels -> {
@@ -148,6 +146,7 @@ public class RequestSharedViewModel extends ViewModel {
 
         // Clear List
         temporaryReservationList.clear();
+        reservationListLive.postValue(new ArrayList<>(temporaryReservationList));
 
         // Counter to avoid race condition
         AtomicInteger pendingFetches = new AtomicInteger(requestList.size());
@@ -166,7 +165,7 @@ public class RequestSharedViewModel extends ViewModel {
 
                         if (reservationDate.isBefore(today)) {
                             // Call DatabaseRepository to update status to "Completed"
-                            DatabaseRepository.updateReservationStatus(reservation);
+                            DatabaseRepository.updateReservationStatus(reservation, null);
                             return;
                         }
 
@@ -176,7 +175,7 @@ public class RequestSharedViewModel extends ViewModel {
                         // If it's today and the reservation is already expired (past 1 hour after the reserved time)
                         if (reservationDate.isEqual(today) && (reservationTime.isBefore(currentTime) && currentTime.getHour() != 23)) {
                             // Call DatabaseRepository to update status to "Completed"
-                            DatabaseRepository.updateReservationStatus(reservation);
+                            DatabaseRepository.updateReservationStatus(reservation, null);
                             return;
                         }
 
