@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -114,7 +115,8 @@ public class ReservationSharedViewModel extends ViewModel {
         LocalDate today = LocalDate.now();
 
         // Get current time MINUS one hour
-        LocalTime currentTime = LocalTime.now().minusHours(1);
+        LocalTime actualTime = LocalTime.now();
+        LocalTime currentTime = actualTime.minusHours(1);
 
         if (reservationEventListener == null) {
             reservationEventListener = new ValueEventListener() {
@@ -149,7 +151,7 @@ public class ReservationSharedViewModel extends ViewModel {
                                 LocalTime reservationTime = LocalTime.parse(reservation.getTime());
 
                                 // If it's today and the reservation is already expired (past 1 hour after the reserved time)
-                                if (reservationDate.isEqual(today) && reservationTime.isBefore(currentTime)) {
+                                if (reservationDate.isEqual(today) && (reservationTime.isBefore(currentTime) && currentTime.getHour() != 23)) {
                                     // Call DatabaseRepository to update status to "Completed"
                                     DatabaseRepository.updateReservationStatus(reservation);
                                     return;

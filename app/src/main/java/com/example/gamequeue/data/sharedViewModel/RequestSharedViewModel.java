@@ -174,7 +174,7 @@ public class RequestSharedViewModel extends ViewModel {
                         LocalTime reservationTime = LocalTime.parse(reservation.getTime());
 
                         // If it's today and the reservation is already expired (past 1 hour after the reserved time)
-                        if (reservationDate.isEqual(today) && reservationTime.isBefore(currentTime)) {
+                        if (reservationDate.isEqual(today) && (reservationTime.isBefore(currentTime) && currentTime.getHour() != 23)) {
                             // Call DatabaseRepository to update status to "Completed"
                             DatabaseRepository.updateReservationStatus(reservation);
                             return;
