@@ -22,6 +22,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -178,7 +179,7 @@ public class ReservationSharedViewModel extends ViewModel {
             };
 
             // Add listener
-            reservationRef.child(FirebaseUtil.getAuth().getCurrentUser().getUid()).addValueEventListener(reservationEventListener);
+            reservationRef.child(Objects.requireNonNull(FirebaseUtil.getAuth().getCurrentUser()).getUid()).addValueEventListener(reservationEventListener);
         }
     }
 

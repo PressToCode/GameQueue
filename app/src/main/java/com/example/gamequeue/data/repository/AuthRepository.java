@@ -165,10 +165,9 @@ public class AuthRepository {
 
     // Register Using Email & Password
     public static void registerWithEmailAndPassword(String name, String email, String password, CustomCallback callback) {
-        updateName(name);
-
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
             if(task.isSuccessful()) {
+                updateName(name);
                 callback.onSuccess();
                 return;
             }
