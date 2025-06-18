@@ -187,7 +187,7 @@ public class RequestSharedViewModel extends ViewModel {
                         temporaryReservationList.add(reservation);
                     }
 
-                    if (pendingFetches.decrementAndGet() == 0) {
+                    if (pendingFetches.decrementAndGet() == 0 || pendingFetches.get() < 0) {
                         reservationListLive.postValue(new ArrayList<>(temporaryReservationList));
                     }
                 }
@@ -196,7 +196,7 @@ public class RequestSharedViewModel extends ViewModel {
                 public void onError(String error) {
                     Log.d("[RequestSharedViewModel]", "fetchReservations: " + error);
 
-                    if (pendingFetches.decrementAndGet() == 0) {
+                    if (pendingFetches.decrementAndGet() == 0 || pendingFetches.get() < 0) {
                         // All fetches completed (some might have failed)
                         reservationListLive.postValue(new ArrayList<>(temporaryReservationList));
                     }

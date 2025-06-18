@@ -39,6 +39,7 @@ import java.util.Arrays;
 /*
  * This version offer no recommendation card
  * No radio filters either (since it won't make sense)
+ * But still offer keyword filters
  */
 public class AdminHomeFragment extends Fragment {
     private RecyclerView recyclerView;
