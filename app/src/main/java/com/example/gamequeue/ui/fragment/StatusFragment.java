@@ -138,11 +138,11 @@ public class StatusFragment extends Fragment {
     private void applyFilter(int checkedId) {
         // Apply Filtering
         if(checkedId == R.id.radio_button_pending_status) {
-            reservationSharedViewModel.setFilterStatusTwo("pending");
+            reservationSharedViewModel.setFilterStatusTwo(radioPending.getText().toString().toLowerCase());
         } else if(checkedId == R.id.radio_button_completed_status) {
-            reservationSharedViewModel.setFilterStatusTwo("completed");
+            reservationSharedViewModel.setFilterStatusTwo(radioCompleted.getText().toString().toLowerCase());
         } else if(checkedId == R.id.radio_button_canceled_status) {
-            reservationSharedViewModel.setFilterStatusTwo("canceled");
+            reservationSharedViewModel.setFilterStatusTwo(radioCanceled.getText().toString().toLowerCase());
         } else if(checkedId == -1) {
             reservationSharedViewModel.setFilterStatusTwo("");
         }

@@ -322,15 +322,15 @@ public class HomeFragment extends Fragment {
             String status = "";
 
             if(checkedId == R.id.radio_button_pending) {
-                status = "pending";
+                status = radioPending.getText().toString();
             } else if (checkedId == R.id.radio_button_completed) {
-                status = "completed";
+                status = radioCompleted.getText().toString();
             } else if (checkedId == R.id.radio_button_canceled) {
-                status = "canceled";
+                status = radioCanceled.getText().toString();
             }
 
             // Filter by status AND word
-            reservationSharedViewModel.setFilterStatusOne(status);
+            reservationSharedViewModel.setFilterStatusOne(status.toLowerCase());
             reservationSharedViewModel.setFilterWordOne(searchText);
 
             // Update is already handled by observer
@@ -348,13 +348,13 @@ public class HomeFragment extends Fragment {
 
         // Apply Filtering
         if(checkedId == R.id.radio_button_pending) {
-            reservationSharedViewModel.setFilterStatusOne("pending");
+            reservationSharedViewModel.setFilterStatusOne(radioPending.getText().toString().toLowerCase());
             reservationSharedViewModel.setFilterWordOne(new ArrayList<>(Arrays.asList(searchText)));
         } else if(checkedId == R.id.radio_button_completed) {
-            reservationSharedViewModel.setFilterStatusOne("completed");
+            reservationSharedViewModel.setFilterStatusOne(radioCompleted.getText().toString().toLowerCase());
             reservationSharedViewModel.setFilterWordOne(new ArrayList<>(Arrays.asList(searchText)));
         } else if(checkedId == R.id.radio_button_canceled) {
-            reservationSharedViewModel.setFilterStatusOne("canceled");
+            reservationSharedViewModel.setFilterStatusOne(radioCanceled.getText().toString().toLowerCase());
             reservationSharedViewModel.setFilterWordOne(new ArrayList<>(Arrays.asList(searchText)));
         } else if(checkedId == -1) {
             reservationSharedViewModel.setFilterStatusOne("");

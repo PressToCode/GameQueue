@@ -60,7 +60,7 @@
             android:layout_marginBottom="8dp"
             android:gravity="center"
             android:orientation="horizontal"
-            android:weightSum="3">
+            android:weightSum="2">
 
             <RadioButton
                 android:id="@+id/radio_button_pending_status"
@@ -89,7 +89,7 @@
                 android:gravity="center"
                 android:includeFontPadding="false"
                 android:minHeight="36dp"
-                android:text="Completed"
+                android:text="Approved"
                 android:textColor="@color/radio_button_text_selector"
                 android:textSize="12sp" />
 
@@ -107,7 +107,8 @@
                 android:minHeight="36dp"
                 android:text="Canceled"
                 android:textColor="@color/radio_button_text_selector"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:visibility="gone" />
 
         </RadioGroup>
 
